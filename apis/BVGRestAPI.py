@@ -3,7 +3,7 @@ from concurrent.futures import process
 
 import requests
 
-from APIInterface import APIInterface
+from apis.APIInterface import APIInterface
 
 
 class BVGRestAPI(APIInterface):
