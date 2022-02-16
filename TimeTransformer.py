@@ -13,11 +13,14 @@ class TimeTransformer(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X, y=None):
-        X.loc[:, :] = X[X["Time"] != "error"]
-        X["Time"] = pd.to_datetime(X["Time"], format="%H%M%S")
-        X["Time"] = X["Time"] - self.start_time
-        X["Time"] = X["Time"].dt.total_seconds() / 60
         X = X.dropna()
-        X = X[X["Time"] > 0]  # drop all items where time is negative
-        X = X[X["Time"] < self.max_trip_time]  # drop all items where time is negative
+        X.drop(X[X["Time"] == "error"].index, inplace=True)
+        X.drop(X[~X["Time"].str.match(r"(\b\d{6}\b)", na=False)].index, inplace=True)
+        # X.loc[:, :] = X[X["Time"] != "error"]
+        # X.loc[:, :] = X[X["Time"].str.match(r"(\b\d{6}\b)", na=False)]  # Remove wrong time formate
+        X.loc[:, "Time"] = pd.to_datetime(X["Time"], format="%H%M%S")
+        X.loc[:, "Time"] = X["Time"] - self.start_time
+        X.loc[:, "Time"] = X["Time"].dt.total_seconds() / 60
+        X.drop(X[X["Time"] < 0].index, inplace=True)  # drop all items where time is negative
+        X.drop(X[X["Time"] > self.max_trip_time].index, inplace=True)  # drop all items where time is negative
         return X
