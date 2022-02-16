@@ -10,6 +10,7 @@ class BVGRestAPI(APIInterface):
     def __init__(self):
         # request rate per minute
         self.request_rate = 100
+        self.past_requests = []
 
     def query_location(
         self, query: str, amount_of_results=1, has_addresses="true", has_stops="false", has_poi="false"
@@ -21,7 +22,9 @@ class BVGRestAPI(APIInterface):
             ("stops", has_stops),
             ("poi", has_poi),
         )
-        return requests.get("https://v5.bvg.transport.rest/locations", params=params).json()[0]
+        response = requests.get("https://v5.bvg.transport.rest/locations", params=params).json()[0]
+        self.past_requests.append({"time": datetime.datetime.now()})
+        return response
 
     def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results=1) -> dict:
         params = (
@@ -36,9 +39,13 @@ class BVGRestAPI(APIInterface):
             ("stopovers", "true"),
         )
         response = requests.get("https://v5.bvg.transport.rest/journeys", params=params).json()
+        self.past_requests.append({"time": datetime.datetime.now()})
         journey = self.__process_response(response)
         journey["origin"] = {"longitude": origin["longitude"], "latitude": origin["latitude"]}
-        journey["destination"] = {"longitude": float(destination["longitude"]), "latitude": float(destination["latitude"])}
+        journey["destination"] = {
+            "longitude": float(destination["longitude"]),
+            "latitude": float(destination["latitude"]),
+        }
         return journey
 
     def __process_response(self, response):
