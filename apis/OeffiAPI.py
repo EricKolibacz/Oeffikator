@@ -36,9 +36,9 @@ class OeffiAPI(APIInterface):
         try:
             aTime = resp["svcResL"][1]["res"]["outConL"][0]["arr"]["aTimeS"]
         except:
-            return None
+            return {"origin": origin, "destination": destination, "arrivalTime": None, "stopovers": None}
         if aTime == None:
-            return None
+            return {"origin": origin, "destination": destination, "arrivalTime": None, "stopovers": None}
         return {"origin": origin, "destination": destination, "arrivalTime": aTime, "stopovers": None}
 
     def __process_response(self, response):
