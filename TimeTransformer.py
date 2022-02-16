@@ -5,8 +5,9 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class TimeTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self, start_time="12000"):
+    def __init__(self, start_time="12000", max_trip_time=120):
         self.start_time = datetime.datetime.strptime("120000", "%H%M%S")
+        self.max_trip_time = max_trip_time
 
     def fit(self, X, y=None):
         return self
@@ -18,4 +19,5 @@ class TimeTransformer(BaseEstimator, TransformerMixin):
         X["Time"] = X["Time"].dt.total_seconds() / 60
         X = X.dropna()
         X = X[X["Time"] > 0]  # drop all items where time is negative
+        X = X[X["Time"] < self.max_trip_time]  # drop all items where time is negative
         return X
