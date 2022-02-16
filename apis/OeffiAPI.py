@@ -11,6 +11,7 @@ class OeffiAPI(APIInterface):
     def __init__(self):
         # request rate per minute
         self.request_rate = 100
+        self.past_requests = []
         self.__BVG_URL = "http://bvg-apps-ext.hafas.de/bin/mgate.exe/mgate.exe"
         # requires key, x and y coordinates
         self.__JSON_GEOLOC = '{"auth":{"aid":"%s","type":"AID"},"client":{"id":"BVG","type":"AND"},"ext":"BVG.1","ver":"1.18","lang":"eng","svcReqL":[{"meth":"ServerInfo","req":{"getServerDateTime":true,"getTimeTablePeriod":false}},{"meth":"LocGeoPos","cfg":{"polyEnc":"GPA"},"req":{"ring":{"cCrd":{"x":%d,"y":%d},"maxDist":20000},"getStops":true,"getPOIs":true,"maxLoc":1}}],"formatted":false}'
@@ -47,6 +48,7 @@ class OeffiAPI(APIInterface):
         data = json.loads(json_string)
         headers = {"Content-type": "application/json", "Accept": "text/plain"}
         r = requests.post(self.__BVG_URL, data=json.dumps(data), headers=headers)
+        self.past_requests.append({"time": datetime.datetime.now()})
         return json.loads(r.text)
 
     def __get_dest(self, x, y):
