@@ -51,7 +51,7 @@ class BVGRestAPI(APIInterface):
             for leg in response["journeys"][0]["legs"]:
                 if "stopovers" in leg:
                     for stop in leg["stopovers"]:
-                        if stop["arrival"] != None:
+                        if stop["arrival"] is not None:
                             x = stop["stop"]["location"]["longitude"]
                             y = stop["stop"]["location"]["latitude"]
                             atime = stop["arrival"][11:19].replace(":", "")
