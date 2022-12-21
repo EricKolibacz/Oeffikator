@@ -2,6 +2,7 @@ import datetime
 
 import requests
 
+from apis import RESPONSE_TIMEOUT
 from apis.APIInterface import APIInterface
 
 
@@ -18,7 +19,9 @@ class BVGRestAPI(APIInterface):
             ("stops", has_stops),
             ("poi", has_poi),
         )
-        response = requests.get("https://v5.bvg.transport.rest/locations", params=params).json()[0]
+        response = requests.get(
+            "https://v5.bvg.transport.rest/locations", params=params, timeout=RESPONSE_TIMEOUT
+        ).json()[0]
         self.past_requests.append({"time": datetime.datetime.now()})
         return response
 
@@ -34,7 +37,9 @@ class BVGRestAPI(APIInterface):
             ("results", str(amount_of_results)),
             ("stopovers", "true"),
         )
-        response = requests.get("https://v5.bvg.transport.rest/journeys", params=params).json()
+        response = requests.get(
+            "https://v5.bvg.transport.rest/journeys", params=params, timeout=RESPONSE_TIMEOUT
+        ).json()
         self.past_requests.append({"time": datetime.datetime.now()})
         journey = self.__process_response(response)
         journey["origin"] = {"longitude": origin["longitude"], "latitude": origin["latitude"]}
