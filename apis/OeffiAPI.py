@@ -3,6 +3,7 @@ import json
 
 import requests
 
+from apis import RESPONSE_TIMEOUT
 from apis.APIInterface import APIInterface
 
 
@@ -37,7 +38,7 @@ class OeffiAPI(APIInterface):
     def __request_data(self, json_string):
         data = json.loads(json_string)
         headers = {"Content-type": "application/json", "Accept": "text/plain"}
-        r = requests.post(self.__BVG_URL, data=json.dumps(data), headers=headers)
+        r = requests.post(self.__BVG_URL, data=json.dumps(data), headers=headers, timeout=RESPONSE_TIMEOUT)
         self.past_requests.append({"time": datetime.datetime.now()})
         return json.loads(r.text)
 
