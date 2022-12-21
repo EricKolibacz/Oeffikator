@@ -34,9 +34,6 @@ class OeffiAPI(APIInterface):
             return {"origin": origin, "destination": destination, "arrivalTime": None, "stopovers": None}
         return {"origin": origin, "destination": destination, "arrivalTime": aTime, "stopovers": None}
 
-    def __process_response(self, response):
-        pass
-
     def __request_data(self, json_string):
         data = json.loads(json_string)
         headers = {"Content-type": "application/json", "Accept": "text/plain"}
