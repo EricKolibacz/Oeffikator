@@ -37,7 +37,7 @@ class OeffiAPI(APIInterface):
             aTime = resp["svcResL"][1]["res"]["outConL"][0]["arr"]["aTimeS"]
         except:
             return {"origin": origin, "destination": destination, "arrivalTime": None, "stopovers": None}
-        if aTime == None:
+        if aTime is None:
             return {"origin": origin, "destination": destination, "arrivalTime": None, "stopovers": None}
         return {"origin": origin, "destination": destination, "arrivalTime": aTime, "stopovers": None}
 
