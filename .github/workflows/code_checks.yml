@@ -37,6 +37,7 @@ jobs:
         poetry run isort */*.py
     - name: Check Code with pycodestyle
       run: |
+        ls
         poetry run pycodestyle */*.py
     - name: Lint Code with pylint
       run: |
