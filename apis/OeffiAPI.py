@@ -18,7 +18,7 @@ class OeffiAPI(APIInterface):
     def query_location(
         self, query: str, amount_of_results=1, has_addresses="true", has_stops="false", has_poi="false"
     ) -> dict:
-        return None
+        raise NotImplementedError
 
     def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results=1) -> dict:
         start_lid = self.__get_lid(origin["longitude"], origin["latitude"])
