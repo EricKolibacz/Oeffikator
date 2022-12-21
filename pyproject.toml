@@ -45,4 +45,4 @@ ignored-modules = ["pydantic"]
 
 [tool.pylint."MESSAGES CONTROL"]
 max-line-length = 120
-disable = "R,C,W0613,W0703,E0213,W0511"
+disable = "R,C,W0613,W0703,E0213,W0511,W0221"

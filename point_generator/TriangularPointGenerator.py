@@ -1,11 +1,11 @@
 import numpy as np
-from scipy.spatial import Delaunay
+from scipy.spatial.qhull import Delaunay
 
 from point_generator.PointGeneratorInterface import PointGeneratorInterface
 
 
 class TriangularPointGenerator(PointGeneratorInterface):
-    def get_next_points(self, points, group_size):
+    def get_next_points(self, group_size, points):
         tri = Delaunay(points)
         areas = self.__get_area(points[tri.simplices])
         tri_centers = np.mean(points[tri.simplices][np.argpartition(areas, -group_size)[-group_size:]], 1)
