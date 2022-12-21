@@ -35,9 +35,9 @@ jobs:
     - name: Sort imports with isort
       run: |
         poetry run isort */*.py
-    # - name: Check Code with pycodestyle
-    #   run: |
-    #    poetry run pycodestyle */*.py
-    # - name: Lint Code with pylint
-    #   run: |
-    #    poetry run pylint */*.py
+    - name: Check Code with pycodestyle
+      run: |
+        poetry run pycodestyle */*.py
+    - name: Lint Code with pylint
+      run: |
+        poetry run pylint */*.py
