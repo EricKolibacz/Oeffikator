@@ -7,10 +7,7 @@ from apis.APIInterface import APIInterface
 
 
 class BVGRestAPI(APIInterface):
-    def __init__(self):
-        # request rate per minute
-        self.request_rate = 100
-        self.past_requests = []
+    request_rate = 100
 
     def query_location(
         self, query: str, amount_of_results=1, has_addresses="true", has_stops="false", has_poi="false"

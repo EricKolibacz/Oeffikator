@@ -3,6 +3,14 @@ from abc import ABC, abstractmethod
 
 
 class APIInterface(ABC):
+
+    @property
+    def request_rate(self) -> str:
+        """
+        :return: The number of requests per minute
+        """
+        raise NotImplementedError
+
     @abstractmethod
     def query_location(query) -> dict:
         pass

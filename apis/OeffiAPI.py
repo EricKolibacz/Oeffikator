@@ -8,10 +8,10 @@ from apis.APIInterface import APIInterface
 
 
 class OeffiAPI(APIInterface):
+    request_rate = 100
+
     def __init__(self):
-        # request rate per minute
-        self.request_rate = 100
-        self.past_requests = []
+        super(OeffiAPI, self).__init__()
         self.__BVG_URL = "http://bvg-apps-ext.hafas.de/bin/mgate.exe/mgate.exe"
         # requires key, x and y coordinates
         self.__JSON_GEOLOC = '{"auth":{"aid":"%s","type":"AID"},"client":{"id":"BVG","type":"AND"},"ext":"BVG.1","ver":"1.18","lang":"eng","svcReqL":[{"meth":"ServerInfo","req":{"getServerDateTime":true,"getTimeTablePeriod":false}},{"meth":"LocGeoPos","cfg":{"polyEnc":"GPA"},"req":{"ring":{"cCrd":{"x":%d,"y":%d},"maxDist":20000},"getStops":true,"getPOIs":true,"maxLoc":1}}],"formatted":false}'
