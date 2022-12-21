@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 
 
 class APIInterface(ABC):
+    def __init__(self) -> None:
+        self.past_requests = []
 
     @property
     def request_rate(self) -> str:
