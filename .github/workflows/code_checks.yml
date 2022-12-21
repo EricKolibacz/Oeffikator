@@ -29,9 +29,15 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install poetry
         poetry install
-    - name: Lint with flake8
+    - name: Reformat code with black
       run: |
         poetry run black */*.py
+    - name: Sort imports with isort
+      run: |
         poetry run isort */*.py
+    - name: Check Code with pycodestyle
+      run: |
         poetry run pycodestyle */*.py
+    - name: Lint Code with pylint
+      run: |
         poetry run pylint */*.py
