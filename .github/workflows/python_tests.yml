@@ -31,3 +31,10 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run pytest .
+    - name: Run test coverage
+      run: |
+        poetry run pytest -cov=.
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
