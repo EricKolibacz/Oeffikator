@@ -2,7 +2,6 @@ import datetime
 import json
 
 import requests
-
 from apis import RESPONSE_TIMEOUT
 from apis.APIInterface import APIInterface
 
@@ -13,7 +12,7 @@ class OeffiAPI(APIInterface):
     def __init__(self):
         super(OeffiAPI, self).__init__()
         self.__BVG_URL = "http://bvg-apps-ext.hafas.de/bin/mgate.exe/mgate.exe"
-        with open("AUTHKEY.txt", encoding="UTF-8") as keyfile:
+        with open("../../AUTHKEY.txt", encoding="UTF-8") as keyfile:
             self.__key = keyfile.read().splitlines()[0]
 
     def query_location(
