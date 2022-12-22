@@ -47,3 +47,20 @@ def test_first_point_from_triangular_point_generation():
     grid_point_generation = TriangularPointGenerator()
     point_is = grid_point_generation.get_next_points(1, STARTING_POINTS)[0]
     np.testing.assert_array_equal(point_is, point_should_be)
+
+
+def test_point_for_two_triangles_from_triangular_point_generation():
+    point_should_be = np.mean(STARTING_POINTS, 0)
+    new_points = np.append(STARTING_POINTS, [[1.1, 1]], axis=0)
+    grid_point_generation = TriangularPointGenerator()
+    point_is = grid_point_generation.get_next_points(1, new_points)[0]
+    np.testing.assert_array_equal(point_is, point_should_be)
+
+
+def test_two_points_from_triangular_point_generation():
+    point_should_be = np.mean(np.append(STARTING_POINTS[1:3, :], [[1 / 3, 2 / 3]], axis=0), 0)
+    grid_point_generation = TriangularPointGenerator()
+    point_is = grid_point_generation.get_next_points(1, STARTING_POINTS)[0]
+    new_points = np.append(STARTING_POINTS, [point_is], axis=0)
+    point_is = grid_point_generation.get_next_points(1, new_points)[0]
+    np.testing.assert_array_equal(point_is, point_should_be)
