@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.spatial.qhull import Delaunay
+from scipy.spatial import Delaunay
 
 from oeffikator.point_generator.PointGeneratorInterface import PointGeneratorInterface
 
