@@ -1,6 +1,6 @@
 import numpy as np
 
-from point_generator.PointGeneratorInterface import PointGeneratorInterface
+from oeffikator.point_generator.PointGeneratorInterface import PointGeneratorInterface
 
 
 class GridPointGenerator(PointGeneratorInterface):

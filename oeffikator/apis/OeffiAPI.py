@@ -2,8 +2,8 @@ import datetime
 import json
 
 import requests
-from apis import RESPONSE_TIMEOUT
-from apis.APIInterface import APIInterface
+from oeffikator.apis import RESPONSE_TIMEOUT
+from oeffikator.apis.APIInterface import APIInterface
 
 AUTHKEY_FILE = "../../AUTHKEY.txt"
 
