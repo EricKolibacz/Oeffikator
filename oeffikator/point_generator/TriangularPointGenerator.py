@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.qhull import Delaunay
 
-from point_generator.PointGeneratorInterface import PointGeneratorInterface
+from oeffikator.point_generator.PointGeneratorInterface import PointGeneratorInterface
 
 
 class TriangularPointGenerator(PointGeneratorInterface):
