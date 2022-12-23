@@ -17,14 +17,14 @@ class TriangularPointIterator(PointIteratorInterface):
     def __iter__(self):
         return self
 
-    def __next__(self) -> dict:
+    def __next__(self) -> np.ndarray:
         tri = Delaunay(self.points)
         areas = self.__get_area(self.points[tri.simplices])
         new_point = np.mean(self.points[tri.simplices][np.argpartition(areas, -1)][-1], 0)
         self.points = np.vstack([self.points, new_point])
         return new_point
 
-    def __get_area(self, points):
+    def __get_area(self, points: np.ndarray) -> np.ndarray:
         first = np.multiply(points[:, 0, 0], np.subtract(points[:, 1, 1], points[:, 2, 1]))
         second = np.multiply(points[:, 1, 0], np.subtract(points[:, 2, 1], points[:, 0, 1]))
         third = np.multiply(points[:, 2, 0], np.subtract(points[:, 0, 1], points[:, 1, 1]))

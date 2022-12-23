@@ -15,12 +15,17 @@ class APIInterface(ABC):
 
     @abstractmethod
     def query_location(
-        self, query: str, amount_of_results=1, has_addresses="true", has_stops="false", has_poi="false"
+        self,
+        query: str,
+        amount_of_results: int,
+        has_addresses: str,
+        has_stops: str,
+        has_poi: str,
     ) -> dict:
         pass
 
     @abstractmethod
-    def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results=1) -> dict:
+    def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int) -> dict:
         pass
 
     def has_reached_request_limit(self) -> bool:

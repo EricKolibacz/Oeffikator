@@ -10,7 +10,12 @@ class BVGRestAPI(APIInterface):
     request_rate = 100
 
     def query_location(
-        self, query: str, amount_of_results=1, has_addresses="true", has_stops="false", has_poi="false"
+        self,
+        query: str,
+        amount_of_results: int = 1,
+        has_addresses: str = "true",
+        has_stops: str = "false",
+        has_poi: str = "false",
     ) -> dict:
         params = (
             ("query", query),
@@ -25,7 +30,7 @@ class BVGRestAPI(APIInterface):
         self.past_requests.append({"time": datetime.datetime.now()})
         return response
 
-    def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results=1) -> dict:
+    def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int = 1) -> dict:
         params = (
             ("from.address", origin["address"]),
             ("from.latitude", origin["latitude"]),
@@ -49,7 +54,7 @@ class BVGRestAPI(APIInterface):
         }
         return journey
 
-    def __process_response(self, response):
+    def __process_response(self, response: dict) -> dict:
         stopsovers = []
         try:
             for leg in response["journeys"][0]["legs"]:

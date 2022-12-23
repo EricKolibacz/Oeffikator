@@ -4,7 +4,7 @@ from oeffikator.point_iterator.PointIteratorInterface import PointIteratorInterf
 
 
 class GridPointIterator(PointIteratorInterface):
-    def __init__(self, bounding_box):
+    def __init__(self, bounding_box: tuple[int | float]):
         if len(bounding_box) != 4:
             raise ValueError("The bounding box should contain 4 values: east, west, south, north")
         if bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3]:
@@ -22,7 +22,7 @@ class GridPointIterator(PointIteratorInterface):
     def __iter__(self):
         return self
 
-    def __next__(self) -> dict:
+    def __next__(self) -> list:
         if self.points_used < len(self.initial_points):
             point = self.initial_points[self.points_used]
             self.points_used += 1

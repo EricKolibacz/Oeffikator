@@ -5,14 +5,14 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class TimeTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self, start_time="12000", max_trip_time=120):
-        self.start_time = datetime.datetime.strptime("120000", "%H%M%S")
+    def __init__(self, start_time: str = "12000", max_trip_time: int = 120):
+        self.start_time = datetime.datetime.strptime(start_time, "%H%M%S")
         self.max_trip_time = max_trip_time
 
-    def fit(self, X, y=None):
+    def fit(self, X: pd.DataFrame):
         return self
 
-    def transform(self, X, y=None):
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         X = X.dropna()
         X.drop(X[X["Time"] == "error"].index, inplace=True)
         X.drop(X[~X["Time"].str.match(r"(\b\d{6}\b)", na=False)].index, inplace=True)
