@@ -55,6 +55,21 @@ def test_all_points_from_grid_point_iterator():
 STARTING_POINTS = np.array([[0, 0], [0, 1], [1, 1]])
 
 
+def test_enough_starting_points_for_triangular_point_iterator():  # at least 2 rows
+    with pytest.raises(ValueError):
+        TriangularPointIterator(STARTING_POINTS[0:2, :])  # shape (2,2)
+
+
+def test_minimum_two_columns_for_triangular_point_iterator():
+    with pytest.raises(ValueError):
+        TriangularPointIterator([[1], [2], [3]])  # shape (1,3)
+
+
+def test_maximum_two_columns_for_triangular_point_iterator():
+    with pytest.raises(ValueError):
+        TriangularPointIterator([[1, 2, 3], [2, 3, 4], [3, 4, 5]])  # shape (3,3)
+
+
 def test_first_point_from_triangular_point_iterator():
     # also test if the compute center works properly
     point_should_be = np.mean(STARTING_POINTS, 0)
