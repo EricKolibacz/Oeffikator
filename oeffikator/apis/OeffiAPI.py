@@ -12,7 +12,7 @@ AUTHKEY_FILE = "AUTHKEY_OeffiAPI.txt"
 
 class OeffiAPI(APIInterface):
     """An API which queries data from the Oeffi app.
-    Requires a authenification key (called AUTHKEY.txt).
+    Attention: Requires a authenification key (called AUTHKEY_OeeffiAPI.txt) in the same folder as this class.
 
     Args:
         APIInterface: interface which defines the abstract methods and properties of an api class
