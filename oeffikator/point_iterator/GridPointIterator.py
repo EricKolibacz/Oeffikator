@@ -13,14 +13,16 @@ class GridPointIterator(PointIteratorInterface):
         points (tuple[floats]): points which form the grid and which will be iterated over
     """
 
-    def __init__(self, bounding_box: tuple[float]):
+    def __init__(self, bounding_box: tuple[float], points_per_axis: int):
         """
         Args:
             bounding_box (tuple[float]): a bounding box which defines the grid. It needs following format:
             east, west, south, north (i.e. bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3])
+            points_per_axis (int): the number of points for both axis, e.g. if 3, 3*3 points will be generated
 
         Raises:
             ValueError: if bounding box does not contain 4 elements in the east-west-south-north format
+            or if the points per axis is lower than 2 (which is the minimum)
         """
         if len(bounding_box) != 4:
             raise ValueError("The bounding box should contain 4 values: east, west, south, north")
@@ -29,10 +31,15 @@ class GridPointIterator(PointIteratorInterface):
                 "The bounding box does not follow the convention: east, west, south, north "
                 "(i.e. bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3])"
             )
+        if points_per_axis < 2:
+            raise ValueError(
+                "point_per_axis parameter is too low (<2). At least 2 points are required."
+                " See documentation for details"
+            )
 
         self.points = []
-        for x in np.linspace(bounding_box[0], bounding_box[1], 3):
-            for y in np.linspace(bounding_box[2], bounding_box[3], 3):
+        for x in np.linspace(bounding_box[0], bounding_box[1], points_per_axis):
+            for y in np.linspace(bounding_box[2], bounding_box[3], points_per_axis):
                 self.points.append([x, y])
         self.points_used = 0
 
