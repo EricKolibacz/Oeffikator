@@ -1,9 +1,10 @@
+"""This module includes the API class for the BVG."""
 import datetime
 
 import requests
 
 from oeffikator.apis import RESPONSE_TIMEOUT
-from oeffikator.apis.APIInterface import APIInterface
+from oeffikator.apis.api_interface import APIInterface
 
 
 class BVGRestAPI(APIInterface):
@@ -19,20 +20,13 @@ class BVGRestAPI(APIInterface):
 
     request_rate = 100
 
-    def query_location(
-        self,
-        query: str,
-        amount_of_results: int = 1,
-        has_addresses: str = "true",
-        has_stops: str = "false",
-        has_poi: str = "false",
-    ) -> dict:
+    def query_location(self, query: str, amount_of_results: int = 1) -> dict:
         params = (
             ("query", query),
             ("results", str(amount_of_results)),
-            ("addresses", has_addresses),
-            ("stops", has_stops),
-            ("poi", has_poi),
+            ("addresses", "true"),
+            ("stops", "false"),
+            ("poi", "false"),
         )
         response = requests.get(
             "https://v5.bvg.transport.rest/locations", params=params, timeout=RESPONSE_TIMEOUT
@@ -79,12 +73,12 @@ class BVGRestAPI(APIInterface):
                 if "stopovers" in leg:
                     for stop in leg["stopovers"]:
                         if stop["arrival"] is not None:
-                            x = stop["stop"]["location"]["longitude"]
-                            y = stop["stop"]["location"]["latitude"]
+                            longitude = stop["stop"]["location"]["longitude"]
+                            latitude = stop["stop"]["location"]["latitude"]
                             atime = stop["arrival"][11:19].replace(":", "")
-                            stopsovers.append({"longitude": x, "latitude": y, "time": atime})
+                            stopsovers.append({"longitude": longitude, "latitude": latitude, "time": atime})
             destination = response["journeys"][0]["legs"][-1]
-            aTime = destination["arrival"][11:19].replace(":", "")
+            arrival_time = destination["arrival"][11:19].replace(":", "")
             destination = {
                 "longitude": destination["destination"]["longitude"],
                 "latitude": destination["destination"]["latitude"],
@@ -92,4 +86,4 @@ class BVGRestAPI(APIInterface):
         except KeyError:
             print("Something went wrong. The response looks like: ", response)
             return {"arrivalTime": None, "stopovers": None}
-        return {"arrivalTime": aTime, "stopovers": stopsovers}
+        return {"arrivalTime": arrival_time, "stopovers": stopsovers}

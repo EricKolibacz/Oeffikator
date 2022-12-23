@@ -34,13 +34,13 @@ jobs:
         poetry install
     - name: Reformat code with black
       run: |
-        poetry run black oeffikator
+        poetry run black oeffikator/ tests/
     - name: Sort imports with isort
       run: |
-        poetry run isort oeffikator
+        poetry run isort oeffikator/ tests/
     - name: Check Code with pycodestyle
       run: |
-        poetry run pycodestyle oeffikator
+        poetry run pycodestyle oeffikator/ tests/
     - name: Lint Code with pylint
       run: |
-        poetry run pylint oeffikator
+        poetry run pylint oeffikator/ tests/
