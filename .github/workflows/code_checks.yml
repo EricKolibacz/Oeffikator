@@ -28,16 +28,16 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install poetry
-        poetry install --without test
+        poetry install
     - name: Reformat code with black
       run: |
-        poetry run black */*.py
+        poetry run black oeffikator
     - name: Sort imports with isort
       run: |
-        poetry run isort */*.py
+        poetry run isort oeffikator
     - name: Check Code with pycodestyle
       run: |
-        poetry run pycodestyle */*.py
+        poetry run pycodestyle oeffikator
     - name: Lint Code with pylint
       run: |
-        poetry run pylint */*.py
+        poetry run pylint oeffikator
