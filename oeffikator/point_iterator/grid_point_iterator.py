@@ -19,18 +19,18 @@ class GridPointIterator(PointIteratorInterface):
         """
         Args:
             bounding_box (tuple[float]): a bounding box which defines the grid. It needs following format:
-            east, west, south, north (i.e. bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3])
+            west, east, south, north (i.e. bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3])
             points_per_axis (int): the number of points for both axis, e.g. if 3, 3*3 points will be generated
 
         Raises:
-            ValueError: if bounding box does not contain 4 elements in the east-west-south-north format
+            ValueError: if bounding box does not contain 4 elements in the west-east-south-north format
             or if the points per axis is lower than 2 (which is the minimum)
         """
         if len(bounding_box) != 4:
-            raise ValueError("The bounding box should contain 4 values: east, west, south, north")
+            raise ValueError("The bounding box should contain 4 values: west, east, south, north")
         if bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3]:
             raise ValueError(
-                "The bounding box does not follow the convention: east, west, south, north "
+                "The bounding box does not follow the convention: west, east, south, north "
                 "(i.e. bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3])"
             )
         if points_per_axis < 2:

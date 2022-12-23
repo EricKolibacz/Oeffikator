@@ -6,7 +6,7 @@ from scipy.spatial import cKDTree
 from oeffikator.point_iterator.grid_point_iterator import GridPointIterator
 from oeffikator.point_iterator.triangular_iterator_interface import TriangularPointIterator
 
-BOUNDING_BOX = (0, 1, 2.5, 3.5)  # ("east", "west", "south", "north")
+BOUNDING_BOX = (0, 1, 2.5, 3.5)  # ("west", "east", "south", "north")
 POINTS_PER_AXIS = 3
 
 
@@ -19,7 +19,7 @@ def test_correct_bounding_box_length_in_grid_iterator():
 
 def test_plausible_bounding_box_values_in_grid_iterator():
     """Test if grid iterator checks that the first value should be lower than the second (west-east)
-    and the third lower than the fourth (south-east)"""
+    and the third lower than the fourth (south-north)"""
     with pytest.raises(ValueError):
         wrong_bounding_box1 = BOUNDING_BOX[0:2][::-1] + BOUNDING_BOX[2:4][::1]
         wrong_bounding_box2 = BOUNDING_BOX[0:2][::1] + BOUNDING_BOX[2:4][::-1]
@@ -136,7 +136,7 @@ def test_smaller_triangles_for_triangular_point_iterator():
     Here, we test if the largest distance for all points to their closest neighbour over the long term decreases.
     In other words, if for iteration i we identify the largest distance between two points to be between point k and j,
     we hope to see that this is not the case in a future iteration. Note: it could be that
-    we don't catch that right after one iteration but at leaster after some (here 10) we expect to see that.
+    we don't catch that right after one iteration but at leaste after some (here 10) we expect to see that.
     """
     point_iterator = TriangularPointIterator(np.array(STARTING_POINTS))
     largest_distance_for_current_points = []
