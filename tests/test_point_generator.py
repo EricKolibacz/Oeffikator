@@ -43,14 +43,14 @@ STARTING_POINTS = np.array([[0, 0], [0, 1], [1, 1]])
 
 def test_first_point_from_triangular_point_generation():
     # also test if the compute center works properly
-    point_should_be = [np.mean(STARTING_POINTS, 0)]
+    point_should_be = np.mean(STARTING_POINTS, 0)
     grid_point_generation = TriangularPointGenerator(STARTING_POINTS)
     point_is = next(grid_point_generation)
     np.testing.assert_array_equal(point_is, point_should_be)
 
 
 def test_point_for_two_triangles_from_triangular_point_generation():
-    point_should_be = [np.mean(STARTING_POINTS, 0)]
+    point_should_be = np.mean(STARTING_POINTS, 0)
     new_points = np.append(STARTING_POINTS, [[1.1, 1]], axis=0)
     grid_point_generation = TriangularPointGenerator(new_points)
     point_is = next(grid_point_generation)
@@ -58,7 +58,7 @@ def test_point_for_two_triangles_from_triangular_point_generation():
 
 
 def test_two_consective_points_from_triangular_point_generation():
-    point_should_be = [np.mean(np.append(STARTING_POINTS[1:3, :], [[1 / 3, 2 / 3]], axis=0), 0)]
+    point_should_be = np.mean(np.append(STARTING_POINTS[1:3, :], [[1 / 3, 2 / 3]], axis=0), 0)
     new_points = np.append(STARTING_POINTS, [[1.1, 1]], axis=0)
     grid_point_generation = TriangularPointGenerator(new_points)
     next(grid_point_generation)
