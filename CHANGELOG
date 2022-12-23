@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+* Introduce new parameter "points_per_axis" for grid iterator
+
 ## 0.1.0
 
 * very first version of the app
