@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from oeffikator.point_iterator.GridPointIterator import GridPointIterator
 from oeffikator.point_iterator.TriangularPointIterator import TriangularPointIterator
@@ -7,6 +8,19 @@ BOUNDING_BOX = (0, 1, 2.5, 3.5)  # ("east", "west", "south", "north")
 
 
 # Test on GridPointIterator
+def test_correct_bounding_box_length_in_grid_iterator():
+    with pytest.raises(ValueError):
+        GridPointIterator(BOUNDING_BOX[:3])
+
+
+def test_plausible_bounding_box_values_in_grid_iterator():
+    with pytest.raises(ValueError):
+        wrong_bounding_box1 = BOUNDING_BOX[1] + BOUNDING_BOX[0] + BOUNDING_BOX[2:]
+        wrong_bounding_box2 = BOUNDING_BOX[:2] + BOUNDING_BOX[3] + BOUNDING_BOX[2]
+        GridPointIterator(wrong_bounding_box1)
+        GridPointIterator(wrong_bounding_box2)
+
+
 def test_first_point_from_grid_point_iterator():
     point_iterator = GridPointIterator(BOUNDING_BOX)
     first_point = next(point_iterator)
