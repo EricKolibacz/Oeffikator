@@ -1,12 +1,13 @@
 import datetime
 import json
+import os
 
 import requests
 
 from oeffikator.apis import RESPONSE_TIMEOUT
 from oeffikator.apis.APIInterface import APIInterface
 
-AUTHKEY_FILE = "../../AUTHKEY.txt"
+AUTHKEY_FILE = "AUTHKEY_OeffiAPI.txt"
 
 
 class OeffiAPI(APIInterface):
@@ -15,7 +16,10 @@ class OeffiAPI(APIInterface):
     def __init__(self):
         super(OeffiAPI, self).__init__()
         self.__BVG_URL = "http://bvg-apps-ext.hafas.de/bin/mgate.exe/mgate.exe"
-        with open(AUTHKEY_FILE, encoding="UTF-8") as keyfile:
+        with open(
+            os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), AUTHKEY_FILE),
+            encoding="UTF-8",
+        ) as keyfile:
             self.__key = keyfile.read().splitlines()[0]
 
     def query_location(
