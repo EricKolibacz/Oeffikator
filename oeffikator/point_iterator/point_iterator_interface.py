@@ -1,3 +1,4 @@
+"""This modul contains the interface which defines the broad structure of the point interators."""
 from abc import ABC, abstractmethod
 
 import numpy as np
