@@ -3,9 +3,9 @@ from abc import ABC, abstractmethod
 
 class PointGeneratorInterface(ABC):
     @abstractmethod
-    def get_next_point(self, *args) -> dict:
+    def __iter__(self):
         pass
 
     @abstractmethod
-    def get_next_points(self, group_size: int, *args) -> dict:
+    def __next__(self) -> dict:
         pass
