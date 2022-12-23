@@ -62,17 +62,17 @@ def test_enough_starting_points_for_triangular_point_iterator():  # at least 2 r
 
 def test_minimum_two_columns_for_triangular_point_iterator():
     with pytest.raises(ValueError):
-        TriangularPointIterator([[1], [2], [3]])  # shape (1,3)
+        TriangularPointIterator(np.array([[1], [2], [3]]))  # shape (1,3)
 
 
 def test_maximum_two_columns_for_triangular_point_iterator():
     with pytest.raises(ValueError):
-        TriangularPointIterator([[1, 2, 3], [2, 3, 4], [3, 4, 5]])  # shape (3,3)
+        TriangularPointIterator(np.array([[1, 2, 3], [2, 3, 4], [3, 4, 5]]))  # shape (3,3)
 
 
 def test_too_many_dimensions_for_triangular_point_iterator():
     with pytest.raises(ValueError):
-        TriangularPointIterator([[[1, 2, 3], [2, 3, 4], [3, 4, 5]]])  # shape (1,3,3)
+        TriangularPointIterator(np.array([[[1, 2, 3], [2, 3, 4], [3, 4, 5]]]))  # shape (1,3,3)
 
 
 def test_first_point_from_triangular_point_iterator():
