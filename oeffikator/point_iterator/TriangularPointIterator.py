@@ -1,10 +1,10 @@
 import numpy as np
 from scipy.spatial import Delaunay
 
-from oeffikator.point_generator.PointGeneratorInterface import PointGeneratorInterface
+from oeffikator.point_iterator.PointIteratorInterface import PointIteratorInterface
 
 
-class TriangularPointGenerator(PointGeneratorInterface):
+class TriangularPointIterator(PointIteratorInterface):
     def __init__(self, initial_points: np.ndarray) -> None:
         self.points = initial_points
 

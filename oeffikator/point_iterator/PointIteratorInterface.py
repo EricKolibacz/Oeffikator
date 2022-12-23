@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class PointGeneratorInterface(ABC):
+class PointIteratorInterface(ABC):
     @abstractmethod
     def __iter__(self):
         pass

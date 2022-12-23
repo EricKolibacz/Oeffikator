@@ -1,9 +1,9 @@
 import numpy as np
 
-from oeffikator.point_generator.PointGeneratorInterface import PointGeneratorInterface
+from oeffikator.point_iterator.PointIteratorInterface import PointIteratorInterface
 
 
-class GridPointGenerator(PointGeneratorInterface):
+class GridPointIterator(PointIteratorInterface):
     def __init__(self, bounding_box):
         self.initial_points = []
         for x in np.linspace(bounding_box[0], bounding_box[1], 3):
