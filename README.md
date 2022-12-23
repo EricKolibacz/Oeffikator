@@ -4,7 +4,7 @@
 ![Python Tests](https://github.com/EricKolibacz/Oeffikator/actions/workflows/python_tests.yml/badge.svg)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
-[![Coverage Status](https://coveralls.io/repos/github/EricKolibacz/Oeffikator/badge.svg?branch=main&kill_cache=1)](https://coveralls.io/github/EricKolibacz/Oeffikator?branch=main&kill_cache=1)
+[![Coverage Status](https://coveralls.io/repos/github/EricKolibacz/Oeffikator/badge.svg?branch=main&kill_cache=1&service=github)](https://coveralls.io/github/EricKolibacz/Oeffikator?branch=main&kill_cache=1&service=github)
 
 The Oeffikator App enables you to receive an visual overview of commuting times via public transport in Berlin. Oeffikator uses BVG and VBB APIs to get information on commuting times between an origin and possible destinations and plots the result through an overlaying head map on a central Berlin map. You can see an example map with the Brandenburger Gate as origin below:
 
