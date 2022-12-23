@@ -30,18 +30,18 @@ class GridPointIterator(PointIteratorInterface):
                 "(i.e. bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3])"
             )
 
-        self.initial_points = []
+        self.points = []
         for x in np.linspace(bounding_box[0], bounding_box[1], 3):
             for y in np.linspace(bounding_box[2], bounding_box[3], 3):
-                self.initial_points.append([x, y])
+                self.points.append([x, y])
         self.points_used = 0
 
     def __iter__(self):
         return self
 
     def __next__(self) -> list:
-        if self.points_used < len(self.initial_points):
-            point = self.initial_points[self.points_used]
+        if self.points_used < len(self.points):
+            point = self.points[self.points_used]
             self.points_used += 1
         else:
             raise StopIteration("Your reached the end of the point Grid.")
@@ -53,4 +53,4 @@ class GridPointIterator(PointIteratorInterface):
         Returns:
             bool: true, if the end is reached, else flase
         """
-        return self.points_used < len(self.initial_points)
+        return self.points_used < len(self.points)
