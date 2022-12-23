@@ -45,16 +45,16 @@ class TriangularPointIterator(PointIteratorInterface):
         self.points = np.vstack([self.points, new_point])
         return new_point
 
-    def __get_area(self, points: np.ndarray) -> np.ndarray:
+    def __get_area(self, triangles: np.ndarray) -> np.ndarray:
         """Compute the area for a given set of triangles.
 
         Args:
-            points (np.ndarray): triangles for which we need the area
+            triangles (np.ndarray): triangles for which we need the area
 
         Returns:
             np.ndarray: the area for each of the given triangles
         """
-        first = np.multiply(points[:, 0, 0], np.subtract(points[:, 1, 1], points[:, 2, 1]))
-        second = np.multiply(points[:, 1, 0], np.subtract(points[:, 2, 1], points[:, 0, 1]))
-        third = np.multiply(points[:, 2, 0], np.subtract(points[:, 0, 1], points[:, 1, 1]))
+        first = np.multiply(triangles[:, 0, 0], np.subtract(triangles[:, 1, 1], triangles[:, 2, 1]))
+        second = np.multiply(triangles[:, 1, 0], np.subtract(triangles[:, 2, 1], triangles[:, 0, 1]))
+        third = np.multiply(triangles[:, 2, 0], np.subtract(triangles[:, 0, 1], triangles[:, 1, 1]))
         return 0.5 * np.add(np.add(first, second), third)
