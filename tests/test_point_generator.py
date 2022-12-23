@@ -9,7 +9,7 @@ BOUNDING_BOX = (0, 1, 2.5, 3.5)  # ("east", "west", "south", "north")
 # Test on GridPointGenerator
 def test_first_point_from_grid_point_generation():
     grid_point_generation = GridPointGenerator(BOUNDING_BOX)
-    first_point = grid_point_generation.get_next_points(1)
+    first_point = grid_point_generation.get_next_point()
     assert first_point == [[0, 2.5]]
 
 
