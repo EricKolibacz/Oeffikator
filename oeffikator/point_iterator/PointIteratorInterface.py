@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 
 class PointIteratorInterface(ABC):
     @abstractmethod
@@ -7,5 +9,5 @@ class PointIteratorInterface(ABC):
         pass
 
     @abstractmethod
-    def __next__(self) -> dict:
+    def __next__(self) -> list | np.ndarray:
         pass

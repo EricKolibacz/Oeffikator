@@ -19,11 +19,16 @@ class OeffiAPI(APIInterface):
             self.__key = keyfile.read().splitlines()[0]
 
     def query_location(
-        self, query: str, amount_of_results=1, has_addresses="true", has_stops="false", has_poi="false"
+        self,
+        query: str,
+        amount_of_results: int = 1,
+        has_addresses: str = "true",
+        has_stops: str = "false",
+        has_poi: str = "false",
     ) -> dict:
         raise NotImplementedError
 
-    def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results=1) -> dict:
+    def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int = 1) -> dict:
         start_lid = self.__get_lid(origin["longitude"], origin["latitude"])
         dest = self.__get_dest(destination["longitude"], destination["latitude"])
         extId = dest[0]
@@ -37,24 +42,24 @@ class OeffiAPI(APIInterface):
             return {"origin": origin, "destination": destination, "arrivalTime": None, "stopovers": None}
         return {"origin": origin, "destination": destination, "arrivalTime": aTime, "stopovers": None}
 
-    def __request_data(self, json_string):
+    def __request_data(self, json_string: str) -> dict:
         data = json.loads(json_string)
         headers = {"Content-type": "application/json", "Accept": "text/plain"}
         r = requests.post(self.__BVG_URL, data=json.dumps(data), headers=headers, timeout=RESPONSE_TIMEOUT)
         self.past_requests.append({"time": datetime.datetime.now()})
         return json.loads(r.text)
 
-    def __get_dest(self, x, y):
+    def __get_dest(self, x: float, y: float) -> tuple:
         resp = self.__request_data(self.__create_JSON_GEOLOC(x, y))
         e = resp["svcResL"][1]["res"]["locL"][0]["extId"]
         t = resp["svcResL"][1]["res"]["locL"][0]["type"]
         return (e, t)
 
-    def __get_lid(self, x, y):
+    def __get_lid(self, x: float, y: float) -> dict:
         resp = self.__request_data(self.__create_JSON_GEOLOC(x, y))
         return resp["svcResL"][1]["res"]["locL"][0]["lid"]
 
-    def __create_JSON_GEOLOC(self, x: float, y: float):
+    def __create_JSON_GEOLOC(self, x: float, y: float) -> str:
         return str(
             '{"auth":{"aid":'
             f'"{self.__key}"'
