@@ -12,7 +12,7 @@ class GridPointIterator(PointIteratorInterface):
                 "The bounding box does not follow the convention: east, west, south, north "
                 "(i.e. bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3])"
             )
-            
+
         self.initial_points = []
         for x in np.linspace(bounding_box[0], bounding_box[1], 3):
             for y in np.linspace(bounding_box[2], bounding_box[3], 3):
