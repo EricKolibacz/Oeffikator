@@ -32,14 +32,7 @@ class OeffiAPI(APIInterface):
         ) as keyfile:
             self.__key = keyfile.read().splitlines()[0]
 
-    def query_location(
-        self,
-        query: str,
-        amount_of_results: int = 1,
-        has_addresses: str = "true",
-        has_stops: str = "false",
-        has_poi: str = "false",
-    ) -> dict:
+    def query_location(self, query: str, amount_of_results: int) -> dict:
         raise NotImplementedError
 
     def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int = 1) -> dict:

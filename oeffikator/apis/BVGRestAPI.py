@@ -19,20 +19,13 @@ class BVGRestAPI(APIInterface):
 
     request_rate = 100
 
-    def query_location(
-        self,
-        query: str,
-        amount_of_results: int = 1,
-        has_addresses: str = "true",
-        has_stops: str = "false",
-        has_poi: str = "false",
-    ) -> dict:
+    def query_location(self, query: str, amount_of_results: int = 1) -> dict:
         params = (
             ("query", query),
             ("results", str(amount_of_results)),
-            ("addresses", has_addresses),
-            ("stops", has_stops),
-            ("poi", has_poi),
+            ("addresses", "true"),
+            ("stops", "false"),
+            ("poi", "false"),
         )
         response = requests.get(
             "https://v5.bvg.transport.rest/locations", params=params, timeout=RESPONSE_TIMEOUT

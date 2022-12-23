@@ -21,14 +21,7 @@ class APIInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def query_location(
-        self,
-        query: str,
-        amount_of_results: int,
-        has_addresses: str,
-        has_stops: str,
-        has_poi: str,
-    ) -> dict:
+    def query_location(self, query: str, amount_of_results: int) -> dict:
         """A method which queries the location given a input string (e.g. 'Brandenburger Tor').
 
         Args:
