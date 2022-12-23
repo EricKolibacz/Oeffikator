@@ -4,7 +4,7 @@ lesser densly populated by points. Hence, we set the point here."""
 import numpy as np
 from scipy.spatial import Delaunay
 
-from oeffikator.point_iterator.PointIteratorInterface import PointIteratorInterface
+from oeffikator.point_iterator.point_iterator_interface import PointIteratorInterface
 
 
 class TriangularPointIterator(PointIteratorInterface):

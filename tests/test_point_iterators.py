@@ -3,8 +3,8 @@ import numpy as np
 import pytest
 from scipy.spatial import cKDTree
 
-from oeffikator.point_iterator.GridPointIterator import GridPointIterator
-from oeffikator.point_iterator.TriangularPointIterator import TriangularPointIterator
+from oeffikator.point_iterator.grid_point_iterator import GridPointIterator
+from oeffikator.point_iterator.triangular_iterator_interface import TriangularPointIterator
 
 BOUNDING_BOX = (0, 1, 2.5, 3.5)  # ("east", "west", "south", "north")
 POINTS_PER_AXIS = 3
