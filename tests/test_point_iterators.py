@@ -1,5 +1,7 @@
 import numpy as np
 import pytest
+from scipy.spatial import cKDTree
+from scipy.spatial.distance import pdist
 
 from oeffikator.point_iterator.GridPointIterator import GridPointIterator
 from oeffikator.point_iterator.TriangularPointIterator import TriangularPointIterator
@@ -113,3 +115,18 @@ def test_two_points_from_triangular_point_iterator():
     point_iterator = TriangularPointIterator(new_points)
     points_are = [next(point_iterator) for _ in range(2)]
     np.testing.assert_almost_equal(points_are, points_should_be)
+
+
+def test_smaller_triangles_for_triangular_point_iterator():
+    point_iterator = TriangularPointIterator(np.array(STARTING_POINTS))
+    largest_distance_for_current_points = []
+    for _ in range(10):  # iterator over (10-1=)9 points
+        tree = cKDTree(point_iterator.points, leafsize=100)
+        distance_to_farthest_neighbour_in_neighbourhood = [
+            np.max(tree.query(item, k=2)[0]) for item in point_iterator.points
+        ]
+        # find the overall/global largest distance for all points to their closest neighbour
+        largest_distance_for_current_points.append(np.max(distance_to_farthest_neighbour_in_neighbourhood))
+        next(point_iterator)
+    assert largest_distance_for_current_points == sorted(largest_distance_for_current_points, reverse=True)
+    assert largest_distance_for_current_points[0] > largest_distance_for_current_points[-1]
