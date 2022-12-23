@@ -6,6 +6,12 @@ from oeffikator.point_iterator.PointIteratorInterface import PointIteratorInterf
 
 class TriangularPointIterator(PointIteratorInterface):
     def __init__(self, initial_points: np.ndarray) -> None:
+        if len(initial_points.shape) != 2:
+            raise ValueError("We only support 2-dimensional input.")
+        if initial_points.shape[0] < 3:
+            raise ValueError("We need at least three values to create traignles/generate new points.")
+        if initial_points.shape[1] != 2:
+            raise ValueError("Second dimension should be 2.")
         self.points = initial_points
 
     def __iter__(self):

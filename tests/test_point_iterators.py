@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from oeffikator.point_iterator.GridPointIterator import GridPointIterator
 from oeffikator.point_iterator.TriangularPointIterator import TriangularPointIterator
@@ -7,6 +8,19 @@ BOUNDING_BOX = (0, 1, 2.5, 3.5)  # ("east", "west", "south", "north")
 
 
 # Test on GridPointIterator
+def test_correct_bounding_box_length_in_grid_iterator():
+    with pytest.raises(ValueError):
+        GridPointIterator(BOUNDING_BOX[:3])
+
+
+def test_plausible_bounding_box_values_in_grid_iterator():
+    with pytest.raises(ValueError):
+        wrong_bounding_box1 = BOUNDING_BOX[0:2][::-1] + BOUNDING_BOX[2:4][::1]
+        wrong_bounding_box2 = BOUNDING_BOX[0:2][::1] + BOUNDING_BOX[2:4][::-1]
+        GridPointIterator(wrong_bounding_box1)
+        GridPointIterator(wrong_bounding_box2)
+
+
 def test_first_point_from_grid_point_iterator():
     point_iterator = GridPointIterator(BOUNDING_BOX)
     first_point = next(point_iterator)
@@ -39,6 +53,26 @@ def test_all_points_from_grid_point_iterator():
 # Test on TriangularPointIterator
 
 STARTING_POINTS = np.array([[0, 0], [0, 1], [1, 1]])
+
+
+def test_enough_starting_points_for_triangular_point_iterator():  # at least 2 rows
+    with pytest.raises(ValueError):
+        TriangularPointIterator(STARTING_POINTS[0:2, :])  # shape (2,2)
+
+
+def test_minimum_two_columns_for_triangular_point_iterator():
+    with pytest.raises(ValueError):
+        TriangularPointIterator(np.array([[1], [2], [3]]))  # shape (1,3)
+
+
+def test_maximum_two_columns_for_triangular_point_iterator():
+    with pytest.raises(ValueError):
+        TriangularPointIterator(np.array([[1, 2, 3], [2, 3, 4], [3, 4, 5]]))  # shape (3,3)
+
+
+def test_too_many_dimensions_for_triangular_point_iterator():
+    with pytest.raises(ValueError):
+        TriangularPointIterator(np.array([[[1, 2, 3], [2, 3, 4], [3, 4, 5]]]))  # shape (1,3,3)
 
 
 def test_first_point_from_triangular_point_iterator():
