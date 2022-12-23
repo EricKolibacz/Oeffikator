@@ -1,6 +1,7 @@
 # Oeffikator
 
 ![Code Checks](https://github.com/EricKolibacz/Oeffikator/actions/workflows/code_checks.yml/badge.svg)
+![Python Tests](https://github.com/EricKolibacz/Oeffikator/actions/workflows/python_tests.yml/badge.svg)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
 [![Coverage Status](https://coveralls.io/repos/github/EricKolibacz/Oeffikator/badge.svg?branch=main&kill_cache=1)](https://coveralls.io/github/EricKolibacz/Oeffikator?branch=main&kill_cache=1)
