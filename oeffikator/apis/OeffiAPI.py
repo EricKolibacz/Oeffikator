@@ -24,7 +24,7 @@ class OeffiAPI(APIInterface):
     request_rate = 100
 
     def __init__(self):
-        super(OeffiAPI, self).__init__()
+        super().__init__()
         self.__BVG_URL = "http://bvg-apps-ext.hafas.de/bin/mgate.exe/mgate.exe"
         with open(
             os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), AUTHKEY_FILE),
