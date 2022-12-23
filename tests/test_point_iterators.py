@@ -5,30 +5,36 @@ from oeffikator.point_iterator.GridPointIterator import GridPointIterator
 from oeffikator.point_iterator.TriangularPointIterator import TriangularPointIterator
 
 BOUNDING_BOX = (0, 1, 2.5, 3.5)  # ("east", "west", "south", "north")
+POINTS_PER_AXIS = 3
 
 
 # Test on GridPointIterator
 def test_correct_bounding_box_length_in_grid_iterator():
     with pytest.raises(ValueError):
-        GridPointIterator(BOUNDING_BOX[:3])
+        GridPointIterator(BOUNDING_BOX[:3], POINTS_PER_AXIS)
 
 
 def test_plausible_bounding_box_values_in_grid_iterator():
     with pytest.raises(ValueError):
         wrong_bounding_box1 = BOUNDING_BOX[0:2][::-1] + BOUNDING_BOX[2:4][::1]
         wrong_bounding_box2 = BOUNDING_BOX[0:2][::1] + BOUNDING_BOX[2:4][::-1]
-        GridPointIterator(wrong_bounding_box1)
-        GridPointIterator(wrong_bounding_box2)
+        GridPointIterator(wrong_bounding_box1, POINTS_PER_AXIS)
+        GridPointIterator(wrong_bounding_box2, POINTS_PER_AXIS)
+
+
+def test_correct_number_of_points_per_axis_in_grid_iterator():
+    with pytest.raises(ValueError):
+        GridPointIterator(BOUNDING_BOX, 1)
 
 
 def test_first_point_from_grid_point_iterator():
-    point_iterator = GridPointIterator(BOUNDING_BOX)
+    point_iterator = GridPointIterator(BOUNDING_BOX, POINTS_PER_AXIS)
     first_point = next(point_iterator)
     assert first_point == [0, 2.5]
 
 
 def test_corner_points_from_grid_point_iterator():
-    point_iterator = GridPointIterator(BOUNDING_BOX)
+    point_iterator = GridPointIterator(BOUNDING_BOX, POINTS_PER_AXIS)
     points = [point for point in point_iterator]
     assert points[0] == [0, 2.5]
     assert points[2] == [0, 3.5]
@@ -37,7 +43,7 @@ def test_corner_points_from_grid_point_iterator():
 
 
 def test_all_points_from_grid_point_iterator():
-    point_iterator = GridPointIterator(BOUNDING_BOX)
+    point_iterator = GridPointIterator(BOUNDING_BOX, POINTS_PER_AXIS)
     points = [point for point in point_iterator]
     assert points[0] == [0, 2.5]
     assert points[1] == [0, 3.0]
