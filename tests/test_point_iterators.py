@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 from scipy.spatial import cKDTree
-from scipy.spatial.distance import pdist
 
 from oeffikator.point_iterator.GridPointIterator import GridPointIterator
 from oeffikator.point_iterator.TriangularPointIterator import TriangularPointIterator
