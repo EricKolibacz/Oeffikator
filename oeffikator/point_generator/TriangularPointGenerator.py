@@ -5,14 +5,18 @@ from oeffikator.point_generator.PointGeneratorInterface import PointGeneratorInt
 
 
 class TriangularPointGenerator(PointGeneratorInterface):
-    def get_next_points(self, group_size, points):
-        tri = Delaunay(points)
-        areas = self.__get_area(points[tri.simplices])
-        tri_centers = np.mean(points[tri.simplices][np.argpartition(areas, -group_size)[-group_size:]], 1)
-        return tri_centers
+    def __init__(self, initial_points: np.ndarray) -> None:
+        self.points = initial_points
 
-    def get_next_point(self, points):
-        return self.get_next_points(1, points)
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> dict:
+        tri = Delaunay(self.points)
+        areas = self.__get_area(self.points[tri.simplices])
+        new_point = np.mean(self.points[tri.simplices][np.argpartition(areas, -1)][-1], 0)
+        self.points = np.vstack([self.points, new_point])
+        return new_point
 
     def __get_area(self, points):
         first = np.multiply(points[:, 0, 0], np.subtract(points[:, 1, 1], points[:, 2, 1]))
