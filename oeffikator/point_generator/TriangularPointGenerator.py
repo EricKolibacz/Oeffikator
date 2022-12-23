@@ -11,6 +11,9 @@ class TriangularPointGenerator(PointGeneratorInterface):
         tri_centers = np.mean(points[tri.simplices][np.argpartition(areas, -group_size)[-group_size:]], 1)
         return tri_centers
 
+    def get_next_point(self, points):
+        return self.get_next_points(1, points)
+
     def __get_area(self, points):
         first = np.multiply(points[:, 0, 0], np.subtract(points[:, 1, 1], points[:, 2, 1]))
         second = np.multiply(points[:, 1, 0], np.subtract(points[:, 2, 1], points[:, 0, 1]))
