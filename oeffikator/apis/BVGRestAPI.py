@@ -7,6 +7,16 @@ from oeffikator.apis.APIInterface import APIInterface
 
 
 class BVGRestAPI(APIInterface):
+    """An API querying data from the BVG.
+    Does not require any authentification and is able to query coordinates from location strings.
+
+    Args:
+        APIInterface: interface which defines the abstract methods and properties of an api class
+
+    Attributes:
+        request rate: the number of requests tolerated per minute
+    """
+
     request_rate = 100
 
     def query_location(
@@ -55,6 +65,14 @@ class BVGRestAPI(APIInterface):
         return journey
 
     def __process_response(self, response: dict) -> dict:
+        """Method to standardize the api response and make it usable
+
+        Args:
+            response (dict): api respons (as json)
+
+        Returns:
+            dict: json which is simpler to handle and process
+        """
         stopsovers = []
         try:
             for leg in response["journeys"][0]["legs"]:

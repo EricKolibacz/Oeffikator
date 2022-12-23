@@ -4,7 +4,24 @@ from oeffikator.point_iterator.PointIteratorInterface import PointIteratorInterf
 
 
 class GridPointIterator(PointIteratorInterface):
-    def __init__(self, bounding_box: tuple[int | float]):
+    """Point iterator which generates points along a grid.
+
+    Args:
+        PointIteratorInterface: interface which defines abstract methods for a point iterator
+
+    Attibutes:
+        initial_points (tuple[floats]): points which form the grid and which will be iterated over
+    """
+
+    def __init__(self, bounding_box: tuple[float]):
+        """
+        Args:
+            bounding_box (tuple[float]): a bounding box which defines the grid. It needs following format:
+            east, west, south, north (i.e. bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3])
+
+        Raises:
+            ValueError: if bounding box does not contain 4 elements in the east-west-south-north format
+        """
         if len(bounding_box) != 4:
             raise ValueError("The bounding box should contain 4 values: east, west, south, north")
         if bounding_box[0] > bounding_box[1] or bounding_box[2] > bounding_box[3]:
@@ -30,5 +47,10 @@ class GridPointIterator(PointIteratorInterface):
             raise StopIteration("Your reached the end of the point Grid.")
         return point
 
-    def has_points_remaining(self):
+    def has_points_remaining(self) -> bool:
+        """Method to check if the end of the iterator is reached
+
+        Returns:
+            bool: true, if the end is reached, else flase
+        """
         return self.points_used < len(self.initial_points)
