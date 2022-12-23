@@ -2,6 +2,7 @@ import datetime
 import json
 
 import requests
+
 from oeffikator.apis import RESPONSE_TIMEOUT
 from oeffikator.apis.APIInterface import APIInterface
 
