@@ -1,6 +1,8 @@
+"""This module contains the grid point iterator which is based on the idea
+that points are generated with euqally along a grid in a rectangular space."""
 import numpy as np
 
-from oeffikator.point_iterator.PointIteratorInterface import PointIteratorInterface
+from oeffikator.point_iterator.point_iterator_interface import PointIteratorInterface
 
 
 class GridPointIterator(PointIteratorInterface):
@@ -38,9 +40,9 @@ class GridPointIterator(PointIteratorInterface):
             )
 
         self.points = []
-        for x in np.linspace(bounding_box[0], bounding_box[1], points_per_axis):
-            for y in np.linspace(bounding_box[2], bounding_box[3], points_per_axis):
-                self.points.append([x, y])
+        for longitude in np.linspace(bounding_box[0], bounding_box[1], points_per_axis):
+            for latitude in np.linspace(bounding_box[2], bounding_box[3], points_per_axis):
+                self.points.append([longitude, latitude])
         self.points_used = 0
 
     def __iter__(self):
