@@ -11,6 +11,16 @@ AUTHKEY_FILE = "AUTHKEY_OeffiAPI.txt"
 
 
 class OeffiAPI(APIInterface):
+    """An API which queries data from the Oeffi app.
+    Requires a authenification key (called AUTHKEY.txt).
+
+    Args:
+        APIInterface: interface which defines the abstract methods and properties of an api class
+
+    Attributes:
+        request rate: the number of requests tolerated per minute
+    """
+
     request_rate = 100
 
     def __init__(self):
@@ -47,6 +57,14 @@ class OeffiAPI(APIInterface):
         return {"origin": origin, "destination": destination, "arrivalTime": aTime, "stopovers": None}
 
     def __request_data(self, json_string: str) -> dict:
+        """Request data from the API
+
+        Args:
+            json_string (str): request string
+
+        Returns:
+            dict: response dict (json)
+        """
         data = json.loads(json_string)
         headers = {"Content-type": "application/json", "Accept": "text/plain"}
         r = requests.post(self.__BVG_URL, data=json.dumps(data), headers=headers, timeout=RESPONSE_TIMEOUT)
@@ -54,16 +72,43 @@ class OeffiAPI(APIInterface):
         return json.loads(r.text)
 
     def __get_dest(self, x: float, y: float) -> tuple:
+        """Gets the response for a destination query
+
+        Args:
+            x (float): Longitude (in ESPG:4326)
+            y (float): Latitude (in EPSG:4326)
+
+        Returns:
+            tuple: response tuple of destination id and type
+        """
         resp = self.__request_data(self.__create_JSON_GEOLOC(x, y))
         e = resp["svcResL"][1]["res"]["locL"][0]["extId"]
         t = resp["svcResL"][1]["res"]["locL"][0]["type"]
         return (e, t)
 
     def __get_lid(self, x: float, y: float) -> dict:
+        """Gets the reponse of a lid query
+
+        Args:
+            x (float): Longitude (in ESPG:4326)
+            y (float): Latitude (in EPSG:4326)
+
+        Returns:
+            dict: response json
+        """
         resp = self.__request_data(self.__create_JSON_GEOLOC(x, y))
         return resp["svcResL"][1]["res"]["locL"][0]["lid"]
 
     def __create_JSON_GEOLOC(self, x: float, y: float) -> str:
+        """Create the body for a geo location requests
+
+        Args:
+            x (float): Longitude (in ESPG:4326)
+            y (float): Latitude (in EPSG:4326)
+
+        Returns:
+            str: body for a geo location request
+        """
         return str(
             '{"auth":{"aid":'
             f'"{self.__key}"'
@@ -78,6 +123,15 @@ class OeffiAPI(APIInterface):
         )
 
     def __create_JSON_TRIP(self, start_lid: str, dest_type: str, extId: str, start_date: str) -> str:
+        """Create the body for a trip requests
+
+        Args:
+            x (float): Longitude (in ESPG:4326)
+            y (float): Latitude (in EPSG:4326)
+
+        Returns:
+            str: body for a trip request
+        """
         return str(
             '{"auth":{"aid":"'
             f"{self.__key}"
