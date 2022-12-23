@@ -44,4 +44,4 @@ include_trailing_comma = true
 
 [tool.pylint."MESSAGES CONTROL"]
 max-line-length = 120
-disable = "C,W0613,W0221,E0611"
+disable = "C,E0611"
