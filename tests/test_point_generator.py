@@ -68,8 +68,8 @@ def test_two_consective_points_from_triangular_point_generation():
 
 
 def test_two_points_from_triangular_point_generation():
-    point1_should_be = np.mean(STARTING_POINTS[0:3, :], 0)
-    point2_should_be = np.mean(np.append(STARTING_POINTS[1:3, :], [[1, 0]], axis=0), 0)
+    point1_should_be = np.mean(STARTING_POINTS, 0)
+    point2_should_be = np.mean(np.append(STARTING_POINTS[0:3:2, :], [[1, 0]], axis=0), 0)
     new_points = np.append(STARTING_POINTS, [[1, 0]], axis=0)
     grid_point_generation = TriangularPointGenerator()
     point_is = grid_point_generation.get_next_points(2, new_points)
