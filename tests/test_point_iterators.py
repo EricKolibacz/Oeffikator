@@ -36,7 +36,7 @@ def test_first_point_from_grid_point_iterator():
 
 def test_corner_points_from_grid_point_iterator():
     point_iterator = GridPointIterator(BOUNDING_BOX, POINTS_PER_AXIS)
-    points = [point for point in point_iterator]
+    points = list(point_iterator)
     assert points[0] == [0, 2.5]
     assert points[2] == [0, 3.5]
     assert points[6] == [1, 2.5]
@@ -45,7 +45,7 @@ def test_corner_points_from_grid_point_iterator():
 
 def test_all_points_from_grid_point_iterator():
     point_iterator = GridPointIterator(BOUNDING_BOX, POINTS_PER_AXIS)
-    points = [point for point in point_iterator]
+    points = list(point_iterator)
     assert points[0] == [0, 2.5]
     assert points[1] == [0, 3.0]
     assert points[2] == [0, 3.5]
