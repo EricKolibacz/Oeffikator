@@ -10,7 +10,7 @@ class GridPointIterator(PointIteratorInterface):
         PointIteratorInterface: interface which defines abstract methods for a point iterator
 
     Attibutes:
-        initial_points (tuple[floats]): points which form the grid and which will be iterated over
+        points (tuple[floats]): points which form the grid and which will be iterated over
     """
 
     def __init__(self, bounding_box: tuple[float]):
