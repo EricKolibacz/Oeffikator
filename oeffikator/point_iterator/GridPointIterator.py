@@ -1,3 +1,5 @@
+"""This module contains the grid point iterator which is based on the idea
+that points are generated with euqally along a grid in a rectangular space."""
 import numpy as np
 
 from oeffikator.point_iterator.PointIteratorInterface import PointIteratorInterface

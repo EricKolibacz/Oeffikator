@@ -1,3 +1,4 @@
+"""This module includes interface which defines the broad structure for the to be implemented apis."""
 import datetime
 from abc import ABC, abstractmethod
 

@@ -1,3 +1,4 @@
+"""This module includes the API class for the BVG."""
 import datetime
 
 import requests

@@ -1,3 +1,4 @@
+"""This module includes the API class for Oeffi."""
 import datetime
 import json
 import os

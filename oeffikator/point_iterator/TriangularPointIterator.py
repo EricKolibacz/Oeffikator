@@ -1,3 +1,6 @@
+"""This module contains the triangular point iterator. The underlying idea is that we can create a set of triangles
+between points (size at least 3). The traingle with the largest area probably covers some space which is
+lesser densly populated by points. Hence, we set the point here."""
 import numpy as np
 from scipy.spatial import Delaunay
 

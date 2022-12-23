@@ -1,3 +1,4 @@
+"""This module contains all the test for the point iterators currently implemented."""
 import numpy as np
 import pytest
 from scipy.spatial import cKDTree
