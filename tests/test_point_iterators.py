@@ -15,8 +15,8 @@ def test_correct_bounding_box_length_in_grid_iterator():
 
 def test_plausible_bounding_box_values_in_grid_iterator():
     with pytest.raises(ValueError):
-        wrong_bounding_box1 = BOUNDING_BOX[1] + BOUNDING_BOX[0] + BOUNDING_BOX[2:]
-        wrong_bounding_box2 = BOUNDING_BOX[:2] + BOUNDING_BOX[3] + BOUNDING_BOX[2]
+        wrong_bounding_box1 = BOUNDING_BOX[0:2][::-1] + BOUNDING_BOX[2:4][::1]
+        wrong_bounding_box2 = BOUNDING_BOX[0:2][::1] + BOUNDING_BOX[2:4][::-1]
         GridPointIterator(wrong_bounding_box1)
         GridPointIterator(wrong_bounding_box2)
 
