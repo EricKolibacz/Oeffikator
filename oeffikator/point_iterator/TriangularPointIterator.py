@@ -40,8 +40,11 @@ class TriangularPointIterator(PointIteratorInterface):
 
     def __next__(self) -> np.ndarray:
         tri = Delaunay(self.points)
-        areas = self.__get_area(self.points[tri.simplices])
-        new_point = np.mean(self.points[tri.simplices][np.argpartition(areas, -1)][-1], 0)
+        triangles = self.points[tri.simplices]
+        areas = self.__get_area(triangles)
+        largest_triangle = triangles[np.argpartition(areas, -1)][-1]
+        # compute the "center" of the triangle
+        new_point = np.mean(largest_triangle, 0)
         self.points = np.vstack([self.points, new_point])
         return new_point
 
