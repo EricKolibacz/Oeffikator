@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2
+
+* Fix missing time transformation in example notebook
+
 ## 0.1.1
 
 * Introduce new parameter "points_per_axis" for grid iterator
