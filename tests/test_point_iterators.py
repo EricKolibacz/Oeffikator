@@ -65,6 +65,14 @@ def test_all_points_from_grid_point_iterator():
     assert points[8] == [1, 3.5]
 
 
+def test_has_points_remaining():
+    """Test if the grid iterator gets the grid right if we want 9 points."""
+    point_iterator = GridPointIterator(BOUNDING_BOX, POINTS_PER_AXIS)
+    assert point_iterator.has_points_remaining()
+    _ = list(point_iterator)
+    assert not point_iterator.has_points_remaining()
+
+
 # Test on TriangularPointIterator
 
 STARTING_POINTS = np.array([[0, 0], [0, 1], [1, 1]])
