@@ -3,7 +3,7 @@ import datetime
 from abc import ABC, abstractmethod
 
 
-class APIRequester(ABC):
+class RequesterInterface(ABC):
     """This interface defines the basic structure for API which can query data from public transport companies."""
 
     def __init__(self) -> None:

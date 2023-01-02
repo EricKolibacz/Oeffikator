@@ -4,10 +4,10 @@ import datetime
 import requests
 
 from oeffikator.requesters import RESPONSE_TIMEOUT
-from oeffikator.requesters.requester_interface import APIRequester
+from oeffikator.requesters.requester_interface import RequesterInterface
 
 
-class BVGRestRequester(APIRequester):
+class BVGRestRequester(RequesterInterface):
     """An API querying data from the BVG.
     Does not require any authentification and is able to query coordinates from location strings.
 

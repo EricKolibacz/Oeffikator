@@ -6,12 +6,12 @@ import os
 import requests
 
 from oeffikator.requesters import RESPONSE_TIMEOUT
-from oeffikator.requesters.requester_interface import APIRequester
+from oeffikator.requesters.requester_interface import RequesterInterface
 
 AUTHKEY_FILE = "AUTHKEY_OeffiRequester.txt"
 
 
-class OeffiRequester(APIRequester):
+class OeffiRequester(RequesterInterface):
     """An API which queries data from the Oeffi app.
     Attention: Requires a authenification key (called AUTHKEY_OeeffiAPI.txt) in the same folder as this class.
 
