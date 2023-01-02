@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+* Change naming from api to requester
+
 ## 0.1.2
 
 * Fix missing time transformation in example notebook
