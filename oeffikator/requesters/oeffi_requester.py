@@ -1,14 +1,11 @@
 """This module includes the requester class for Oeffi."""
 import datetime
 import json
-import os
 
 import requests
 
 from oeffikator.requesters import RESPONSE_TIMEOUT
 from oeffikator.requesters.requester_interface import RequesterInterface
-
-AUTHKEY_FILE = "AUTHKEY_OeffiRequester.txt"
 
 
 class OeffiRequester(RequesterInterface):
@@ -24,21 +21,10 @@ class OeffiRequester(RequesterInterface):
 
     request_rate = 100
 
-    def __init__(self):
+    def __init__(self, key: str):
         super().__init__()
         self.__bvg_url = "http://bvg-apps-ext.hafas.de/bin/mgate.exe/mgate.exe"
-        try:
-            with open(
-                os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), AUTHKEY_FILE),
-                encoding="UTF-8",
-            ) as keyfile:
-                self.__key = keyfile.read().splitlines()[0]
-        except FileNotFoundError as exception:
-            raise FileNotFoundError(
-                "It seems like the AUTHKEY_OeffiRequester.txt does not exist. "
-                "It should though to be able to use the Oeffi requester. "
-                "Wondering where to find a key? You can find some unsecurely stored on open-source github repos."
-            ) from exception
+        self.__key = key
 
     def query_location(self, query: str, amount_of_results: int = 1) -> dict:
         raise NotImplementedError
