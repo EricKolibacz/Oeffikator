@@ -1,18 +1,18 @@
-"""This module includes the API class for the BVG."""
+"""This module includes the requester class for the BVG."""
 import datetime
 
 import requests
 
-from oeffikator.apis import RESPONSE_TIMEOUT
-from oeffikator.apis.api_interface import APIInterface
+from oeffikator.requesters import RESPONSE_TIMEOUT
+from oeffikator.requesters.requester_interface import RequesterInterface
 
 
-class BVGRestAPI(APIInterface):
-    """An API querying data from the BVG.
+class BVGRestRequester(RequesterInterface):
+    """An requester querying data from the BVG.
     Does not require any authentification and is able to query coordinates from location strings.
 
     Args:
-        APIInterface: interface which defines the abstract methods and properties of an api class
+        RequesterInterface: interface which defines the abstract methods and properties of an requester class
 
     Attributes:
         request rate: the number of requests tolerated per minute
