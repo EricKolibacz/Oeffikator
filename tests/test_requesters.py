@@ -20,7 +20,7 @@ def test_has_reached_limit():
     """Tests if the bvg rest requester queries the location properly"""
     requester = BVGRestRequester()
     assert not requester.has_reached_request_limit()
-    location = requester.query_location("Brandenburger Tor")
+    _ = requester.query_location("Brandenburger Tor")
     requester.request_rate = 0
     assert requester.has_reached_request_limit()
 
