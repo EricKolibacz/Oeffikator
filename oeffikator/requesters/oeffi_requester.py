@@ -8,7 +8,7 @@ import requests
 from oeffikator.requesters import RESPONSE_TIMEOUT
 from oeffikator.requesters.requester_interface import APIRequester
 
-AUTHKEY_FILE = "AUTHKEY_OeffiAPI.txt"
+AUTHKEY_FILE = "AUTHKEY_OeffiRequester.txt"
 
 
 class OeffiRequester(APIRequester):
