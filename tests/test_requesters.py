@@ -1,4 +1,6 @@
 """Tests related to the requesters."""
+import datetime
+
 import numpy as np
 import pytest
 
@@ -14,6 +16,25 @@ def test_query_location():
     location = requester.query_location("Brandenburger Tor")
     coordinates_is = np.array([location["latitude"], location["longitude"]])
     np.testing.assert_array_almost_equal(coordinates_should_be, coordinates_is, decimal=3)
+
+
+def test_get_journey():
+    """Tests if the bvg rest requester gets a journey properly.
+    Here, we check a trip between S+U Alexanderplatz Bhf (Berlin) and S+U Berlin Hauptbahnhof for the next weekday.
+    This will fail as soon as if there are constructions on this line!"""
+    time_should_be = 10
+
+    date_today = datetime.datetime.today()
+    date_next_monday = date_today + datetime.timedelta(days=-date_today.weekday(), weeks=1)
+
+    requester = BVGRestRequester()
+    origin = requester.query_location("10178 Berlin-Mitte, Alexanderplatz 1")
+    destination = requester.query_location("10557 Berlin-Moabit, Europaplatz 1")
+
+    journey = requester.get_journey(origin=origin, destination=destination, start_date=date_next_monday)
+    time_is = (int(journey["arrivalTime"]) - 120000) / 100
+
+    assert time_should_be == time_is
 
 
 def test_has_reached_limit():
