@@ -5,13 +5,13 @@ import os
 
 import requests
 
-from oeffikator.apis import RESPONSE_TIMEOUT
-from oeffikator.apis.api_interface import APIInterface
+from oeffikator.requesters import RESPONSE_TIMEOUT
+from oeffikator.requesters.requester_interface import APIRequester
 
 AUTHKEY_FILE = "AUTHKEY_OeffiAPI.txt"
 
 
-class OeffiAPI(APIInterface):
+class OeffiRequester(APIRequester):
     """An API which queries data from the Oeffi app.
     Attention: Requires a authenification key (called AUTHKEY_OeeffiAPI.txt) in the same folder as this class.
 
@@ -27,11 +27,18 @@ class OeffiAPI(APIInterface):
     def __init__(self):
         super().__init__()
         self.__bvg_url = "http://bvg-apps-ext.hafas.de/bin/mgate.exe/mgate.exe"
-        with open(
-            os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), AUTHKEY_FILE),
-            encoding="UTF-8",
-        ) as keyfile:
-            self.__key = keyfile.read().splitlines()[0]
+        try:
+            with open(
+                os.path.join(os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))), AUTHKEY_FILE),
+                encoding="UTF-8",
+            ) as keyfile:
+                self.__key = keyfile.read().splitlines()[0]
+        except FileNotFoundError as exception:
+            raise FileNotFoundError(
+                "It seems like the AUTHKEY_OeffiAPI.txt does not exist. "
+                "It should though to be able to use the Oeffi API."
+                "Wondering where to find a key? You can find some unsecurely stored on open-source github repos."
+            ) from exception
 
     def query_location(self, query: str, amount_of_results: int = 1) -> dict:
         raise NotImplementedError
