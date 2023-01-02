@@ -22,7 +22,16 @@ class OeffiRequester(RequesterInterface):
     request_rate = 100
 
     def __init__(self, key: str):
+        """
+        Args:
+            key (str): the authentification key to properly access the Oeffi api
+
+        Raises:
+            ValueError: if the passed key is empty or None
+        """
         super().__init__()
+        if key == "" or key is None:
+            raise ValueError(f"The oeffi requester will not work without a key. You provided: '{key}'")
         self.__bvg_url = "http://bvg-apps-ext.hafas.de/bin/mgate.exe/mgate.exe"
         self.__key = key
 
