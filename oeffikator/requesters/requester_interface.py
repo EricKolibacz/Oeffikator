@@ -1,10 +1,11 @@
-"""This module includes interface which defines the broad structure for the to be implemented apis."""
+"""This module includes interface which defines the broad structure for the to be implemented requesters."""
 import datetime
 from abc import ABC, abstractmethod
 
 
 class RequesterInterface(ABC):
-    """This interface defines the basic structure for API which can query data from public transport companies."""
+    """This interface defines the basic structure for requesters
+    which can query data from public transport companies."""
 
     def __init__(self) -> None:
         self.past_requests = []
@@ -51,7 +52,7 @@ class RequesterInterface(ABC):
         """
 
     def has_reached_request_limit(self) -> bool:
-        """Checks if the api has reached it request limit per minute
+        """Checks if the requester has reached it request limit per minute
 
         Returns:
             bool: true, if limit is reached, else false

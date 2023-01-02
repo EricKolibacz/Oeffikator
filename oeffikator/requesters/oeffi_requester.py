@@ -1,4 +1,4 @@
-"""This module includes the API class for Oeffi."""
+"""This module includes the requester class for Oeffi."""
 import datetime
 import json
 import os
@@ -12,11 +12,11 @@ AUTHKEY_FILE = "AUTHKEY_OeffiRequester.txt"
 
 
 class OeffiRequester(RequesterInterface):
-    """An API which queries data from the Oeffi app.
-    Attention: Requires a authenification key (called AUTHKEY_OeeffiAPI.txt) in the same folder as this class.
+    """An requester which queries data from the Oeffi app.
+    Attention: Requires a authenification key (called AUTHKEY_OeffiRequester.txt) in the same folder as this class.
 
     Args:
-        APIInterface: interface which defines the abstract methods and properties of an api class
+        RequesterInterface: interface which defines the abstract methods and properties of an requester class
 
     Attributes:
         request rate: the number of requests tolerated per minute
@@ -35,8 +35,8 @@ class OeffiRequester(RequesterInterface):
                 self.__key = keyfile.read().splitlines()[0]
         except FileNotFoundError as exception:
             raise FileNotFoundError(
-                "It seems like the AUTHKEY_OeffiAPI.txt does not exist. "
-                "It should though to be able to use the Oeffi API."
+                "It seems like the AUTHKEY_OeffiRequester.txt does not exist. "
+                "It should though to be able to use the Oeffi requester."
                 "Wondering where to find a key? You can find some unsecurely stored on open-source github repos."
             ) from exception
 
