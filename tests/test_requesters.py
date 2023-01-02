@@ -16,6 +16,15 @@ def test_query_location():
     np.testing.assert_array_almost_equal(coordinates_should_be, coordinates_is, decimal=3)
 
 
+def test_has_reached_limit():
+    """Tests if the bvg rest requester queries the location properly"""
+    requester = BVGRestRequester()
+    assert not requester.has_reached_request_limit()
+    location = requester.query_location("Brandenburger Tor")
+    requester.request_rate = 0
+    assert requester.has_reached_request_limit()
+
+
 # Oeffi requester
 def test_for_empty_auth_key():
     """Check if we receive an appropriate warning if the authkey is empty."""
