@@ -36,7 +36,7 @@ jobs:
         poetry run pytest .
     - name: Run test coverage
       run: |
-        poetry run pytest --cov=./oeffikator --cov-report lcov:./coverage/lcov.info --cov-report term
+        poetry run pytest --cov=./oeffikator --cov-report lcov:./coverage/lcov.info --cov-report term-missing
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
