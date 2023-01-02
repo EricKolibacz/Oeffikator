@@ -36,7 +36,7 @@ class OeffiRequester(RequesterInterface):
         except FileNotFoundError as exception:
             raise FileNotFoundError(
                 "It seems like the AUTHKEY_OeffiRequester.txt does not exist. "
-                "It should though to be able to use the Oeffi requester."
+                "It should though to be able to use the Oeffi requester. "
                 "Wondering where to find a key? You can find some unsecurely stored on open-source github repos."
             ) from exception
 
