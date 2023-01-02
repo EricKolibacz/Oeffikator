@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+* Remove authkey support
+
 ## 0.2.0
 
 * Change naming from api to requester
