@@ -1,7 +1,6 @@
 """This module includes the requester class for Oeffi."""
 import datetime
 import json
-import os
 
 import requests
 
