@@ -45,7 +45,7 @@ jobs:
       run: |
         poetry run pylint oeffikator/ tests/
     - name: Lint jupyter notebooks
-      run: |
+      run: |  # black has own jupyter notebook support
         poetry run nbqa isort oeffikator/
         poetry run nbqa pylint oeffikator/
         poetry run nbqa pycodestyle oeffikator/
