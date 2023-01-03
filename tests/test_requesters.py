@@ -9,7 +9,7 @@ from oeffikator.requesters.oeffi_requester import OeffiRequester
 
 
 # BVG Rest requester
-def test_query_location():
+def test_query_location_for_bvg_requester():
     """Tests if the bvg rest requester queries the location properly"""
     coordinates_should_be = np.array([52.51627344417692, 13.37766793796735])
     requester = BVGRestRequester()
@@ -18,7 +18,7 @@ def test_query_location():
     np.testing.assert_array_almost_equal(coordinates_should_be, coordinates_is, decimal=3)
 
 
-def test_get_journey():
+def test_get_journey_for_bvg_requester():
     """Tests if the bvg rest requester gets a journey properly.
     Here, we check a trip between S+U Alexanderplatz Bhf (Berlin) and S+U Berlin Hauptbahnhof for the next weekday.
     This will fail as soon as if there are constructions on this line!"""
@@ -37,7 +37,7 @@ def test_get_journey():
     assert time_should_be == time_is
 
 
-def test_catch_wrong_requests_for_wrong_journey():
+def test_catch_wrong_requests_for_wrong_journey_for_bvg_requester():
     """Tests if the bvg rest requester catches wrong get_journey request"""
     origin = {"address": "", "latitude": -1, "longitude": -1}
     destination = {"address": "", "latitude": -1, "longitude": -1}
@@ -52,7 +52,7 @@ def test_catch_wrong_requests_for_wrong_journey():
     assert response == excepted_response
 
 
-def test_has_reached_limit():
+def test_has_reached_limit_for_bvg_requester():
     """Tests if the bvg rest requester queries the location properly"""
     requester = BVGRestRequester()
     assert not requester.has_reached_request_limit()
@@ -62,14 +62,14 @@ def test_has_reached_limit():
 
 
 # Oeffi requester
-def test_for_empty_auth_key():
+def test_for_empty_auth_key_for_oeffi_requester():
     """Check if we receive an appropriate warning if the authkey is empty."""
     authkey = ""
     with pytest.raises(ValueError):
         OeffiRequester(authkey)
 
 
-def test_for_none_auth_key():
+def test_for_none_auth_key_for_oeffi_requester():
     """Check if we receive an appropriate warning if the authkey is None."""
     authkey = None
     with pytest.raises(ValueError):
