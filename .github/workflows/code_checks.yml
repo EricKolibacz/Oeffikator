@@ -44,3 +44,8 @@ jobs:
     - name: Lint Code with pylint
       run: |
         poetry run pylint oeffikator/ tests/
+    - name: Lint jupyter notebooks
+      run: |
+        poetry run nbqa isort oeffikator/
+        poetry run nbqa pylint oeffikator/
+        poetry run nbqa pycodestyle oeffikator/
