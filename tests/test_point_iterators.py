@@ -65,6 +65,14 @@ def test_all_points_from_grid_point_iterator():
     assert points[8] == [1, 3.5]
 
 
+def test_has_points_remaining():
+    """Test if the grid iterator gets the grid right if we want 9 points."""
+    point_iterator = GridPointIterator(BOUNDING_BOX, POINTS_PER_AXIS)
+    assert point_iterator.has_points_remaining()
+    _ = list(point_iterator)
+    assert not point_iterator.has_points_remaining()
+
+
 # Test on TriangularPointIterator
 
 STARTING_POINTS = np.array([[0, 0], [0, 1], [1, 1]])
@@ -92,6 +100,11 @@ def test_too_many_dimensions_for_triangular_point_iterator():
     """Test if the triangular iterator checks that the input is 2 dimensional."""
     with pytest.raises(ValueError):
         TriangularPointIterator(np.array([[[1, 2, 3], [2, 3, 4], [3, 4, 5]]]))  # shape (1,3,3)
+
+
+def test_is_iterator_for_triangular_point_iterator():
+    """Test if the triangular iterator is an iterator. Should fail if '__iter__' method is missing."""
+    iter(TriangularPointIterator(STARTING_POINTS))
 
 
 def test_first_point_from_triangular_point_iterator():
