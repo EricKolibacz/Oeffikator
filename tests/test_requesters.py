@@ -52,15 +52,6 @@ def test_catch_wrong_requests_for_wrong_journey_for_bvg_requester():
     assert response == excepted_response
 
 
-def test_has_reached_limit_for_bvg_requester():
-    """Tests if the bvg rest requester queries the location properly"""
-    requester = BVGRestRequester()
-    assert not requester.has_reached_request_limit()
-    _ = requester.query_location("Brandenburger Tor")
-    requester.request_rate = 0
-    assert requester.has_reached_request_limit()
-
-
 # Oeffi requester
 def test_for_empty_auth_key_for_oeffi_requester():
     """Check if we receive an appropriate warning if the authkey is empty."""
@@ -74,3 +65,13 @@ def test_for_none_auth_key_for_oeffi_requester():
     authkey = None
     with pytest.raises(ValueError):
         OeffiRequester(authkey)
+
+
+# requester interface check
+def test_has_reached_limit_for_requester_interface():
+    """Tests if the bvg rest requester queries the location properly"""
+    requester = BVGRestRequester()
+    assert not requester.has_reached_request_limit()
+    _ = requester.query_location("Brandenburger Tor")
+    requester.request_rate = 0
+    assert requester.has_reached_request_limit()
