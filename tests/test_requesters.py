@@ -75,3 +75,13 @@ def test_has_reached_limit_for_requester_interface():
     _ = requester.query_location("Brandenburger Tor")
     requester.request_rate = 0
     assert requester.has_reached_request_limit()
+
+
+def test_if_requests_are_poped_after_timeout():
+    """Tests if the bvg rest requester queries the location properly"""
+    requester = BVGRestRequester()
+    _ = requester.query_location("Brandenburger Tor")
+    requester.request_rate = 0
+    assert requester.has_reached_request_limit()
+    requester.past_requests[0]["time"] = datetime.datetime.now() - datetime.timedelta(seconds=61)
+    assert not requester.has_reached_request_limit()
