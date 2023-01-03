@@ -37,6 +37,21 @@ def test_get_journey():
     assert time_should_be == time_is
 
 
+def test_catch_wrong_requests_for_wrong_journey():
+    """Tests if the bvg rest requester catches wrong get_journey request"""
+    origin = {"address": "", "latitude": -1, "longitude": -1}
+    destination = {"address": "", "latitude": -1, "longitude": -1}
+    excepted_response = {
+        "arrivalTime": None,
+        "stopovers": None,
+        "origin": {"longitude": origin["longitude"], "latitude": origin["latitude"]},
+        "destination": {"longitude": destination["longitude"], "latitude": destination["latitude"]},
+    }
+    requester = BVGRestRequester()
+    response = requester.get_journey(origin=origin, destination=destination, start_date=datetime.datetime.today())
+    assert response == excepted_response
+
+
 def test_has_reached_limit():
     """Tests if the bvg rest requester queries the location properly"""
     requester = BVGRestRequester()
