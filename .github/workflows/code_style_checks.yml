@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Code Checks
+name: Code Style Checks
 
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
     - name: Sort imports with isort
       run: |
         poetry run isort oeffikator/ tests/
-    - name: Check Code with pycodestyle
+    - name: Check Code Sytel with pycodestyle
       run: |
         poetry run pycodestyle oeffikator/ tests/
     - name: Lint Code with pylint
