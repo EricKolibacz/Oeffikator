@@ -4,7 +4,9 @@ from importlib.metadata import version
 
 from .requesters.bvg_rest_requester import BVGRestRequester
 from .requesters.oeffi_requester import OeffiRequester
+from .settings import Settings
 
+settings = Settings()
 __version__ = version("oeffikator")
 
 logger = logging.getLogger("uvicorn")
