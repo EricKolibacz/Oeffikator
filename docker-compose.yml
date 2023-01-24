@@ -9,8 +9,8 @@ services:
     depends_on:
       - oeffikator-db
     secrets:
-      - oeffikator_db_pw
-      - oeffikator_db_user
+      - db_pw
+      - db_user
 
   oeffikator-db:
     image: postgis/postgis
