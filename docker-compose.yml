@@ -6,3 +6,24 @@ services:
     build: .
     ports:
       - 8000:8000
+
+  oeffikator-db:
+    image: postgis/postgis
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD_FILE: /run/secrets/oeffikator_db_pw
+      POSTGRES_DB: oeffikator
+    secrets:
+      - oeffikator_db_pw
+    volumes:
+      - ./scripts/:/docker-entrypoint-initdb.d/
+      - pgdata:/var/lib/postgresql/data:rw
+
+secrets:
+  oeffikator_db_pw:
+    file: oeffikator_db_pw.txt
+
+volumes:
+  pgdata:
