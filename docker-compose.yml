@@ -6,6 +6,11 @@ services:
     build: .
     ports:
       - 8000:8000
+    depends_on:
+      - db
+    secrets:
+      - oeffikator_db_pw
+      - oeffikator_db_user
 
   oeffikator-db:
     image: postgis/postgis
