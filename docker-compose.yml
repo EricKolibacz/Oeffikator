@@ -12,11 +12,12 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: docker
+      POSTGRES_USER: /run/secrets/oeffikator_db_user
       POSTGRES_PASSWORD_FILE: /run/secrets/oeffikator_db_pw
       POSTGRES_DB: oeffikator
     secrets:
       - oeffikator_db_pw
+      - oeffikator_db_user
     volumes:
       - ./scripts/:/docker-entrypoint-initdb.d/
       - pgdata:/var/lib/postgresql/data:rw
@@ -24,6 +25,8 @@ services:
 secrets:
   oeffikator_db_pw:
     file: oeffikator_db_pw.txt
+  oeffikator_db_user:
+    file: oeffikator_db_user.txt
 
 volumes:
   pgdata:
