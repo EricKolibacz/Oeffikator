@@ -7,7 +7,7 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - db
+      - oeffikator-db
     secrets:
       - oeffikator_db_pw
       - oeffikator_db_user
