@@ -14,6 +14,14 @@ CREATE TABLE geo.locations(
     CONSTRAINT requrest_id FOREIGN KEY(request_id) REFERENCES usage.requests(id),
     CONSTRAINT locations_pkey PRIMARY KEY (id)
 );
+-- query aliases for the address of a location
+CREATE TABLE geo.location_aliases(
+    id SERIAL,
+    address_alias TEXT UNIQUE,
+    location_id INT,
+    CONSTRAINT location_id FOREIGN KEY(location_id) REFERENCES geo.locations(id),
+    CONSTRAINT location_aliases_pkey PRIMARY KEY (id)
+);
 CREATE TABLE geo.trips(
     id SERIAL,
     duration int NOT NULL,
