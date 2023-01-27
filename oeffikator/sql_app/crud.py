@@ -35,6 +35,19 @@ def get_location_by_address(database: Session, address: str) -> models.Location 
     return database.query(models.Location).filter(models.Location.address == address).first()
 
 
+def get_location_by_id(database: Session, location_id: int) -> models.Location | None:
+    """Get a location by its id
+
+    Args:
+        db (Session): database session
+        location_id (int): the location's id
+
+    Returns:
+        schemas.Location: the queried location
+    """
+    return database.query(models.Location).filter(models.Location.id == location_id).first()
+
+
 def create_location(database: Session, location: schemas.LocationCreate) -> models.Location:
     """Get a location by its location description(/alias)
 
@@ -69,6 +82,25 @@ def create_alias(database: Session, alias: schemas.LocationAliasCreate, location
         schemas.LocationAlias: the created location alias with additional information on id and location_id
     """
     db_item = models.LocationAlias(**alias.dict(), location_id=location_id)
+    database.add(db_item)
+    database.commit()
+    database.refresh(db_item)
+    return db_item
+
+
+def create_trip(database: Session, origin_id: int, destination_id: int, duration: int) -> models.Trip:
+    """Create a trip given its origin and destination id
+
+    Args:
+        origin_id (int): location id of the origin
+        destination_id (int): location id of the destination
+        duration (int): duration of the trip in minutes
+
+    Returns:
+        schemas.LocationAlias: the created location alias with additional information on id and location_id
+    """
+    request = create_request(database=database)
+    db_item = models.Trip(origin_id=origin_id, destination_id=destination_id, duration=duration, request_id=request.id)
     database.add(db_item)
     database.commit()
     database.refresh(db_item)
