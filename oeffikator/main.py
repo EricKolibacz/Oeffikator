@@ -36,39 +36,31 @@ def create_location(location_description: str, database: Session = Depends(get_d
     """
     logger.info("Using origin with following description: %s", location_description)
     db_location = crud.get_location_by_alias(database, location_description)
-    if db_location is not None:
-        # db_location.geom = to_shape(db_location.geom).wkt
-        logger.info("Location is already known:")
-        logger.info("  Address: %s", db_location.address)
-        logger.info("  Coordinates: %s", db_location.geom)
-        return db_location
-    logger.info("Location description not known")
 
-    requested_location = requesters[0].query_location(location_description)
-    location = schemas.LocationCreate(
-        address=requested_location["address"],
-        geom=f"POINT({requested_location['longitude']} {requested_location['latitude']})",
-    )
-    db_location = crud.get_location_by_address(database, location.address)
-    if db_location is not None:
-        # db_location.geom = to_shape(db_location.geom).wkt
-        logger.info("Address of Location is already known:")
-        logger.info("  Address: %s", db_location.address)
-        logger.info("  Coordinates: %s", db_location.geom)
+    if db_location is None:
+        logger.info("Location description not known")
+        requested_location = requesters[0].query_location(location_description)
+        location = schemas.LocationCreate(
+            address=requested_location["address"],
+            geom=f"POINT({requested_location['longitude']} {requested_location['latitude']})",
+        )
+        db_location = crud.get_location_by_address(database, location.address)
+
+        if db_location is None:
+            logger.info("Address of Location not known")
+            logger.info("Saving address")
+            db_location = crud.create_location(database, location)
+        else:
+            logger.info("Address of Location is already known")
+
         logger.info("Saving alias")
         crud.create_alias(database, schemas.LocationAliasCreate(address_alias=location_description), db_location.id)
-        # db_location.geom = to_shape(db_location.geom).wkt
-        return db_location
-    logger.info("Address not known")
+    else:
+        logger.info("Location description is already known")
 
-    logger.info("Saving address")
-    db_location = crud.create_location(database, location)
-    logger.info("Saving alias")
-    crud.create_alias(database, schemas.LocationAliasCreate(address_alias=location_description), db_location.id)
-    # db_location.geom = to_shape(db_location.geom).wkt
-    logger.info("New Location saved:")
-    logger.info("  Address: %s", db_location.address)
-    logger.info("  Coordinates: %s", db_location.geom)
+    logger.info("Returning:")
+    logger.info("  - Address: %s", db_location.address)
+    logger.info("  - Coordinates: %s", db_location.geom)
     return db_location
 
 
