@@ -6,8 +6,8 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     """Settings for the oeffikator container, mainly secrets"""
 
-    db_user: str
-    db_pw: str
+    db_user: str = ""
+    db_pw: str = ""
 
     class Config:
         """Defines the source for the settings"""
