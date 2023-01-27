@@ -12,7 +12,7 @@ def get_location_by_alias(database: Session, alias: str) -> models.Location | No
         alias (str): the location alias (/location description)
 
     Returns:
-        schemas.Location: the queried location
+        models.Location: the queried location
     """
     return (
         database.query(models.Location)
@@ -30,7 +30,7 @@ def get_location_by_address(database: Session, address: str) -> models.Location 
         alias (str): the location's address
 
     Returns:
-        schemas.Location: the queried location
+        models.Location: the queried location
     """
     return database.query(models.Location).filter(models.Location.address == address).first()
 
@@ -43,7 +43,7 @@ def get_location_by_id(database: Session, location_id: int) -> models.Location |
         location_id (int): the location's id
 
     Returns:
-        schemas.Location: the queried location
+        models.Location: the queried location
     """
     return database.query(models.Location).filter(models.Location.id == location_id).first()
 
@@ -56,7 +56,7 @@ def create_location(database: Session, location: schemas.LocationCreate) -> mode
         location (schemas.LocationCreate): an object containing information on the location's address and coordinates
 
     Returns:
-        schemas.Location: the created location with additional information on id and request_id
+        models.Location: the created location with additional information on id and request_id
     """
     db_item = models.Location(address=location.address, request_id=location.request_id)
     # if not set seperately
@@ -78,7 +78,7 @@ def create_alias(database: Session, alias: schemas.LocationAliasCreate, location
         location_id (int): the location id to which the alias connects
 
     Returns:
-        schemas.LocationAlias: the created location alias with additional information on id and location_id
+        models.LocationAlias: the created location alias with additional information on id and location_id
     """
     db_item = models.LocationAlias(**alias.dict(), location_id=location_id)
     database.add(db_item)
@@ -91,12 +91,11 @@ def create_trip(database: Session, trip: schemas.TripCreate) -> models.Trip:
     """Create a trip given its origin and destination id
 
     Args:
-        origin_id (int): location id of the origin
-        destination_id (int): location id of the destination
-        duration (int): duration of the trip in minutes
+        database (Session): the connection to the database
+        trip (TripCreate): information on the trip (without database id yet)
 
     Returns:
-        schemas.LocationAlias: the created location alias with additional information on id and location_id
+        models.Trip: the created trip
     """
     db_item = models.Trip(**trip.dict())
     database.add(db_item)
@@ -112,7 +111,7 @@ def create_request(database: Session) -> models.Request:
         db (Session): database session
 
     Returns:
-        schemas.Request: the request with current date and id
+        models.Request: the request with current date and id
     """
     db_item = models.Request()
     database.add(db_item)
