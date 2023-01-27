@@ -29,6 +29,7 @@ class LocationBase(BaseModel):
 
     address: str
     geom: str
+    request_id: int
 
     class Config:
         """For pydantic configuration"""
@@ -44,7 +45,6 @@ class Location(LocationBase):
     """Pydantic model for adding attributes for reading"""
 
     id: int
-    request_id: int
 
     class Config:
         """For pydantic configuration"""
@@ -78,6 +78,9 @@ class TripBase(BaseModel):
     """Pydantic model to have common attributes while creating or reading data"""
 
     duration: int
+    origin_id: int
+    destination_id: int
+    request_id: int
 
 
 class TripCreate(TripBase):
@@ -88,9 +91,6 @@ class Trip(TripBase):
     """Pydantic model for adding attributes for reading"""
 
     id: int
-    origin_id: int
-    destination_id: int
-    request_id: int
 
     class Config:
         """For pydantic configuration"""

@@ -58,8 +58,7 @@ def create_location(database: Session, location: schemas.LocationCreate) -> mode
     Returns:
         schemas.Location: the created location with additional information on id and request_id
     """
-    request = create_request(database=database)
-    db_item = models.Location(address=location.address, request_id=request.id)
+    db_item = models.Location(address=location.address, request_id=location.request_id)
     # if not set seperately
     # causes some transformation errors between geoalchemy2.elements.wkbeelement and wkt-string
     db_item.geom = location.geom
@@ -88,7 +87,7 @@ def create_alias(database: Session, alias: schemas.LocationAliasCreate, location
     return db_item
 
 
-def create_trip(database: Session, origin_id: int, destination_id: int, duration: int) -> models.Trip:
+def create_trip(database: Session, trip: schemas.TripCreate) -> models.Trip:
     """Create a trip given its origin and destination id
 
     Args:
@@ -99,8 +98,7 @@ def create_trip(database: Session, origin_id: int, destination_id: int, duration
     Returns:
         schemas.LocationAlias: the created location alias with additional information on id and location_id
     """
-    request = create_request(database=database)
-    db_item = models.Trip(origin_id=origin_id, destination_id=destination_id, duration=duration, request_id=request.id)
+    db_item = models.Trip(**trip.dict())
     database.add(db_item)
     database.commit()
     database.refresh(db_item)

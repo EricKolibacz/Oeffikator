@@ -1,11 +1,10 @@
 """Main module of the oeffikator app, providing the actual FastAPI / Uvicorn app."""
-import datetime
-
 from fastapi import Depends, FastAPI, HTTPException, Response
-from shapely import from_wkt
 from sqlalchemy.orm import Session
 
-from . import TRAVELLING_DAYTIME, __version__, logger, requesters
+from oeffikator.requests import request_location, request_trip
+
+from . import __version__, logger
 from .sql_app import crud, models, schemas
 from .sql_app.database import engine, get_db
 
@@ -43,11 +42,7 @@ def create_location(location_description: str, database: Session = Depends(get_d
 
     if db_location is None:
         logger.info("Location description not known")
-        requested_location = requesters[0].query_location(location_description)
-        location = schemas.LocationCreate(
-            address=requested_location["address"],
-            geom=f"POINT({requested_location['longitude']} {requested_location['latitude']})",
-        )
+        location = request_location(location_description, database)
         db_location = crud.get_location_by_address(database, location.address)
 
         if db_location is None:
@@ -107,36 +102,9 @@ def create_trip(origin_id: int, destination_id: int, database: Session = Depends
     logger.info("  - Destination: %s", destination.address)
 
     logger.info("Requesting trip time computation")
-    requested_trip = requesters[0].get_journey(
-        convert_location_to_requesters_dict(origin),
-        convert_location_to_requesters_dict(destination),
-        TRAVELLING_DAYTIME,
-    )
-    duration = (
-        datetime.datetime.combine(
-            TRAVELLING_DAYTIME.date(), datetime.datetime.strptime(requested_trip["arrivalTime"], "%H%M%S").time()
-        )
-        - TRAVELLING_DAYTIME
-    ).total_seconds() / 60
-    logger.info("The trip takes %.2f minutes", duration)
+    requested_trip = request_trip(origin, destination, database)
+    logger.info("The trip takes %.2f minutes", requested_trip.duration)
 
     logger.info("Creating trip")
-    trip = crud.create_trip(database, origin_id, destination_id, duration)
+    trip = crud.create_trip(database, requested_trip)
     return trip
-
-
-def convert_location_to_requesters_dict(location: models.Location) -> dict:
-    """Convert a sqlalchemy-type location to a dict understandable by a requester
-
-    Args:
-        location (models.Location): the location returned by the database
-
-    Returns:
-        dict: understandable location by requesters
-    """
-    location_dict = {}
-    location_dict["address"] = location.address
-    location_dict["latitude"] = from_wkt(location.geom).y
-    location_dict["longitude"] = from_wkt(location.geom).x
-
-    return location_dict
