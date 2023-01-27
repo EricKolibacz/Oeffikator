@@ -26,13 +26,14 @@ async def get_service_status() -> Response:
 
 @app.post("/location/", response_model=schemas.Location | None)
 def create_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
-    """Get trip durations from certain origin
+    """Create a location for a given string. If the location description or the corresponding address is known,
+    no new location is created. Alias for location descriptions are updated.
 
     Args:
-        origin_description (str): description of the trip's starting point
+        origin_description (str): description of the location
 
     Returns:
-        list[schemas.Trip]: trips information (origin, destinations and durations)
+        Location information like address of coordinates
     """
     logger.info("Using origin with following description: %s", location_description)
     db_location = crud.get_location_by_alias(database, location_description)
@@ -51,12 +52,12 @@ def create_location(location_description: str, database: Session = Depends(get_d
             logger.info("Saving address")
             db_location = crud.create_location(database, location)
         else:
-            logger.info("Address of Location is already known")
+            logger.info("Address of Location is already known. No location created.")
 
         logger.info("Saving alias")
         crud.create_alias(database, schemas.LocationAliasCreate(address_alias=location_description), db_location.id)
     else:
-        logger.info("Location description is already known")
+        logger.info("Location description is already known. No location created.")
 
     logger.info("Returning:")
     logger.info("  - Address: %s", db_location.address)
@@ -66,13 +67,13 @@ def create_location(location_description: str, database: Session = Depends(get_d
 
 @app.get("/location/", response_model=schemas.Location | None)
 def get_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
-    """Get trip durations from certain origin
+    """Get location for given description
 
     Args:
-        origin_description (str): description of the trip's starting point
+        origin_description (str): description of the location
 
     Returns:
-        list[schemas.Trip]: trips information (origin, destinations and durations)
+        Location information like address of coordinates
     """
     logger.info("Using origin with following description: %s", location_description)
     db_location = crud.get_location_by_alias(database, location_description)
