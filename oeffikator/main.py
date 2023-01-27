@@ -1,10 +1,12 @@
 """Main module of the oeffikator app, providing the actual FastAPI / Uvicorn app."""
-from fastapi import FastAPI, Response
+from fastapi import Depends, FastAPI, Response
+from sqlalchemy.orm import Session
 
-from oeffikator.db_functionality import get_location, query_trips
+from . import __version__, logger, requesters
+from .sql_app import crud, models, schemas
+from .sql_app.database import engine, get_db
 
-from . import __version__, logger
-
+models.Base.metadata.create_all(bind=engine)
 # create App
 app = FastAPI(
     title="Oeffikator",
@@ -22,21 +24,64 @@ async def get_service_status() -> Response:
     return {"status": "ok", "version": __version__}
 
 
-@app.get("/get_trip_durations/")
-async def get_trip(origin_description: str) -> Response:
+@app.post("/location/", response_model=schemas.Location | None)
+def create_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
     """Get trip durations from certain origin
 
     Args:
         origin_description (str): description of the trip's starting point
 
     Returns:
-        Response: trips information (origin, destinations and durations)
+        list[schemas.Trip]: trips information (origin, destinations and durations)
     """
-    # TODO raise error if origin_description is empty
-    logger.info("Using origin with following description: %s", origin_description)
-    origin = get_location(origin_description)
-    logger.info("We are going to use following location:")
-    logger.info("- address: %s", {origin["address"]})
-    logger.info("- coordiantes: (%s, %s)", {origin["latitude"]}, {origin["longitude"]})
-    trips = query_trips(origin["id"])
-    return {"origin": origin, "trips": trips}
+    logger.info("Using origin with following description: %s", location_description)
+    db_location = crud.get_location_by_alias(database, location_description)
+    if db_location is not None:
+        # db_location.geom = to_shape(db_location.geom).wkt
+        logger.info("Location is already known:")
+        logger.info("  Address: %s", db_location.address)
+        logger.info("  Coordinates: %s", db_location.geom)
+        return db_location
+    logger.info("Location description not known")
+
+    requested_location = requesters[0].query_location(location_description)
+    location = schemas.LocationCreate(
+        address=requested_location["address"],
+        geom=f"POINT({requested_location['longitude']} {requested_location['latitude']})",
+    )
+    db_location = crud.get_location_by_address(database, location.address)
+    if db_location is not None:
+        # db_location.geom = to_shape(db_location.geom).wkt
+        logger.info("Address of Location is already known:")
+        logger.info("  Address: %s", db_location.address)
+        logger.info("  Coordinates: %s", db_location.geom)
+        logger.info("Saving alias")
+        crud.create_alias(database, schemas.LocationAliasCreate(address_alias=location_description), db_location.id)
+        # db_location.geom = to_shape(db_location.geom).wkt
+        return db_location
+    logger.info("Address not known")
+
+    logger.info("Saving address")
+    db_location = crud.create_location(database, location)
+    logger.info("Saving alias")
+    crud.create_alias(database, schemas.LocationAliasCreate(address_alias=location_description), db_location.id)
+    # db_location.geom = to_shape(db_location.geom).wkt
+    logger.info("New Location saved:")
+    logger.info("  Address: %s", db_location.address)
+    logger.info("  Coordinates: %s", db_location.geom)
+    return db_location
+
+
+@app.get("/location/", response_model=schemas.Location | None)
+def get_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
+    """Get trip durations from certain origin
+
+    Args:
+        origin_description (str): description of the trip's starting point
+
+    Returns:
+        list[schemas.Trip]: trips information (origin, destinations and durations)
+    """
+    logger.info("Using origin with following description: %s", location_description)
+    db_location = crud.get_location_by_alias(database, location_description)
+    return db_location
