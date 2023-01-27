@@ -81,12 +81,9 @@ def request_trip(origin: models.Location, destination: models.Location, database
         convert_location_to_requesters_dict(destination),
         TRAVELLING_DAYTIME,
     )
-    duration = (
-        datetime.datetime.combine(
-            TRAVELLING_DAYTIME.date(), datetime.datetime.strptime(requested_trip["arrivalTime"], "%H%M%S").time()
-        )
-        - TRAVELLING_DAYTIME
-    ).total_seconds() / 60
+    arrivale_time = datetime.datetime.strptime(requested_trip["arrivalTime"], "%H%M%S").time()
+    arrivale_time = datetime.datetime.combine(TRAVELLING_DAYTIME.date(), arrivale_time)
+    duration = (arrivale_time - TRAVELLING_DAYTIME).total_seconds() / 60  # in minutes
     request = crud.create_request(database=database)
 
     trip = schemas.TripCreate(
