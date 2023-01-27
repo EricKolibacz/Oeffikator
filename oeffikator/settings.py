@@ -2,6 +2,7 @@
 from pydantic import BaseSettings
 
 
+# pylint: disable=R0903
 class Settings(BaseSettings):
     """Settings for the oeffikator container, mainly secrets"""
 
