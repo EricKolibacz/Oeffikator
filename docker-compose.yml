@@ -8,6 +8,7 @@ services:
       - 8000:8000
     environment:
       - db_name=${OEFFI_DB_NAME}
+      - db_container_name=${OEFFI_DB_CONTAINER_NAME}
     depends_on:
       - oeffikator-db
     secrets:
@@ -28,6 +29,7 @@ services:
     volumes:
       - ./scripts/:/docker-entrypoint-initdb.d/
       - pgdata:/var/lib/postgresql/data:rw
+    container_name: ${OEFFI_DB_CONTAINER_NAME}
 
 secrets:
   db_pw:

@@ -8,7 +8,7 @@ from oeffikator import settings
 
 
 SQLALCHEMY_DATABASE_URL = (
-    f"postgresql+psycopg2://{settings.db_user}:{settings.db_pw}@oeffikator-db:5432/{settings.db_name}"
+    f"postgresql+psycopg2://{settings.db_user}:{settings.db_pw}@{settings.db_container_name}:5432/{settings.db_name}"
 )
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
