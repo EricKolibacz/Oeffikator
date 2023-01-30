@@ -7,7 +7,9 @@ from oeffikator import settings
 # pylint: disable=R0903
 
 
-SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{settings.db_user}:{settings.db_pw}@oeffikator-db:5432/oeffikator"
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql+psycopg2://{settings.db_user}:{settings.db_pw}@oeffikator-db:5432/{settings.db_name}"
+)
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
