@@ -6,6 +6,8 @@ services:
     build: .
     ports:
       - 8000:8000
+    environment:
+      - db_name=${OEFFI_DB_NAME}
     depends_on:
       - oeffikator-db
     secrets:
@@ -19,7 +21,7 @@ services:
     environment:
       POSTGRES_USER_FILE: /run/secrets/db_user
       POSTGRES_PASSWORD_FILE: /run/secrets/db_pw
-      POSTGRES_DB: oeffikator
+      POSTGRES_DB: ${OEFFI_DB_NAME}
     secrets:
       - db_pw
       - db_user
