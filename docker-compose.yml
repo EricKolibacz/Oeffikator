@@ -1,7 +1,7 @@
 version: "3.3"
 
 services:
-  oeffikator:
+  app:
     image: oeffikator
     build: .
     ports:
@@ -10,12 +10,12 @@ services:
       - db_name=${OEFFI_DB_NAME}
       - db_container_name=${OEFFI_DB_CONTAINER_NAME}
     depends_on:
-      - oeffikator-db
+      - db
     secrets:
       - db_pw
       - db_user
 
-  oeffikator-db:
+  db:
     image: postgis/postgis
     ports:
       - "5432:5432"
