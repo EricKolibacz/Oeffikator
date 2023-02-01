@@ -68,3 +68,16 @@ def test_increasing_number_of_requests():
     post_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
 
     assert post_count == initial_count + 1
+
+
+def test_if_location_is_read_from_database_indirectly():
+    """Test whether the oeffikator requests a location (which results in an increased request count)
+    or gets the location from the database"""
+
+    random_string = "".join(random.choice(string.ascii_letters) for i in range(10))
+    client.get_location(random_string)
+    initial_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
+    client.get_location(random_string)
+    post_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
+
+    assert post_count == initial_count
