@@ -95,3 +95,19 @@ def test_indirectly_if_location_is_read_from_database():
     post_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
 
     assert post_count == initial_count
+
+
+def test_indirectly_if_trip_is_read_from_database():
+    """Test whether the oeffikator requests a trip (which results in an increased request count)
+    or gets the trip from the database"""
+    origin_description = "Alexanderplatz 1"
+    destination_description = "Friedrichstr. 50"
+    origin = Location(**client.get_location(origin_description).json())
+    destination = Location(**client.get_location(destination_description).json())
+
+    client.get_trip(origin.id, destination.id)  # trip either requested or read
+    initial_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
+    client.get_trip(origin.id, destination.id)  # trip should be read now --> no. of requests stays the same
+    post_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
+
+    assert post_count == initial_count
