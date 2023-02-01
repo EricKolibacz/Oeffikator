@@ -58,3 +58,16 @@ def test_getting_location():
     respons_location = Location(**response.json())
     assert respons_location.address == expected_location.address
     assert respons_location.geom == expected_location.geom
+
+
+def test_location_alias():
+    """Test whether the oeffikator assigns the same location id to for two locations with alias location descriptions"""
+    location_description = "Alexanderplatz 1"
+    location_description_alias = "Berlin Alexanderplatz 1"
+
+    response = client.get_location(location_description)
+    response_alias = client.get_location(location_description_alias)
+
+    location = Location(**response.json())
+    location_alias = Location(**response_alias.json())
+    assert location.id == location_alias.id
