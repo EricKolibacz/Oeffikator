@@ -1,3 +1,4 @@
+"""Tests on the functionality of the api (and indirectly on the database too)"""
 import random
 import string
 
