@@ -139,3 +139,15 @@ def create_request(database: Session) -> models.Request:
     database.commit()
     database.refresh(db_item)
     return db_item
+
+
+def get_number_of_total_requests(database: Session) -> int:
+    """Get the number of total requests which were sent to requesters so far
+
+    Args:
+        db (Session): database session
+
+    Returns:
+        int: the total number of requests
+    """
+    return database.query(models.Request).count()

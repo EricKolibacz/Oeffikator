@@ -96,3 +96,13 @@ def create_trip(origin_id: int, destination_id: int, database: Session = Depends
         trip = crud.create_trip(database, requested_trip)
 
     return trip
+
+
+@app.get("/total-requests/", status_code=200)
+def get_total_number_of_requests(database: Session = Depends(get_db)) -> Response:
+    """Check how many requests where made up to this point
+
+    Returns:
+        Response: the response to the alive statement with current version
+    """
+    return {"number_of_total_requests": crud.get_number_of_total_requests(database)}
