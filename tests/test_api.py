@@ -100,7 +100,9 @@ def test_increasing_number_of_requests():
     client.get_location(random_string)
     post_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
 
-    assert post_count == initial_count + 1
+    assert (
+        post_count == initial_count + 1
+    ), "maybe random location was already known; either re-run test or re-start test service"
 
 
 def test_indirectly_if_location_is_read_from_database():
