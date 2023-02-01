@@ -51,11 +51,15 @@ def test_location_alias():
     location_description_alias = f"Berlin {LOCATION_1}"
 
     response = client.get_location(location_description)
+    initial_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
     response_alias = client.get_location(location_description_alias)
+    post_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
 
     location = Location(**response.json())
     location_alias = Location(**response_alias.json())
     assert location.id == location_alias.id
+    # just to be sure that no requests were sent for querying the alias
+    assert initial_count == post_count
 
 
 def test_trip():
