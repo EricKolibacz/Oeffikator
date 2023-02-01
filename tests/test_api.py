@@ -38,3 +38,23 @@ def test_creating_location():
     respons_location = Location(**response.json())
     assert respons_location.address == expected_location.address
     assert respons_location.geom == expected_location.geom
+
+
+def test_getting_location():
+    """Test whether the oeffikator can get a location properly
+    (by returning the correct address and coordinates)"""
+    location_description = "Friedrichstr. 50"
+    expected_location = Location(
+        address="10117 Berlin-Mitte, Friedrichstr. 50",
+        geom="POINT (13.390161 52.508788)",
+        id=-1,
+        request_id=-1,
+    )
+    client.post_location(location_description)
+    response = client.get_location(location_description)
+
+    assert response.status_code == 200
+
+    respons_location = Location(**response.json())
+    assert respons_location.address == expected_location.address
+    assert respons_location.geom == expected_location.geom

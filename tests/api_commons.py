@@ -27,3 +27,14 @@ class AppTestClient:
             Response: the location including address, geometry and id
         """
         return requests.post(f"{self.base_url}/location/{location_description}", timeout=5)
+
+    def get_location(self, location_description: str) -> Response:
+        """Get a location from the app
+
+        Args:
+            location_description (str): the description of the location
+
+        Returns:
+            Response: the location including address, geometry and id
+        """
+        return requests.get(f"{self.base_url}/location/{location_description}", timeout=5)
