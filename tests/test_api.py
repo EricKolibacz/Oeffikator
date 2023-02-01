@@ -76,6 +76,20 @@ def test_trip():
     assert trip.duration == expected_trip_duration
 
 
+def test_trip_error_for_wrong_ids():
+    """Test whether the oeffikator returns an error if the origin or destination ids are not known"""
+    origin_description = LOCATION_1
+
+    response = client.get_trip(-1, -1)
+    assert response.status_code == 422
+    assert "origin" in response.json()["detail"] and "not known" in response.json()["detail"]
+
+    origin = Location(**client.get_location(origin_description).json())
+    response = client.get_trip(origin.id, -1)
+    assert response.status_code == 422
+    assert "destination" in response.json()["detail"] and "not known" in response.json()["detail"]
+
+
 def test_increasing_number_of_requests():
     """Test whether the oeffikator count of total number of requests is increasing"""
     initial_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
