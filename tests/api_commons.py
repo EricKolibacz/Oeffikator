@@ -16,3 +16,14 @@ class AppTestClient:
             Response: requests response if the client is alive
         """
         return requests.get(f"{self.base_url}/alive", timeout=5)
+
+    def post_location(self, location_description: str) -> Response:
+        """Post a location to the app
+
+        Args:
+            location_description (str): the description of the location
+
+        Returns:
+            Response: the location including address, geometry and id
+        """
+        return requests.post(f"{self.base_url}/location/{location_description}", timeout=5)
