@@ -8,7 +8,8 @@ from oeffikator.sql_app.schemas import Location, Trip
 from tests.api_commons import AppTestClient
 
 client = AppTestClient("http://0.0.0.0:8001")
-
+LOCATION_1 = "Alexanderplatz 1"
+LOCATION_2 = "Friedrichstr. 50"
 
 # TEST CASES: Basic API tests (how it behaves on different edge cases)
 
@@ -28,7 +29,7 @@ def test_alive():
 def test_getting_location():
     """Test whether the oeffikator can get a location
     (by returning the correct address and coordinates)"""
-    location_description = "Alexanderplatz 1"
+    location_description = LOCATION_1
     expected_location = Location(
         address="10178 Berlin-Mitte, Alexanderplatz 1",
         geom="POINT (13.412904 52.521149)",
@@ -46,8 +47,8 @@ def test_getting_location():
 
 def test_location_alias():
     """Test whether the oeffikator assigns the same location id to for two locations with alias location descriptions"""
-    location_description = "Alexanderplatz 1"
-    location_description_alias = "Berlin Alexanderplatz 1"
+    location_description = LOCATION_1
+    location_description_alias = f"Berlin {LOCATION_1}"
 
     response = client.get_location(location_description)
     response_alias = client.get_location(location_description_alias)
@@ -59,8 +60,8 @@ def test_location_alias():
 
 def test_trip():
     """Test whether the oeffikator gets the trip duration properly"""
-    origin_description = "Alexanderplatz 1"
-    destination_description = "Friedrichstr. 50"
+    origin_description = LOCATION_1
+    destination_description = LOCATION_2
     expected_trip_duration = 15  # in minutes
 
     origin = Location(**client.get_location(origin_description).json())
@@ -100,8 +101,8 @@ def test_indirectly_if_location_is_read_from_database():
 def test_indirectly_if_trip_is_read_from_database():
     """Test whether the oeffikator requests a trip (which results in an increased request count)
     or gets the trip from the database"""
-    origin_description = "Alexanderplatz 1"
-    destination_description = "Friedrichstr. 50"
+    origin_description = LOCATION_1
+    destination_description = LOCATION_2
     origin = Location(**client.get_location(origin_description).json())
     destination = Location(**client.get_location(destination_description).json())
 
