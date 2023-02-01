@@ -26,7 +26,7 @@ async def get_service_status() -> Response:
     return {"status": "ok", "version": __version__}
 
 
-@app.post("/location/", response_model=schemas.Location | None)
+@app.post("/location/{location_description}", response_model=schemas.Location | None)
 def create_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
     """Create a location for a given string. If the location description or the corresponding address is known,
     no new location is created. Alias for location descriptions are updated.
@@ -63,7 +63,7 @@ def create_location(location_description: str, database: Session = Depends(get_d
     return db_location
 
 
-@app.get("/location/", response_model=schemas.Location | None)
+@app.get("/location/{location_description}", response_model=schemas.Location | None)
 def get_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
     """Get location for given description
 
@@ -78,7 +78,7 @@ def get_location(location_description: str, database: Session = Depends(get_db))
     return db_location
 
 
-@app.post("/trip/", response_model=schemas.Trip | None)
+@app.post("/trip/{origin_id}/{destination_id}", response_model=schemas.Trip | None)
 def create_trip(origin_id: int, destination_id: int, database: Session = Depends(get_db)) -> schemas.Trip | None:
     """Get trip duration for a trip from the origin to the destination
 
@@ -89,6 +89,7 @@ def create_trip(origin_id: int, destination_id: int, database: Session = Depends
     Returns:
         a trip with information on the duration, origin and destination
     """
+    # TODO check if the trip is already in the db
     origin = crud.get_location_by_id(database, origin_id)
     if origin is None:
         raise HTTPException(status_code=422, detail=f"The location id of the origin ({origin_id}) is not known")
