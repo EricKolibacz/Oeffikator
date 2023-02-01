@@ -28,6 +28,8 @@ jobs:
         cache: 'poetry'
     - name: Start test docker service
       run: |
+        echo "docker"  > oeffikator_db_user.txt
+        tr -dc A-Za-z0-9 </dev/urandom | head -c 13  > oeffikator_db_pw.txt
         docker compose -f tests/docker-compose.yml up --build -d
     - name: Install dependencies
       run: |
