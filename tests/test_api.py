@@ -39,9 +39,9 @@ def test_getting_location():
 
     assert response.status_code == 200
 
-    respons_location = Location(**response.json())
-    assert respons_location.address == expected_location.address
-    assert respons_location.geom == expected_location.geom
+    response_location = Location(**response.json())
+    assert response_location.address == expected_location.address
+    assert response_location.geom == expected_location.geom
 
 
 def test_location_alias():
