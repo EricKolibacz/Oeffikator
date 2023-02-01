@@ -104,6 +104,27 @@ def create_trip(database: Session, trip: schemas.TripCreate) -> models.Trip:
     return db_item
 
 
+def get_trip(database: Session, origin_id: int, destination_id: int) -> models.Trip:
+    """Get a trip by origin and destination id
+
+    Args:
+        database (Session): the connection to the database
+        origin_id (int): the id of the origin location
+        destination_id (int): the id of the destination location
+
+    Returns:
+        models.Trip: the created trip
+    """
+    return (
+        database.query(models.Trip)
+        .filter(
+            models.Trip.origin_id == origin_id,
+            models.Trip.destination_id == destination_id,
+        )
+        .first()
+    )
+
+
 def create_request(database: Session) -> models.Request:
     """Get a location by its location description(/alias)
 

@@ -73,7 +73,6 @@ def create_trip(origin_id: int, destination_id: int, database: Session = Depends
     Returns:
         a trip with information on the duration, origin and destination
     """
-    # TODO check if the trip is already in the db
     origin = crud.get_location_by_id(database, origin_id)
     if origin is None:
         raise HTTPException(status_code=422, detail=f"The location id of the origin ({origin_id}) is not known")
@@ -86,10 +85,14 @@ def create_trip(origin_id: int, destination_id: int, database: Session = Depends
     logger.info("  - Origin:      %s", origin.address)
     logger.info("  - Destination: %s", destination.address)
 
-    logger.info("Requesting trip time computation")
-    requested_trip = request_trip(origin, destination, database)
-    logger.info("The trip takes %.2f minutes", requested_trip.duration)
+    logger.info("Checking if trip exists in database")
+    trip = crud.get_trip(database, origin_id, destination_id)
+    if trip is not None:
+        logger.info("Trip already in database")
+    else:
+        logger.info("Requesting trip time computation")
+        requested_trip = request_trip(origin, destination, database)
+        logger.info("Creating trip")
+        trip = crud.create_trip(database, requested_trip)
 
-    logger.info("Creating trip")
-    trip = crud.create_trip(database, requested_trip)
     return trip
