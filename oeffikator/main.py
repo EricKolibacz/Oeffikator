@@ -26,10 +26,9 @@ async def get_service_status() -> Response:
     return {"status": "ok", "version": __version__}
 
 
-@app.post("/location/{location_description}", response_model=schemas.Location | None)
-def create_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
-    """Create a location for a given string. If the location description or the corresponding address is known,
-    no new location is created. Alias for location descriptions are updated.
+@app.get("/location/{location_description}", response_model=schemas.Location | None)
+def get_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
+    """Get location for given description. If not known yet, a location will be created.
 
     Args:
         origin_description (str): description of the location
@@ -63,22 +62,7 @@ def create_location(location_description: str, database: Session = Depends(get_d
     return db_location
 
 
-@app.get("/location/{location_description}", response_model=schemas.Location | None)
-def get_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
-    """Get location for given description
-
-    Args:
-        origin_description (str): description of the location
-
-    Returns:
-        Location information like address of coordinates
-    """
-    logger.info("Using origin with following description: %s", location_description)
-    db_location = crud.get_location_by_alias(database, location_description)
-    return db_location
-
-
-@app.post("/trip/{origin_id}/{destination_id}", response_model=schemas.Trip | None)
+@app.get("/trip/{origin_id}/{destination_id}", response_model=schemas.Trip | None)
 def create_trip(origin_id: int, destination_id: int, database: Session = Depends(get_db)) -> schemas.Trip | None:
     """Get trip duration for a trip from the origin to the destination
 
