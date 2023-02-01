@@ -27,3 +27,11 @@ class AppTestClient:
             Response: the location including address, geometry and id
         """
         return requests.get(f"{self.base_url}/location/{location_description}", timeout=5)
+
+    def get_total_number_of_requests(self) -> int:
+        """Get the total number of requests made so far
+
+        Returns:
+            int: the total number of requests
+        """
+        return requests.get(f"{self.base_url}/total-requests/", timeout=5)

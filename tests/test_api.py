@@ -1,3 +1,6 @@
+import random
+import string
+
 import requests.exceptions
 
 from oeffikator.sql_app.schemas import Location
@@ -51,3 +54,16 @@ def test_location_alias():
     location = Location(**response.json())
     location_alias = Location(**response_alias.json())
     assert location.id == location_alias.id
+
+
+def test_increasing_number_of_requests():
+    """Test whether the oeffikator count of total number of requests is increasing"""
+    initial_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
+
+    # create a random string, otherwise the count will not increase after rerunning the test
+    # because the location alias would be already known
+    random_string = "".join(random.choice(string.ascii_letters) for i in range(10))
+    client.get_location(random_string)
+    post_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
+
+    assert post_count == initial_count + 1
