@@ -4,7 +4,7 @@ import string
 
 import requests.exceptions
 
-from oeffikator.sql_app.schemas import Location
+from oeffikator.sql_app.schemas import Location, Trip
 from tests.api_commons import AppTestClient
 
 client = AppTestClient("http://0.0.0.0:8001")
@@ -55,6 +55,20 @@ def test_location_alias():
     location = Location(**response.json())
     location_alias = Location(**response_alias.json())
     assert location.id == location_alias.id
+
+
+def test_trip():
+    """Test whether the oeffikator gets the trip duration properly"""
+    origin_description = "Alexanderplatz 1"
+    destination_description = "Friedrichstr. 50"
+    expected_trip_duration = 15  # in minutes
+
+    origin = Location(**client.get_location(origin_description).json())
+    destination = Location(**client.get_location(destination_description).json())
+    response = client.get_trip(origin.id, destination.id)
+
+    trip = Trip(**response.json())
+    assert trip.duration == expected_trip_duration
 
 
 def test_increasing_number_of_requests():
