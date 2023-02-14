@@ -128,3 +128,25 @@ def test_indirectly_if_trip_is_read_from_database():
     post_count = client.get_total_number_of_requests().json()["number_of_total_requests"]
 
     assert post_count == initial_count
+
+
+def test_get_all_trips():
+    """Test whether it is possible to get all the trips for a given origin id"""
+    origin_description = LOCATION_1
+    destination_description = LOCATION_2
+    origin = Location(**client.get_location(origin_description).json())
+    destination = Location(**client.get_location(destination_description).json())
+
+    trip = Trip(**client.get_trip(origin.id, destination.id).json())
+    trips = [Trip(**trip) for trip in client.get_all_trips(origin.id).json()]
+
+    assert trip in trips
+
+
+def test_get_all_trips_empty():
+    """Test whether it is possible to get all the trips for a origin id for which there should not trips exist"""
+    origin_description = LOCATION_2
+    origin = Location(**client.get_location(origin_description).json())
+    trips = [Trip(**trip) for trip in client.get_all_trips(origin.id).json()]
+
+    assert not trips, f"It seems to exist trips for the location {LOCATION_2} for which no trips should be known"

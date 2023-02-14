@@ -40,6 +40,17 @@ class AppTestClient:
         """
         return requests.get(f"{self.base_url}/trip/{origin_id}/{destination_id}", timeout=5)
 
+    def get_all_trips(self, origin_id: int) -> Response:
+        """Get all trips for a given location id from the app
+
+        Args:
+            origin_id (int): the location id of the origin
+
+        Returns:
+            Response: all trips
+        """
+        return requests.get(f"{self.base_url}/all_trips/{origin_id}", timeout=5)
+
     def get_total_number_of_requests(self) -> int:
         """Get the total number of requests made so far
 
