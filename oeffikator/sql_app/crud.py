@@ -113,7 +113,7 @@ def get_trip(database: Session, origin_id: int, destination_id: int) -> models.T
         destination_id (int): the id of the destination location
 
     Returns:
-        models.Trip: the created trip
+        models.Trip: the trip for the desried origin and destination id
     """
     return (
         database.query(models.Trip)
