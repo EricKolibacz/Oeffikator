@@ -64,7 +64,7 @@ def get_location(location_description: str, database: Session = Depends(get_db))
 
 
 @app.get("/trip/{origin_id}/{destination_id}", response_model=schemas.Trip | None)
-def create_trip(origin_id: int, destination_id: int, database: Session = Depends(get_db)) -> schemas.Trip | None:
+def get_trip(origin_id: int, destination_id: int, database: Session = Depends(get_db)) -> schemas.Trip | None:
     """Get trip duration for a trip from the origin to the destination
 
     Args:
