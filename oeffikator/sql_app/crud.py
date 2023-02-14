@@ -136,7 +136,7 @@ def get_all_trips(database: Session, origin_id: int) -> list[models.Trip]:
         list[models.Trip]: get all trips
     """
     trips = database.query(models.Trip).filter(models.Trip.origin_id == origin_id)
-    return [trip for trip in trips]
+    return list(trips)
 
 
 def create_request(database: Session) -> models.Request:
