@@ -10,6 +10,7 @@ from tests.api_commons import AppTestClient
 client = AppTestClient("http://0.0.0.0:8001")
 LOCATION_1 = "Alexanderplatz 1"
 LOCATION_2 = "Friedrichstr. 50"
+LOCATION_3 = "Unter den Linden 1"
 
 # TEST CASES: Basic API tests (how it behaves on different edge cases)
 
@@ -150,3 +151,20 @@ def test_get_all_trips_empty():
     trips = [Trip(**trip) for trip in client.get_all_trips(origin.id).json()]
 
     assert not trips, f"It seems to exist trips for the location {LOCATION_2} for which no trips should be known"
+
+
+def test_requesting_trips_creation():
+    """Test whether it is possible to request the creation of trips for a given location"""
+    origin_description = LOCATION_3
+    number_of_trips = 1
+
+    origin = Location(**client.request_trips(origin_description, number_of_trips).json())
+    trips = [Trip(**trip) for trip in client.get_all_trips(origin.id).json()]
+
+    assert len(trips) == 1
+
+    client.request_trips(origin_description, number_of_trips).json()
+    client.request_trips(origin_description, number_of_trips).json()
+    trips = [Trip(**trip) for trip in client.get_all_trips(origin.id).json()]
+
+    assert len(trips) == 3
