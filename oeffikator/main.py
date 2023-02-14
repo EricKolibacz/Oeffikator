@@ -99,6 +99,29 @@ def get_trip(origin_id: int, destination_id: int, database: Session = Depends(ge
     return trip
 
 
+@app.get("/all_trips/{origin_id}", response_model=list[schemas.Trip])
+def get_all_trips(origin_id: int, database: Session = Depends(get_db)) -> list[schemas.Trip]:
+    """Get all trip durations for an origin
+
+    Args:
+        origin_id (int): location id of the origin
+
+    Returns:
+        a list of trips with information on the duration, origin and destination
+    """
+    origin = crud.get_location_by_id(database, origin_id)
+    if origin is None:
+        raise HTTPException(status_code=422, detail=f"The location id of the origin ({origin_id}) is not known")
+
+    logger.info("Found follwing addresses:")
+    logger.info("  - Origin:      %s", origin.address)
+
+    logger.info("Getting all known trips")
+    trips = crud.get_all_trips(database, origin_id)
+
+    return trips
+
+
 @app.get("/total-requests/", status_code=200)
 def get_total_number_of_requests(database: Session = Depends(get_db)) -> Response:
     """Check how many requests where made up to this point

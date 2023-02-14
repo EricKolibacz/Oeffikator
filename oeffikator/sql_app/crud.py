@@ -125,6 +125,20 @@ def get_trip(database: Session, origin_id: int, destination_id: int) -> models.T
     )
 
 
+def get_all_trips(database: Session, origin_id: int) -> list[models.Trip]:
+    """Get a all trips by origin id. Note: only trips which are known to the database
+
+    Args:
+        database (Session): the connection to the database
+        origin_id (int): the id of the origin location
+
+    Returns:
+        list[models.Trip]: get all trips
+    """
+    trips = database.query(models.Trip).filter(models.Trip.origin_id == origin_id)
+    return [trip for trip in trips]
+
+
 def create_request(database: Session) -> models.Request:
     """Get a location by its location description(/alias)
 
