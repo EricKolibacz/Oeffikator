@@ -36,6 +36,7 @@ def get_location(location_description: str, database: Session = Depends(get_db))
     Returns:
         Location information like address of coordinates
     """
+    location_description = location_description.lower()
     logger.info("Using origin with following description: %s", location_description)
     db_location = crud.get_location_by_alias(database, location_description)
 
