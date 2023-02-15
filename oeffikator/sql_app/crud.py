@@ -16,12 +16,7 @@ def get_location_by_alias(database: Session, alias: str) -> Location | None:
     Returns:
         Location: the queried location
     """
-    return (
-        database.query(Location)
-        .join(LocationAlias)
-        .filter(LocationAlias.address_alias == alias)
-        .first()
-    )
+    return database.query(Location).join(LocationAlias).filter(LocationAlias.address_alias == alias).first()
 
 
 def get_location_by_address(database: Session, address: str) -> Location | None:
