@@ -78,8 +78,8 @@ class TripBase(BaseModel):
     """Pydantic model to have common attributes while creating or reading data"""
 
     duration: int
-    origin_id: int
-    destination_id: int
+    origin: Location
+    destination: Location
     request_id: int
 
 

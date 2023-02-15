@@ -77,7 +77,9 @@ class Trip(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     duration = Column(Integer, nullable=False)
     origin_id = Column(Integer, ForeignKey("geo.locations.id"))
+    origin = relationship("Location", backref=backref("origin"), foreign_keys=[origin_id])
     destination_id = Column(Integer, ForeignKey("geo.locations.id"))
+    destination = relationship("Location", backref=backref("destination"), foreign_keys=[destination_id])
     request_id = Column(Integer, ForeignKey("usage.requests.id"))
 
     request = relationship("Request", backref=backref("trip"), foreign_keys=[request_id])

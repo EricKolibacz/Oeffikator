@@ -1,5 +1,5 @@
 """The C(reate)R(ead)U(pdate)Delete functions"""
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 
 from . import models, schemas
 
@@ -97,7 +97,12 @@ def create_trip(database: Session, trip: schemas.TripCreate) -> models.Trip:
     Returns:
         models.Trip: the created trip
     """
-    db_item = models.Trip(**trip.dict())
+    db_item = models.Trip(
+        duration=trip.duration,
+        origin_id=trip.origin.id,
+        destination_id=trip.destination.id,
+        request_id=trip.request_id,
+    )
     database.add(db_item)
     database.commit()
     database.refresh(db_item)
@@ -135,7 +140,14 @@ def get_all_trips(database: Session, origin_id: int) -> list[models.Trip]:
     Returns:
         list[models.Trip]: get all trips
     """
-    trips = database.query(models.Trip).filter(models.Trip.origin_id == origin_id)
+    origin = aliased(models.Location)
+    destination = aliased(models.Location)
+    trips = (
+        database.query(models.Trip)
+        .join(origin, models.Trip.origin_id == origin.id)
+        .join(destination, models.Trip.destination_id == destination.id)
+        .filter(models.Trip.origin_id == origin_id)
+    )
     return list(trips)
 
 

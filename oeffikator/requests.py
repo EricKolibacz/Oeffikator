@@ -88,8 +88,8 @@ def request_trip(origin: models.Location, destination: models.Location, database
 
     trip = schemas.TripCreate(
         duration=duration,
-        origin_id=origin.id,
-        destination_id=destination.id,
+        origin=origin,
+        destination=destination,
         request_id=request.id,
     )
 
