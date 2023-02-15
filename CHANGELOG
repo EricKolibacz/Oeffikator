@@ -1,4 +1,8 @@
 # Changelog
+## 1.1.0
+
+* Create visualization service in plotly to display map results
+
 ## 1.0.2
 
 * Update dependency fastapi to ^0.92.0 (Renovate-bot)
