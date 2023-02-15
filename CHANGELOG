@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.7
+
+* Make has_points_remaining check-method for point iterators a abstract class
+* Implement this method for triangular point iterator
+
 ## 0.2.6
 
 * Renovate dependencies (ipython)
