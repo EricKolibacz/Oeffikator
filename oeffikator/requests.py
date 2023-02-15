@@ -61,7 +61,7 @@ def request_location(location_description: str, database: Session) -> schemas.Lo
     return location
 
 
-def request_trip(origin: models.Location, destination: models.Location, database: Session) -> dict:
+def request_trip(origin: models.Location, destination: models.Location, database: Session) -> schemas.TripCreate:
     """A function for querying location address, coordinates, etc. for given description
 
     Args:
@@ -73,7 +73,7 @@ def request_trip(origin: models.Location, destination: models.Location, database
         (most probably because all have reached their request limit)
 
     Returns:
-        dict: information on the location and the corresponding request id
+        schemas.TripCreate: information on the location and the corresponding request id
     """
     requester = get_requester()
     requested_trip = requester.get_journey(
