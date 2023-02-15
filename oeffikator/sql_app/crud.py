@@ -1,8 +1,9 @@
 """The C(reate)R(ead)U(pdate)Delete functions"""
 from sqlalchemy.orm import Session, aliased
 
+from oeffikator.sql_app.models import Location, LocationAlias, Request, Trip
+
 from . import schemas
-from models import Location, Trip, LocationAlias, Request
 
 
 def get_location_by_alias(database: Session, alias: str) -> Location | None:
