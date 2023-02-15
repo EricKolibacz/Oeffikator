@@ -110,7 +110,7 @@ def test_is_iterator_for_triangular_point_iterator():
 def test_has_points_remaining_triangular_point_iterator():
     """Test if the triangular point iterator implements the has_points_remaining() abstract method properly"""
     point_iterator = TriangularPointIterator(STARTING_POINTS)
-    assert point_iterator.has_points_remaining() == True
+    assert point_iterator.has_points_remaining() is True
 
 
 def test_first_point_from_triangular_point_iterator():
