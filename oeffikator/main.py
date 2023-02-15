@@ -1,10 +1,14 @@
 """Main module of the oeffikator app, providing the actual FastAPI / Uvicorn app."""
+import numpy as np
 from fastapi import Depends, FastAPI, HTTPException, Response
+from shapely import from_wkt
 from sqlalchemy.orm import Session
 
+from oeffikator.point_iterator.grid_point_iterator import GridPointIterator
+from oeffikator.point_iterator.triangular_iterator_interface import TriangularPointIterator
 from oeffikator.requests import request_location, request_trip
 
-from . import __version__, logger
+from . import BOUNDING_BOX, __version__, logger
 from .sql_app import crud, models, schemas
 from .sql_app.database import engine, get_db
 
@@ -24,6 +28,48 @@ async def get_service_status() -> Response:
         Response: the response to the alive statement with current version
     """
     return {"status": "ok", "version": __version__}
+
+
+@app.put("/trips/{origin_description}", response_model=list[schemas.Trip])
+def requests_trips(
+    origin_description: str, number_of_trips: int = 1, database: Session = Depends(get_db)
+) -> list[schemas.Trip]:
+    """Requests the creation of a number of trips for a given location
+
+    Args:
+        origin_description (str): description of the location
+        number_of_trips (int): number of requested trips
+
+    Returns:
+        a list of trips with information on the duration, origin and destination
+    """
+    origin = get_location(origin_description, database)
+    known_trips = get_all_trips(origin.id, database)
+    if len(known_trips) < 9:
+        iterator = GridPointIterator(BOUNDING_BOX, points_per_axis=3)
+    else:
+        iterator = TriangularPointIterator(
+            np.array(
+                [
+                    [float(from_wkt(trip.destination.geom).x), float(from_wkt(trip.destination.geom).y)]
+                    for trip in known_trips
+                ],
+            )
+        )
+    new_trips = []
+    while len(new_trips) < number_of_trips and iterator.has_points_remaining():
+        destination_coordiantes = next(iterator)
+        logger.info(
+            "Computing new trip for destination coordinates %f, %f",
+            destination_coordiantes[0],
+            destination_coordiantes[1],
+        )
+        destination = get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
+        if destination.geom not in [trip.destination.geom for trip in known_trips]:
+            new_trip = get_trip(origin.id, destination.id, database)
+            new_trips.append(new_trip)
+
+    return new_trips
 
 
 @app.get("/location/{location_description}", response_model=schemas.Location | None)
