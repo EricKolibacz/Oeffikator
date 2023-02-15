@@ -155,7 +155,7 @@ def test_get_all_trips_empty():
 
 def test_requesting_trips_creation():
     """Test whether it is possible to request the creation of trips for a given location"""
-    origin_description = LOCATION_3
+    origin_description = "".join(random.choice(string.ascii_letters) for i in range(10))
     number_of_trips = 1
 
     origin = Location(**client.request_trips(origin_description, number_of_trips).json())
