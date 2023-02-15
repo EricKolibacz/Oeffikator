@@ -64,3 +64,6 @@ class TriangularPointIterator(PointIteratorInterface):
         second = np.multiply(triangles[:, 1, 0], np.subtract(triangles[:, 2, 1], triangles[:, 0, 1]))
         third = np.multiply(triangles[:, 2, 0], np.subtract(triangles[:, 0, 1], triangles[:, 1, 1]))
         return 0.5 * np.add(np.add(first, second), third)
+
+    def has_points_remaining(self) -> bool:
+        return True
