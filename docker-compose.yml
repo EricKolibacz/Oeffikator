@@ -1,0 +1,41 @@
+version: "3.3"
+
+services:
+  app:
+    image: oeffikator
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      - db_name=${OEFFI_DB_NAME}
+      - db_container_name=${OEFFI_DB_CONTAINER_NAME}
+    depends_on:
+      - db
+    secrets:
+      - db_pw
+      - db_user
+
+  db:
+    image: postgis/postgis
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_pw
+      POSTGRES_DB: ${OEFFI_DB_NAME}
+    secrets:
+      - db_pw
+      - db_user
+    volumes:
+      - ./scripts/:/docker-entrypoint-initdb.d/
+      - pgdata:/var/lib/postgresql/data:rw
+    container_name: ${OEFFI_DB_CONTAINER_NAME}
+
+secrets:
+  db_pw:
+    file: oeffikator_db_pw.txt
+  db_user:
+    file: oeffikator_db_user.txt
+
+volumes:
+  pgdata:
