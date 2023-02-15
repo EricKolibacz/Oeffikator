@@ -62,7 +62,7 @@ class AppTestClient:
             Response: the location itself
         """
         return requests.put(
-            f"{self.base_url}/create_trips/{location_description}",
+            f"{self.base_url}/trips/{location_description}",
             params={"number_of_trips": number_of_trips},
             timeout=5,
         )

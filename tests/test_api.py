@@ -158,7 +158,8 @@ def test_requesting_trips_creation():
     origin_description = "".join(random.choice(string.ascii_letters) for i in range(10))
     number_of_trips = 1
 
-    origin = Location(**client.request_trips(origin_description, number_of_trips).json())
+    origin = Location(**client.get_location(origin_description).json())
+    client.request_trips(origin_description, number_of_trips)
     trips = [Trip(**trip) for trip in client.get_all_trips(origin.id).json()]
 
     assert len(trips) == 1
