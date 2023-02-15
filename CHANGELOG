@@ -1,5 +1,4 @@
 # Changelog
-
 ## 1.0.0
 
 * Introduce oeffikator app and database services (run in docker container)
@@ -7,6 +6,11 @@
 * Introduce api routes for getting locations and tripsVu
 * Introduce independent tests (not covered by pytest-cov yet) and include them into github workflow
   
+## 0.2.7
+
+* Make has_points_remaining check-method for point iterators a abstract class
+* Implement this method for triangular point iterator
+
 ## 0.2.6
 
 * Renovate dependencies (ipython)

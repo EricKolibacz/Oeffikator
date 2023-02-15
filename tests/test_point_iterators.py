@@ -107,6 +107,12 @@ def test_is_iterator_for_triangular_point_iterator():
     iter(TriangularPointIterator(STARTING_POINTS))
 
 
+def test_has_points_remaining_triangular_point_iterator():
+    """Test if the triangular point iterator implements the has_points_remaining() abstract method properly"""
+    point_iterator = TriangularPointIterator(STARTING_POINTS)
+    assert point_iterator.has_points_remaining() is True
+
+
 def test_first_point_from_triangular_point_iterator():
     """Test if the center is computed via the mean"""
     point_should_be = np.mean(STARTING_POINTS, 0)

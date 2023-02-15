@@ -18,3 +18,11 @@ class PointIteratorInterface(ABC):
         Returns:
             list | np.ndarray: the next point in the generator
         """
+
+    @abstractmethod
+    def has_points_remaining(self) -> bool:
+        """Method for determining if an iterator still has points to iterate.
+
+        Returns:
+            bool: answering the question: are there points left?
+        """
