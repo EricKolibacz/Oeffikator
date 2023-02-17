@@ -14,4 +14,5 @@ class Settings(BaseSettings):
     class Config:
         """Defines the source for the settings"""
 
+        env_prefix = "OEFFI_"
         secrets_dir = "/run/secrets"
