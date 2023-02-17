@@ -10,7 +10,8 @@ services:
       - db_name=${OEFFI_DB_NAME}
       - db_container_name=${OEFFI_DB_CONTAINER_NAME}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     secrets:
       - db_pw
       - db_user
@@ -31,6 +32,15 @@ services:
       - ./scripts/:/docker-entrypoint-initdb.d/
       - pgdata:/var/lib/postgresql/data:rw
     container_name: ${OEFFI_DB_CONTAINER_NAME}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $(cat /run/secrets/db_user) -d ${OEFFI_DB_NAME}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
 
   visualization:
     image: visualization

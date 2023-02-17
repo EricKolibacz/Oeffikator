@@ -1,7 +1,11 @@
 # Changelog
+## 1.1.2
+
+* Improve env-variable handling in docker compose (improved coherence)
+
 ## 1.1.1
 
-* Improve env-variable handling in docker compose (improved cohorence)
+* Improve docker compose start up by waiting for db health
 
 ## 1.1.0
 
