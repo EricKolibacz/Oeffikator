@@ -14,6 +14,7 @@ services:
     secrets:
       - db_pw
       - db_user
+    container_name: ${OEFFI_APP_CONTAINER_NAME}
 
   db:
     image: postgis/postgis
