@@ -34,16 +34,16 @@ jobs:
         poetry install
     - name: Reformat code with black
       run: |
-        poetry run black oeffikator/ tests/
+        poetry run black oeffikator/ tests/ visualization/
     - name: Sort imports with isort
       run: |
-        poetry run isort oeffikator/ tests/
+        poetry run isort oeffikator/ tests/ visualization/
     - name: Check Code Sytel with pycodestyle
       run: |
-        poetry run pycodestyle oeffikator/ tests/
+        poetry run pycodestyle oeffikator/ tests/ visualization/
     - name: Lint Code with pylint
       run: |
-        poetry run pylint oeffikator/ tests/
+        poetry run pylint oeffikator/ tests/ visualization/
     - name: Lint jupyter notebooks
       run: |  # black has own jupyter notebook support
         poetry run nbqa isort oeffikator/
