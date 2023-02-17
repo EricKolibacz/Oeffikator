@@ -7,6 +7,7 @@ from visualization.map import get_folium_map
 MAP_ID = "map-id"
 
 app = Dash(__name__)
+server = app.server
 BASE_URL = f"http://{settings.app_container_name}:8000"
 
 print("This is the base url %s,", BASE_URL)
@@ -66,4 +67,6 @@ def render_figure(input_value):
 
 
 if __name__ == "__main__":
-    app.run_server(host="0.0.0.0", port=8080, debug=True)
+    # For Development only, otherwise use uvicorn launch, e.g.
+    # uvicorn visualization.main:app --host 0.0.0.0 --port 8080
+    app.run_server(host="0.0.0.0", port=8081, debug=True)

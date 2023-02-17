@@ -42,6 +42,7 @@ dash = "^2.8.1"
 matplotlib = "^3.7.0"
 folium = "^0.14.0"
 imageio = "^2.25.1"
+gunicorn = "^20.1.0"
 
 [build-system]
 requires = ["poetry-core"]

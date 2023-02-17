@@ -7,6 +7,8 @@ COPY . /tmp/
 RUN poetry build && poetry export -f requirements.txt --output requirements.txt --without-hashes --with visualization
 FROM python:3.11-slim-buster
 WORKDIR /code
+RUN apt update
+RUN apt install gunicorn3 -y
 # install required python packages
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
@@ -18,4 +20,4 @@ COPY .env/ /code
 COPY visualization/ /code/visualization/
 ENV PYTHONPATH "${PYTHONPATH}:/code"
 
-CMD [ "python", "-u", "visualization/main.py" ]
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "visualization.main:server"]
