@@ -14,6 +14,7 @@ services:
     secrets:
       - db_pw
       - db_user
+    container_name: ${OEFFI_APP_CONTAINER_NAME}
 
   db:
     image: postgis/postgis
@@ -30,6 +31,16 @@ services:
       - ./scripts/:/docker-entrypoint-initdb.d/
       - pgdata:/var/lib/postgresql/data:rw
     container_name: ${OEFFI_DB_CONTAINER_NAME}
+
+  visualization:
+    image: visualization
+    build:
+      context: .
+      dockerfile: visualization/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      OEFFI_APP_CONTAINER_NAME: ${OEFFI_APP_CONTAINER_NAME}
 
 secrets:
   db_pw:

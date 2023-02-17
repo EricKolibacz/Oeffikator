@@ -1,4 +1,9 @@
 # Changelog
+## 1.1.0
+
+* Create visualization service in plotly to display map results
+* Using dash and folium to enable an interactive map in browser
+
 ## 1.0.2
 
 * Update dependency fastapi to ^0.92.0 (Renovate-bot)
