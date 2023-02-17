@@ -1,3 +1,4 @@
+"""Module to create the duration heatmap."""
 import io
 
 import matplotlib as plt
@@ -7,16 +8,24 @@ import numpy as np
 import pandas as pd
 from shapely import from_wkt
 
-cdict = {
+COLOR_DICT = {
     "red": ((0.0, 0.0, 0.0), (0.5, 0.0, 0.0), (1.0, 1.0, 1.0)),
     "blue": ((0.0, 0.0, 0.0), (1.0, 0.0, 0.0)),
     "green": ((0.0, 0.0, 1.0), (0.5, 0.0, 0.0), (1.0, 0.0, 0.0)),
 }
-CMAP = mcolors.LinearSegmentedColormap("my_colormap", cdict, 100)
+CMAP = mcolors.LinearSegmentedColormap("my_colormap", COLOR_DICT, 100)
 
 
-def get_heatmap(trip_response: dict):
-    df = pd.DataFrame.from_dict(
+def get_heatmap(trip_response: dict) -> list[io.BytesIO, list[float, float], list[float, float]]:
+    """Create the heatmap for given trips
+
+    Args:
+        trip_response (dict): a list of trips in .json format
+
+    Returns:
+        list[io.BytesIO, list[float, float], list[float, float]]: the overlay image and information on xlim and ylim
+    """
+    trips = pd.DataFrame.from_dict(
         {
             "lon": [from_wkt(trip["destination"]["geom"]).x for trip in trip_response],
             "lat": [from_wkt(trip["destination"]["geom"]).y for trip in trip_response],
@@ -24,18 +33,18 @@ def get_heatmap(trip_response: dict):
         }
     )
 
-    fig, ax = plt.subplots(figsize=(18, 13))
+    fig, axis = plt.subplots(figsize=(18, 13))
     fig.subplots_adjust(0, 0, 1, 1)
     # ax.set_xlim(bounding_box_map[0], bounding_box_map[1])
     # ax.set_ylim(bounding_box_map[2], bounding_box_map[3])
-    ax.set_facecolor((1, 1, 1, 0))
+    axis.set_facecolor((1, 1, 1, 0))
 
     # define the amount of color levels should be there
-    levels = np.linspace(np.min(df["duration"]), np.max(df["duration"]), 60)
-    ax.tricontourf(
-        df["lon"],
-        df["lat"],
-        df["duration"],
+    levels = np.linspace(np.min(trips["duration"]), np.max(trips["duration"]), 60)
+    axis.tricontourf(
+        trips["lon"],
+        trips["lat"],
+        trips["duration"],
         levels=levels,
         alpha=0.5,
         cmap=CMAP,
@@ -57,7 +66,7 @@ def get_heatmap(trip_response: dict):
     buf = io.BytesIO()
     fig.savefig(buf)
     buf.seek(0)
-    return buf, ax.get_xlim(), ax.get_ylim()
+    return buf, axis.get_xlim(), axis.get_ylim()
 
 
 # get_image()

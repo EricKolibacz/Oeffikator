@@ -1,3 +1,4 @@
+"""Main visualization module containing a dash app."""
 import requests
 from dash import Dash, Input, Output, ctx, dcc, exceptions, html
 
@@ -43,20 +44,29 @@ app.layout = html.Div(
     Input(component_id="my-input", component_property="value"),
     Input(component_id="new-points-button", component_property="n_clicks"),
 )
-def update_figure(input_value, _):
-    if input_value is None:
+def update_figure(location_description: str, _) -> list[str, int]:
+    """Updates the figure whenever a new location is entered or the "New points" button is clicked
+
+    Args:
+        location_description (str): _description_
+        _ (int): ignored parameter from button
+
+    Raises:
+        exceptions.PreventUpdate: if the location is not given, the update function should not be called
+
+    Returns:
+        list[str, int]: the intrated frame (html string) as string and the number of trips known for the given location
+    """
+    if location_description is None:
         # PreventUpdate prevents ALL outputs updating
         raise exceptions.PreventUpdate
     if ctx.triggered_id == "new-points-button":
         print("New points, yummy...")
         print("New points, yummy...")
-        requests.put(f"{BASE_URL}/trips/{input_value}", params={"number_of_trips": 5}, timeout=180)
-    return render_figure(input_value)
+        requests.put(f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 5}, timeout=180)
 
-
-def render_figure(input_value):
     print("Rendering figure")
-    response_location = requests.get(f"{BASE_URL}/location/{input_value}", timeout=5).json()
+    response_location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
     print("%s", response_location)
 
     response_trip = requests.get(f"{BASE_URL}/all_trips/{response_location['id']}", timeout=5).json()
