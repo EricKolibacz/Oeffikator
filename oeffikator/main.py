@@ -77,6 +77,17 @@ async def requests_trips(
 async def get_trip_from_coordinates(
     origin: schemas.Location, known_trips: list[schemas.Trip], destination_coordiantes: np.ndarray, database: Session
 ) -> schemas.Trip | None:
+    """Get the trip only given the coordinates of the destination
+
+    Args:
+        origin (schemas.Location): origin of the trip
+        known_trips (list[schemas.Trip]): already known trips
+        destination_coordiantes (np.ndarray): coordinates of the destination
+        database (Session): database
+
+    Returns:
+        schemas.Trip | None: _description_
+    """
     logger.info(
         "Computing new trip for destination coordinates %f, %f",
         destination_coordiantes[0],
