@@ -153,8 +153,15 @@ async def get_trip(origin_id: int, destination_id: int, database: Session = Depe
     else:
         logger.info("Requesting trip time computation")
         requested_trip = await request_trip(origin, destination, database)
-        logger.info("Creating trip")
-        trip = crud.create_trip(database, requested_trip)
+        if requested_trip is not None:
+            logger.info("Creating trip")
+            trip = crud.create_trip(database, requested_trip)
+        else:
+            logger.info("Trip is not available")
+            raise HTTPException(
+                status_code=500,
+                detail="It wasn't possible to successfully request a trip for the given origin -> destination.",
+            )
 
     return trip
 
