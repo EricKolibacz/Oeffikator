@@ -1,5 +1,6 @@
 """Module which combines everything connected to the requesters"""
 import datetime
+import time
 
 from shapely import from_wkt
 from sqlalchemy.orm import Session
@@ -7,6 +8,7 @@ from sqlalchemy.orm import Session
 from oeffikator import TRAVELLING_DAYTIME
 from oeffikator.requesters.requester_interface import RequesterInterface
 
+from . import logger
 from .requesters.bvg_rest_requester import BVGRestRequester
 from .requesters.oeffi_requester import OeffiRequester
 from .sql_app import crud, models, schemas
@@ -31,12 +33,14 @@ def get_requester() -> RequesterInterface:
         RequesterInterface: an available requester
     """
     available_requester = None
-    for requester in REQUESTERS:
-        if not requester.has_reached_request_limit():
-            available_requester = requester
-            break
-    if available_requester is None:
-        raise ModuleNotFoundError("No requester seems to be avialble. Aborting ...")
+    while available_requester is None:
+        for requester in REQUESTERS:
+            if not requester.has_reached_request_limit():
+                available_requester = requester
+                break
+        if available_requester is None:
+            logger.info("No requester seems to be avialble. Waiting a little bit ...")
+            time.sleep(5)
     return requester
 
 
