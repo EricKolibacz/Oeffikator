@@ -1,4 +1,6 @@
 """Main module of the oeffikator app, providing the actual FastAPI / Uvicorn app."""
+import asyncio
+
 import numpy as np
 from fastapi import Depends, FastAPI, HTTPException, Response
 from shapely import from_wkt
@@ -57,21 +59,29 @@ async def requests_trips(
             )
         )
     new_trips = []
-    while len(new_trips) < number_of_trips and iterator.has_points_remaining():
-        destination_coordiantes = next(iterator)
-        logger.info(
-            "Computing new trip for destination coordinates %f, %f",
-            destination_coordiantes[0],
-            destination_coordiantes[1],
-        )
-        destination = await get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
-        if destination.geom not in [trip.destination.geom for trip in known_trips]:
-            try:
-                new_trip = await get_trip(origin.id, destination.id, database)
-            except HTTPException:
-                logger.info("Trip is not computable. Skipping this location.")
-                continue
-            new_trips.append(new_trip)
+    while len(new_trips) < number_of_trips:
+        tasks = []
+        while iterator.has_points_remaining() and len(tasks) + len(new_trips) < number_of_trips:
+            destination_coordiantes = next(iterator)
+            logger.info(
+                "Computing new trip for destination coordinates %f, %f",
+                destination_coordiantes[0],
+                destination_coordiantes[1],
+            )
+            tasks.append(
+                asyncio.ensure_future(
+                    get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
+                )
+            )
+        destinations = await asyncio.gather(*tasks)
+        for destination in destinations:
+            if destination.geom not in [trip.destination.geom for trip in known_trips]:
+                try:
+                    new_trip = await get_trip(origin.id, destination.id, database)
+                except HTTPException:
+                    logger.info("Trip is not computable. Skipping this location.")
+                    continue
+                new_trips.append(new_trip)
 
     return new_trips
 
