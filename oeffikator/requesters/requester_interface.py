@@ -67,7 +67,7 @@ class RequesterInterface(ABC):
         """
         async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
             async with session.get(url, params=params) as response:
-                return await response.json()
+                return await response.json(content_type=None)
 
     async def post(self, url: str, data: str, headers: dict[str, str]) -> dict:
         """Method to for "POST"
@@ -82,7 +82,7 @@ class RequesterInterface(ABC):
         """
         async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
             async with session.post(url, data=data, headers=headers) as response:
-                return await response.json()
+                return await response.json(content_type=None)
 
     def has_reached_request_limit(self) -> bool:
         """Checks if the requester has reached it request limit per minute
