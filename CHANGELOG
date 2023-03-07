@@ -1,4 +1,8 @@
 # Changelog
+## 1.1.4
+
+* Introduce asynchronous querying
+
 ## 1.1.3
 
 * Catch not computable trips (probably start/end location not determinable)
