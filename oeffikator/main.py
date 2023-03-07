@@ -66,7 +66,11 @@ async def requests_trips(
         )
         destination = await get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
         if destination.geom not in [trip.destination.geom for trip in known_trips]:
-            new_trip = await get_trip(origin.id, destination.id, database)
+            try:
+                new_trip = await get_trip(origin.id, destination.id, database)
+            except HTTPException:
+                logger.info("Trip is not computable. Skipping this location.")
+                continue
             new_trips.append(new_trip)
 
     return new_trips
@@ -138,7 +142,7 @@ async def get_trip(origin_id: int, destination_id: int, database: Session = Depe
         logger.info("Trip already in database")
     else:
         logger.info("Requesting trip time computation")
-        requested_trip = await request_trip(origin, destination, database)
+        requested_trip = request_trip(origin, destination, database)
         logger.info("Creating trip")
         trip = crud.create_trip(database, requested_trip)
 
