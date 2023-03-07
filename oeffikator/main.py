@@ -67,10 +67,7 @@ async def requests_trips(
                 asyncio.ensure_future(get_trip_from_coordinates(origin, known_trips, destination_coordiantes, database))
             )
         tmp_trips = await asyncio.gather(*tasks)
-        logger.info(tmp_trips)
         new_trips += [trip for trip in tmp_trips if trip is not None and trip.duration >= 0]
-        logger.info(len(new_trips))
-    logger.info([trip.duration for trip in new_trips])
     return new_trips
 
 
