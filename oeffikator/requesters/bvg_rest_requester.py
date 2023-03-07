@@ -17,6 +17,10 @@ class BVGRestRequester(RequesterInterface):
 
     request_rate = 100
 
+    def __init__(self, url) -> None:
+        super().__init__()
+        self.url = url  # https://v5.bvg.transport.rest/locations
+
     async def query_location(self, query: str, amount_of_results: int = 1) -> dict:
         params = (
             ("query", query),
@@ -25,7 +29,7 @@ class BVGRestRequester(RequesterInterface):
             ("stops", "false"),
             ("poi", "false"),
         )
-        response = await self.get("https://v5.bvg.transport.rest/locations", params=params)
+        response = await self.get(f"{self.url}/locations", params=params)
         self.past_requests.append({"time": datetime.datetime.now()})
         return response[0]
 
@@ -43,7 +47,7 @@ class BVGRestRequester(RequesterInterface):
             ("results", str(amount_of_results)),
             ("stopovers", "true"),
         )
-        response = await self.get("https://v5.bvg.transport.rest/journeys", params=params)
+        response = await self.get(f"{self.url}/journeys", params=params)
         self.past_requests.append({"time": datetime.datetime.now()})
         journey = self.__process_response(response)
         journey["origin"] = {"longitude": origin["longitude"], "latitude": origin["latitude"]}
