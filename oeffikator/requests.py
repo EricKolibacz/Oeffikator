@@ -8,18 +8,10 @@ from sqlalchemy.orm import Session
 from oeffikator import TRAVELLING_DAYTIME
 from oeffikator.requesters.requester_interface import RequesterInterface
 
-from . import logger
+from . import REQUESTERS, logger
 from .requesters.bvg_rest_requester import BVGRestRequester
 from .requesters.oeffi_requester import OeffiRequester
 from .sql_app import crud, models, schemas
-
-requester1 = BVGRestRequester()
-REQUESTERS = [requester1]
-
-AUTHKEY = ""
-if AUTHKEY != "":
-    requester2 = OeffiRequester(AUTHKEY)
-    REQUESTERS.append(requester2)
 
 
 def get_requester() -> RequesterInterface:
