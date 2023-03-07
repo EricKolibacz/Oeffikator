@@ -98,8 +98,6 @@ async def get_trip_from_coordinates(
 
     if destination.geom not in [trip.destination.geom for trip in known_trips]:
         return await get_trip(origin.id, destination.id, database)
-    else:
-        return None
 
 
 @app.get("/location/{location_description}", response_model=schemas.Location | None)
