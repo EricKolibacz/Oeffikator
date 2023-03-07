@@ -1,7 +1,6 @@
 """This module includes the requester class for the BVG."""
 import datetime
 
-from oeffikator.requesters import RESPONSE_TIMEOUT
 from oeffikator.requesters.requester_interface import RequesterInterface
 
 

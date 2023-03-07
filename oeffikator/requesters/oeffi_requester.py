@@ -2,7 +2,6 @@
 import datetime
 import json
 
-from oeffikator.requesters import RESPONSE_TIMEOUT
 from oeffikator.requesters.requester_interface import RequesterInterface
 
 
@@ -33,7 +32,7 @@ class OeffiRequester(RequesterInterface):
         self.__bvg_url = "http://bvg-apps-ext.hafas.de/bin/mgate.exe/mgate.exe"
         self.__key = key
 
-    def query_location(self, query: str, amount_of_results: int = 1) -> dict:
+    async def query_location(self, query: str, amount_of_results: int = 1) -> dict:
         raise NotImplementedError
 
     async def get_journey(
