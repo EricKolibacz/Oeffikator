@@ -56,11 +56,30 @@ class RequesterInterface(ABC):
         """
 
     async def get(self, url: str, params: tuple[tuple[str, str]]) -> dict:
+        """Method to for "GET"
+
+        Args:
+            url (str): the url to call get on
+            params (tuple[tuple[str, str]]): additional parameters
+
+        Returns:
+            dict: get respondse
+        """
         async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
             async with session.get(url, params=params) as response:
                 return await response.json()
 
     async def post(self, url: str, data: str, headers: dict[str, str]) -> dict:
+        """Method to for "POST"
+
+        Args:
+            url (str): the url to call get on
+            data (str): data to post
+            headers (dict[str, str]): required headers
+
+        Returns:
+            dict: post response
+        """
         async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
             async with session.post(url, data=data, headers=headers) as response:
                 return await response.json()
