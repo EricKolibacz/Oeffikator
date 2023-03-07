@@ -61,7 +61,9 @@ async def request_location(location_description: str, database: Session) -> sche
     return location
 
 
-async def request_trip(origin: models.Location, destination: models.Location, database: Session) -> schemas.TripCreate | None:
+async def request_trip(
+    origin: models.Location, destination: models.Location, database: Session
+) -> schemas.TripCreate | None:
     """A function for querying location address, coordinates, etc. for given description
 
     Args:
