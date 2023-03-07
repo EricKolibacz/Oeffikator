@@ -59,31 +59,40 @@ async def requests_trips(
             )
         )
     new_trips = []
-    while len(new_trips) < number_of_trips:
+    while len(new_trips) < number_of_trips and iterator.has_points_remaining():
         tasks = []
         while iterator.has_points_remaining() and len(tasks) + len(new_trips) < number_of_trips:
             destination_coordiantes = next(iterator)
-            logger.info(
-                "Computing new trip for destination coordinates %f, %f",
-                destination_coordiantes[0],
-                destination_coordiantes[1],
-            )
             tasks.append(
-                asyncio.ensure_future(
-                    get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
-                )
+                asyncio.ensure_future(get_trip_from_coordinates(origin, known_trips, destination_coordiantes, database))
             )
-        destinations = await asyncio.gather(*tasks)
-        for destination in destinations:
-            if destination.geom not in [trip.destination.geom for trip in known_trips]:
-                try:
-                    new_trip = await get_trip(origin.id, destination.id, database)
-                except HTTPException:
-                    logger.info("Trip is not computable. Skipping this location.")
-                    continue
-                new_trips.append(new_trip)
-
+        tmp_trips = await asyncio.gather(*tasks)
+        logger.info(tmp_trips)
+        new_trips += [trip for trip in tmp_trips if trip is not None]
+        logger.info(len(new_trips))
+    logger.info([trip.duration for trip in new_trips])
     return new_trips
+
+
+async def get_trip_from_coordinates(
+    origin: schemas.Location, known_trips: list[schemas.Trip], destination_coordiantes: np.ndarray, database: Session
+) -> schemas.Trip | None:
+    logger.info(
+        "Computing new trip for destination coordinates %f, %f",
+        destination_coordiantes[0],
+        destination_coordiantes[1],
+    )
+
+    destination = await get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
+
+    if destination.geom not in [trip.destination.geom for trip in known_trips]:
+        try:
+            new_trip = await get_trip(origin.id, destination.id, database)
+        except HTTPException:
+            logger.info("Trip is not computable. Skipping this location.")
+        else:
+            return new_trip
+    return None
 
 
 @app.get("/location/{location_description}", response_model=schemas.Location | None)
