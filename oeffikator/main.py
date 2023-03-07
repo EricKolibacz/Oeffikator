@@ -1,4 +1,6 @@
 """Main module of the oeffikator app, providing the actual FastAPI / Uvicorn app."""
+import asyncio
+
 import numpy as np
 from fastapi import Depends, FastAPI, HTTPException, Response
 from shapely import from_wkt
@@ -31,7 +33,7 @@ async def get_service_status() -> Response:
 
 
 @app.put("/trips/{origin_description}", response_model=list[schemas.Trip])
-def requests_trips(
+async def requests_trips(
     origin_description: str, number_of_trips: int = 1, database: Session = Depends(get_db)
 ) -> list[schemas.Trip]:
     """Requests the creation of a number of trips for a given location
@@ -43,8 +45,8 @@ def requests_trips(
     Returns:
         a list of trips with information on the duration, origin and destination
     """
-    origin = get_location(origin_description, database)
-    known_trips = get_all_trips(origin.id, database)
+    origin = await get_location(origin_description, database)
+    known_trips = get_all_trips(origin.id, has_invalid_trips=True, database=database)
     if len(known_trips) < 9:
         iterator = GridPointIterator(BOUNDING_BOX, points_per_axis=3)
     else:
@@ -58,26 +60,48 @@ def requests_trips(
         )
     new_trips = []
     while len(new_trips) < number_of_trips and iterator.has_points_remaining():
-        destination_coordiantes = next(iterator)
-        logger.info(
-            "Computing new trip for destination coordinates %f, %f",
-            destination_coordiantes[0],
-            destination_coordiantes[1],
-        )
-        destination = get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
-        if destination.geom not in [trip.destination.geom for trip in known_trips]:
-            try:
-                new_trip = get_trip(origin.id, destination.id, database)
-            except HTTPException:
-                logger.info("Trip is not computable. Skipping this location.")
-                continue
-            new_trips.append(new_trip)
-
+        tasks = []
+        while iterator.has_points_remaining() and len(tasks) + len(new_trips) < number_of_trips:
+            destination_coordiantes = next(iterator)
+            tasks.append(
+                asyncio.ensure_future(get_trip_from_coordinates(origin, known_trips, destination_coordiantes, database))
+            )
+        tmp_trips = await asyncio.gather(*tasks)
+        logger.info(tmp_trips)
+        new_trips += [trip for trip in tmp_trips if trip is not None and trip.duration >= 0]
+        logger.info(len(new_trips))
+    logger.info([trip.duration for trip in new_trips])
     return new_trips
 
 
+async def get_trip_from_coordinates(
+    origin: schemas.Location, known_trips: list[schemas.Trip], destination_coordiantes: np.ndarray, database: Session
+) -> schemas.Trip | None:
+    """Get the trip only given the coordinates of the destination
+
+    Args:
+        origin (schemas.Location): origin of the trip
+        known_trips (list[schemas.Trip]): already known trips
+        destination_coordiantes (np.ndarray): coordinates of the destination
+        database (Session): database
+
+    Returns:
+        schemas.Trip | None: _description_
+    """
+    logger.info(
+        "Computing new trip for destination coordinates %f, %f",
+        destination_coordiantes[0],
+        destination_coordiantes[1],
+    )
+
+    destination = await get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
+
+    if destination.geom not in [trip.destination.geom for trip in known_trips]:
+        return await get_trip(origin.id, destination.id, database)
+
+
 @app.get("/location/{location_description}", response_model=schemas.Location | None)
-def get_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
+async def get_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
     """Get location for given description. If not known yet, a location will be created.
 
     Args:
@@ -92,7 +116,7 @@ def get_location(location_description: str, database: Session = Depends(get_db))
 
     if db_location is None:
         logger.info("Location description not known")
-        location = request_location(location_description, database)
+        location = await request_location(location_description, database)
         db_location = crud.get_location_by_address(database, location.address)
 
         if db_location is None:
@@ -114,7 +138,7 @@ def get_location(location_description: str, database: Session = Depends(get_db))
 
 
 @app.get("/trip/{origin_id}/{destination_id}", response_model=schemas.Trip | None)
-def get_trip(origin_id: int, destination_id: int, database: Session = Depends(get_db)) -> schemas.Trip | None:
+async def get_trip(origin_id: int, destination_id: int, database: Session = Depends(get_db)) -> schemas.Trip | None:
     """Get trip duration for a trip from the origin to the destination
 
     Args:
@@ -142,27 +166,26 @@ def get_trip(origin_id: int, destination_id: int, database: Session = Depends(ge
         logger.info("Trip already in database")
     else:
         logger.info("Requesting trip time computation")
-        requested_trip = request_trip(origin, destination, database)
-        if requested_trip is not None:
-            logger.info("Creating trip")
-            trip = crud.create_trip(database, requested_trip)
-        else:
+        requested_trip = await request_trip(origin, destination, database)
+        if requested_trip.duration == -1:
             logger.info("Trip is not available")
-            raise HTTPException(
-                status_code=500,
-                detail="It wasn't possible to successfully request a trip for the given origin -> destination.",
-            )
+        else:
+            logger.info("Creating trip")
+        trip = crud.create_trip(database, requested_trip)
 
     return trip
 
 
 @app.get("/all_trips/{origin_id}", response_model=list[schemas.Trip])
-def get_all_trips(origin_id: int, database: Session = Depends(get_db)) -> list[schemas.Trip]:
+def get_all_trips(
+    origin_id: int, has_invalid_trips: bool = False, database: Session = Depends(get_db)
+) -> list[schemas.Trip]:
     """Get all trip durations for an origin
 
     Args:
         origin_id (int): location id of the origin
-
+        has_invalid_trips (bool): if trips which we are not able to compute trips to shall be returned too
+                                  the duration of these trips is set to -1
     Returns:
         a list of trips with information on the duration, origin and destination
     """
@@ -174,7 +197,7 @@ def get_all_trips(origin_id: int, database: Session = Depends(get_db)) -> list[s
     logger.info("  - Origin:      %s", origin.address)
 
     logger.info("Getting all known trips")
-    trips = crud.get_all_trips(database, origin_id)
+    trips = crud.get_all_trips(database, origin_id, has_invalid_trips)
 
     return trips
 

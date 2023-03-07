@@ -1,9 +1,6 @@
 """This module includes the requester class for the BVG."""
 import datetime
 
-import requests
-
-from oeffikator.requesters import RESPONSE_TIMEOUT
 from oeffikator.requesters.requester_interface import RequesterInterface
 
 
@@ -20,7 +17,7 @@ class BVGRestRequester(RequesterInterface):
 
     request_rate = 100
 
-    def query_location(self, query: str, amount_of_results: int = 1) -> dict:
+    async def query_location(self, query: str, amount_of_results: int = 1) -> dict:
         params = (
             ("query", query),
             ("results", str(amount_of_results)),
@@ -28,13 +25,13 @@ class BVGRestRequester(RequesterInterface):
             ("stops", "false"),
             ("poi", "false"),
         )
-        response = requests.get(
-            "https://v5.bvg.transport.rest/locations", params=params, timeout=RESPONSE_TIMEOUT
-        ).json()[0]
+        response = await self.get("https://v5.bvg.transport.rest/locations", params=params)
         self.past_requests.append({"time": datetime.datetime.now()})
-        return response
+        return response[0]
 
-    def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int = 1) -> dict:
+    async def get_journey(
+        self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int = 1
+    ) -> dict:
         params = (
             ("from.address", origin["address"]),
             ("from.latitude", origin["latitude"]),
@@ -46,9 +43,7 @@ class BVGRestRequester(RequesterInterface):
             ("results", str(amount_of_results)),
             ("stopovers", "true"),
         )
-        response = requests.get(
-            "https://v5.bvg.transport.rest/journeys", params=params, timeout=RESPONSE_TIMEOUT
-        ).json()
+        response = await self.get("https://v5.bvg.transport.rest/journeys", params=params)
         self.past_requests.append({"time": datetime.datetime.now()})
         journey = self.__process_response(response)
         journey["origin"] = {"longitude": origin["longitude"], "latitude": origin["latitude"]}
@@ -85,5 +80,12 @@ class BVGRestRequester(RequesterInterface):
             }
         except KeyError:
             print("Something went wrong. The response looks like: ", response)
-            return {"arrivalTime": None, "stopovers": None}
+            has_found_no_connection: bool = "msg" in response.keys() and "No connection found" in response["msg"]
+            has_no_station_nearby: bool = "msg" in response.keys() and "no stations found close" in response["msg"]
+            return {
+                "arrivalTime": None,
+                "stopovers": None,
+                "noConnectionFound": has_found_no_connection,
+                "noStationFoundNearby": has_no_station_nearby,
+            }
         return {"arrivalTime": arrival_time, "stopovers": stopsovers}

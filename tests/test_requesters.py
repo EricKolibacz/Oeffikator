@@ -1,4 +1,5 @@
 """Tests related to the requesters."""
+import asyncio
 import datetime
 
 import numpy as np
@@ -13,7 +14,7 @@ def test_query_location_for_bvg_requester():
     """Tests if the bvg rest requester queries the location properly"""
     coordinates_should_be = np.array([52.51627344417692, 13.37766793796735])
     requester = BVGRestRequester()
-    location = requester.query_location("Brandenburger Tor")
+    location = asyncio.run(requester.query_location("Brandenburger Tor"))
     coordinates_is = np.array([location["latitude"], location["longitude"]])
     np.testing.assert_array_almost_equal(coordinates_should_be, coordinates_is, decimal=3)
 
@@ -28,10 +29,10 @@ def test_get_journey_for_bvg_requester():
     date_next_monday = date_today + datetime.timedelta(days=-date_today.weekday(), weeks=1)
 
     requester = BVGRestRequester()
-    origin = requester.query_location("10178 Berlin-Mitte, Alexanderplatz 1")
-    destination = requester.query_location("10557 Berlin-Moabit, Europaplatz 1")
+    origin = asyncio.run(requester.query_location("10178 Berlin-Mitte, Alexanderplatz 1"))
+    destination = asyncio.run(requester.query_location("10557 Berlin-Moabit, Europaplatz 1"))
 
-    journey = requester.get_journey(origin=origin, destination=destination, start_date=date_next_monday)
+    journey = asyncio.run(requester.get_journey(origin=origin, destination=destination, start_date=date_next_monday))
     time_is = (int(journey["arrivalTime"]) - 120000) / 100
 
     assert time_should_be == time_is
@@ -46,9 +47,13 @@ def test_catch_wrong_requests_for_wrong_journey_for_bvg_requester():
         "stopovers": None,
         "origin": {"longitude": origin["longitude"], "latitude": origin["latitude"]},
         "destination": {"longitude": destination["longitude"], "latitude": destination["latitude"]},
+        "noConnectionFound": False,
+        "noStationFoundNearby": False,
     }
     requester = BVGRestRequester()
-    response = requester.get_journey(origin=origin, destination=destination, start_date=datetime.datetime.today())
+    response = asyncio.run(
+        requester.get_journey(origin=origin, destination=destination, start_date=datetime.datetime.today())
+    )
     assert response == excepted_response
 
 
@@ -72,7 +77,7 @@ def test_has_reached_limit_for_requester_interface():
     """Tests if the bvg rest requester queries the location properly"""
     requester = BVGRestRequester()
     assert not requester.has_reached_request_limit()
-    _ = requester.query_location("Brandenburger Tor")
+    _ = asyncio.run(requester.query_location("Brandenburger Tor"))
     requester.request_rate = 0
     assert requester.has_reached_request_limit()
 
@@ -80,7 +85,7 @@ def test_has_reached_limit_for_requester_interface():
 def test_if_requests_are_poped_after_timeout():
     """Tests if the bvg rest requester queries the location properly"""
     requester = BVGRestRequester()
-    _ = requester.query_location("Brandenburger Tor")
+    _ = asyncio.run(requester.query_location("Brandenburger Tor"))
     requester.request_rate = 0
     assert requester.has_reached_request_limit()
     requester.past_requests[0]["time"] = datetime.datetime.now() - datetime.timedelta(seconds=61)

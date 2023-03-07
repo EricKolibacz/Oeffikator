@@ -2,9 +2,6 @@
 import datetime
 import json
 
-import requests
-
-from oeffikator.requesters import RESPONSE_TIMEOUT
 from oeffikator.requesters.requester_interface import RequesterInterface
 
 
@@ -35,15 +32,19 @@ class OeffiRequester(RequesterInterface):
         self.__bvg_url = "http://bvg-apps-ext.hafas.de/bin/mgate.exe/mgate.exe"
         self.__key = key
 
-    def query_location(self, query: str, amount_of_results: int = 1) -> dict:
+    async def query_location(self, query: str, amount_of_results: int = 1) -> dict:
         raise NotImplementedError
 
-    def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int = 1) -> dict:
-        start_lid = self.__get_lid(origin["longitude"], origin["latitude"])
-        dest = self.__get_dest(destination["longitude"], destination["latitude"])
+    async def get_journey(
+        self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int = 1
+    ) -> dict:
+        start_lid = await self.__get_lid(origin["longitude"], origin["latitude"])
+        dest = await self.__get_dest(destination["longitude"], destination["latitude"])
         ext_id = dest[0]
         dest_type = dest[1]
-        resp = self.__request_data(self.__create_json_trip(start_lid, dest_type, ext_id, start_date.strftime("%Y%m%d")))
+        resp = await self.__request_data(
+            self.__create_json_trip(start_lid, dest_type, ext_id, start_date.strftime("%Y%m%d"))
+        )
         try:
             arrival_time = resp["svcResL"][1]["res"]["outConL"][0]["arr"]["aTimeS"]
         except IndexError:
@@ -52,7 +53,7 @@ class OeffiRequester(RequesterInterface):
             return {"origin": origin, "destination": destination, "arrivalTime": None, "stopovers": None}
         return {"origin": origin, "destination": destination, "arrivalTime": arrival_time, "stopovers": None}
 
-    def __request_data(self, json_string: str) -> dict:
+    async def __request_data(self, json_string: str) -> dict:
         """Request data from the API
 
         Args:
@@ -63,11 +64,11 @@ class OeffiRequester(RequesterInterface):
         """
         data = json.loads(json_string)
         headers = {"Content-type": "application/json", "Accept": "text/plain"}
-        response = requests.post(self.__bvg_url, data=json.dumps(data), headers=headers, timeout=RESPONSE_TIMEOUT)
+        response = await self.post(self.__bvg_url, data=json.dumps(data), headers=headers)
         self.past_requests.append({"time": datetime.datetime.now()})
-        return json.loads(response.text)
+        return response
 
-    def __get_dest(self, longitude: float, latitude: float) -> tuple:
+    async def __get_dest(self, longitude: float, latitude: float) -> tuple:
         """Gets the response for a destination query
 
         Args:
@@ -77,12 +78,12 @@ class OeffiRequester(RequesterInterface):
         Returns:
             tuple: response tuple of destination id and type
         """
-        resp = self.__request_data(self.__create_json_geo_loc(longitude, latitude))
+        resp = await self.__request_data(self.__create_json_geo_loc(longitude, latitude))
         ext_id = resp["svcResL"][1]["res"]["locL"][0]["extId"]
         location_type = resp["svcResL"][1]["res"]["locL"][0]["type"]
         return (ext_id, location_type)
 
-    def __get_lid(self, longitude: float, latitude: float) -> dict:
+    async def __get_lid(self, longitude: float, latitude: float) -> dict:
         """Gets the reponse of a lid query
 
         Args:
@@ -92,7 +93,7 @@ class OeffiRequester(RequesterInterface):
         Returns:
             dict: response json
         """
-        resp = self.__request_data(self.__create_json_geo_loc(longitude, latitude))
+        resp = await self.__request_data(self.__create_json_geo_loc(longitude, latitude))
         return resp["svcResL"][1]["res"]["locL"][0]["lid"]
 
     def __create_json_geo_loc(self, longitude: float, latitude: float) -> str:

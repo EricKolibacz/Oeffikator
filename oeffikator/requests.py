@@ -1,5 +1,6 @@
 """Module which combines everything connected to the requesters"""
 import datetime
+import time
 
 from shapely import from_wkt
 from sqlalchemy.orm import Session
@@ -7,6 +8,7 @@ from sqlalchemy.orm import Session
 from oeffikator import TRAVELLING_DAYTIME
 from oeffikator.requesters.requester_interface import RequesterInterface
 
+from . import logger
 from .requesters.bvg_rest_requester import BVGRestRequester
 from .requesters.oeffi_requester import OeffiRequester
 from .sql_app import crud, models, schemas
@@ -31,16 +33,18 @@ def get_requester() -> RequesterInterface:
         RequesterInterface: an available requester
     """
     available_requester = None
-    for requester in REQUESTERS:
-        if not requester.has_reached_request_limit():
-            available_requester = requester
-            break
-    if available_requester is None:
-        raise ModuleNotFoundError("No requester seems to be avialble. Aborting ...")
+    while available_requester is None:
+        for requester in REQUESTERS:
+            if not requester.has_reached_request_limit():
+                available_requester = requester
+                break
+        if available_requester is None:
+            logger.info("No requester seems to be avialble. Waiting a little bit ...")
+            time.sleep(5)
     return requester
 
 
-def request_location(location_description: str, database: Session) -> schemas.LocationCreate:
+async def request_location(location_description: str, database: Session) -> schemas.LocationCreate:
     """A function for querying location address, coordinates, etc. for given description
 
     Args:
@@ -51,7 +55,7 @@ def request_location(location_description: str, database: Session) -> schemas.Lo
         schemas.LocationCreate: information on the location and the corresponding request id
     """
     requester = get_requester()
-    requested_location = requester.query_location(location_description)
+    requested_location = await requester.query_location(location_description)
     request = crud.create_request(database=database)
     location = schemas.LocationCreate(
         address=requested_location["address"],
@@ -61,7 +65,9 @@ def request_location(location_description: str, database: Session) -> schemas.Lo
     return location
 
 
-def request_trip(origin: models.Location, destination: models.Location, database: Session) -> schemas.TripCreate | None:
+async def request_trip(
+    origin: models.Location, destination: models.Location, database: Session
+) -> schemas.TripCreate | None:
     """A function for querying location address, coordinates, etc. for given description
 
     Args:
@@ -76,18 +82,27 @@ def request_trip(origin: models.Location, destination: models.Location, database
         schemas.TripCreate: information on the location and the corresponding request id
     """
     requester = get_requester()
-    requested_trip = requester.get_journey(
+    requested_trip = await requester.get_journey(
         convert_location_to_requesters_dict(origin),
         convert_location_to_requesters_dict(destination),
         TRAVELLING_DAYTIME,
     )
-    if requested_trip["arrivalTime"] is None:  # no trip was found
-        return None
+    request = crud.create_request(database=database)
+
+    if ("noConnectionFound" in requested_trip.keys() and requested_trip["noConnectionFound"]) or (
+        "noStationFoundNearby" in requested_trip.keys() and requested_trip["noStationFoundNearby"]
+    ):  # no connection or no address was found
+        trip = schemas.TripCreate(
+            duration=-1,
+            origin=origin,
+            destination=destination,
+            request_id=request.id,
+        )
+        return trip
 
     arrivale_time = datetime.datetime.strptime(requested_trip["arrivalTime"], "%H%M%S").time()
     arrivale_time = datetime.datetime.combine(TRAVELLING_DAYTIME.date(), arrivale_time)
     duration = (arrivale_time - TRAVELLING_DAYTIME).total_seconds() / 60  # in minutes
-    request = crud.create_request(database=database)
 
     trip = schemas.TripCreate(
         duration=duration,
