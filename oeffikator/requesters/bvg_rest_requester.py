@@ -27,7 +27,6 @@ class BVGRestRequester(RequesterInterface):
         )
         response = await self.get("https://v5.bvg.transport.rest/locations", params=params)
         self.past_requests.append({"time": datetime.datetime.now()})
-        print(response)
         return response[0]
 
     async def get_journey(
