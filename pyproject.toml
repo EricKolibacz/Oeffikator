@@ -22,6 +22,7 @@ sqlalchemy = "^2.0.0"
 geoalchemy2 = "^0.13.1"
 psycopg2-binary = "^2.9.5"
 shapely = "^2.0.0"
+aiohttp = "^3.8.4"
 
 [tool.poetry.group.code_check.dependencies]
 isort = "^5.11.4"
