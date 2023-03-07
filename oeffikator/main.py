@@ -31,7 +31,7 @@ async def get_service_status() -> Response:
 
 
 @app.put("/trips/{origin_description}", response_model=list[schemas.Trip])
-def requests_trips(
+async def requests_trips(
     origin_description: str, number_of_trips: int = 1, database: Session = Depends(get_db)
 ) -> list[schemas.Trip]:
     """Requests the creation of a number of trips for a given location
@@ -43,7 +43,7 @@ def requests_trips(
     Returns:
         a list of trips with information on the duration, origin and destination
     """
-    origin = get_location(origin_description, database)
+    origin = await get_location(origin_description, database)
     known_trips = get_all_trips(origin.id, database)
     if len(known_trips) < 9:
         iterator = GridPointIterator(BOUNDING_BOX, points_per_axis=3)
@@ -64,16 +64,16 @@ def requests_trips(
             destination_coordiantes[0],
             destination_coordiantes[1],
         )
-        destination = get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
+        destination = await get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
         if destination.geom not in [trip.destination.geom for trip in known_trips]:
-            new_trip = get_trip(origin.id, destination.id, database)
+            new_trip = await get_trip(origin.id, destination.id, database)
             new_trips.append(new_trip)
 
     return new_trips
 
 
 @app.get("/location/{location_description}", response_model=schemas.Location | None)
-def get_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
+async def get_location(location_description: str, database: Session = Depends(get_db)) -> schemas.Location:
     """Get location for given description. If not known yet, a location will be created.
 
     Args:
@@ -88,7 +88,7 @@ def get_location(location_description: str, database: Session = Depends(get_db))
 
     if db_location is None:
         logger.info("Location description not known")
-        location = request_location(location_description, database)
+        location = await request_location(location_description, database)
         db_location = crud.get_location_by_address(database, location.address)
 
         if db_location is None:
@@ -110,7 +110,7 @@ def get_location(location_description: str, database: Session = Depends(get_db))
 
 
 @app.get("/trip/{origin_id}/{destination_id}", response_model=schemas.Trip | None)
-def get_trip(origin_id: int, destination_id: int, database: Session = Depends(get_db)) -> schemas.Trip | None:
+async def get_trip(origin_id: int, destination_id: int, database: Session = Depends(get_db)) -> schemas.Trip | None:
     """Get trip duration for a trip from the origin to the destination
 
     Args:
@@ -138,7 +138,7 @@ def get_trip(origin_id: int, destination_id: int, database: Session = Depends(ge
         logger.info("Trip already in database")
     else:
         logger.info("Requesting trip time computation")
-        requested_trip = request_trip(origin, destination, database)
+        requested_trip = await request_trip(origin, destination, database)
         logger.info("Creating trip")
         trip = crud.create_trip(database, requested_trip)
 
