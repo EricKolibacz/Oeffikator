@@ -142,7 +142,7 @@ async def get_trip(origin_id: int, destination_id: int, database: Session = Depe
         logger.info("Trip already in database")
     else:
         logger.info("Requesting trip time computation")
-        requested_trip = request_trip(origin, destination, database)
+        requested_trip = await request_trip(origin, destination, database)
         logger.info("Creating trip")
         trip = crud.create_trip(database, requested_trip)
 
