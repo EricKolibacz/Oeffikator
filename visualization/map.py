@@ -5,6 +5,8 @@ from shapely import from_wkt
 
 from visualization.heatmap import get_heatmap
 
+from . import settings
+
 
 def get_folium_map(trip_response: dict) -> str:
     """Create the map with overlaying image
@@ -23,7 +25,17 @@ def get_folium_map(trip_response: dict) -> str:
     origin_coordinates = [origin_geom.y, origin_geom.x]
 
     # Create a map using Stamen Terrain, centered on study area with set zoom level
-    map_object = Map(location=[52.520008, 13.404954], tiles="Stamen Terrain", zoom_start=12)
+    map_object = Map(
+        location=[from_wkt(trip_response[0]["origin"]["geom"]).y, from_wkt(trip_response[0]["origin"]["geom"]).x],
+        min_lon=settings.bounding_box[0],
+        max_lon=settings.bounding_box[1],
+        min_lat=settings.bounding_box[2],
+        max_lat=settings.bounding_box[3],
+        max_bounds=True,
+        tiles="Stamen Terrain",
+        zoom_start=12,
+        min_zoom=11,
+    )
 
     map_bounds = [[ylim[0], xlim[0]], [ylim[1], xlim[1]]]
     # Overlay raster called img using add_child() function (opacity and bounding box set)
