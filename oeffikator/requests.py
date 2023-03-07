@@ -61,7 +61,7 @@ def request_location(location_description: str, database: Session) -> schemas.Lo
     return location
 
 
-def request_trip(origin: models.Location, destination: models.Location, database: Session) -> schemas.TripCreate:
+def request_trip(origin: models.Location, destination: models.Location, database: Session) -> schemas.TripCreate | None:
     """A function for querying location address, coordinates, etc. for given description
 
     Args:
@@ -81,6 +81,9 @@ def request_trip(origin: models.Location, destination: models.Location, database
         convert_location_to_requesters_dict(destination),
         TRAVELLING_DAYTIME,
     )
+    if requested_trip["arrivalTime"] is None:  # no trip was found
+        return None
+
     arrivale_time = datetime.datetime.strptime(requested_trip["arrivalTime"], "%H%M%S").time()
     arrivale_time = datetime.datetime.combine(TRAVELLING_DAYTIME.date(), arrivale_time)
     duration = (arrivale_time - TRAVELLING_DAYTIME).total_seconds() / 60  # in minutes

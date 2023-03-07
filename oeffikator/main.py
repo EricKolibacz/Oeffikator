@@ -66,7 +66,11 @@ def requests_trips(
         )
         destination = get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
         if destination.geom not in [trip.destination.geom for trip in known_trips]:
-            new_trip = get_trip(origin.id, destination.id, database)
+            try:
+                new_trip = get_trip(origin.id, destination.id, database)
+            except HTTPException:
+                logger.info("Trip is not computable. Skipping this location.")
+                continue
             new_trips.append(new_trip)
 
     return new_trips
@@ -139,8 +143,15 @@ def get_trip(origin_id: int, destination_id: int, database: Session = Depends(ge
     else:
         logger.info("Requesting trip time computation")
         requested_trip = request_trip(origin, destination, database)
-        logger.info("Creating trip")
-        trip = crud.create_trip(database, requested_trip)
+        if requested_trip is not None:
+            logger.info("Creating trip")
+            trip = crud.create_trip(database, requested_trip)
+        else:
+            logger.info("Trip is not available")
+            raise HTTPException(
+                status_code=500,
+                detail="It wasn't possible to successfully request a trip for the given origin -> destination.",
+            )
 
     return trip
 
