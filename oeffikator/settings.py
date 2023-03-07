@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     db_name: str = ""
     db_user: str = ""
     db_pw: str = ""
+    bounding_box: tuple = (12.929257, 13.770260, 52.327450, 52.705182)
 
     class Config:
         """Defines the source for the settings"""

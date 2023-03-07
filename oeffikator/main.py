@@ -10,7 +10,7 @@ from oeffikator.point_iterator.grid_point_iterator import GridPointIterator
 from oeffikator.point_iterator.triangular_iterator_interface import TriangularPointIterator
 from oeffikator.requests import request_location, request_trip
 
-from . import BOUNDING_BOX, __version__, logger
+from . import __version__, logger, settings
 from .sql_app import crud, models, schemas
 from .sql_app.database import engine, get_db
 
@@ -48,7 +48,7 @@ async def requests_trips(
     origin = await get_location(origin_description, database)
     known_trips = get_all_trips(origin.id, has_invalid_trips=True, database=database)
     if len(known_trips) < 9:
-        iterator = GridPointIterator(BOUNDING_BOX, points_per_axis=3)
+        iterator = GridPointIterator(settings.bounding_box, points_per_axis=3)
     else:
         iterator = TriangularPointIterator(
             np.array(
