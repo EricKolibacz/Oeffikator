@@ -80,5 +80,12 @@ class BVGRestRequester(RequesterInterface):
             }
         except KeyError:
             print("Something went wrong. The response looks like: ", response)
-            return {"arrivalTime": None, "stopovers": None}
+            has_found_no_connection: bool = "msg" in response.keys() and "No connection found" in response["msg"]
+            has_no_station_nearby: bool = "msg" in response.keys() and "no stations found close" in response["msg"]
+            return {
+                "arrivalTime": None,
+                "stopovers": None,
+                "noConnectionFound": has_found_no_connection,
+                "noStationFoundNearby": has_no_station_nearby,
+            }
         return {"arrivalTime": arrival_time, "stopovers": stopsovers}

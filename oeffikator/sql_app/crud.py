@@ -127,16 +127,19 @@ def get_trip(database: Session, origin_id: int, destination_id: int) -> Trip:
     )
 
 
-def get_all_trips(database: Session, origin_id: int) -> list[Trip]:
+def get_all_trips(database: Session, origin_id: int, has_invalid_trips: bool = False) -> list[Trip]:
     """Get a all trips by origin id. Note: only trips which are known to the database
 
     Args:
         database (Session): the connection to the database
         origin_id (int): the id of the origin location
+        has_invalid_trips (bool): if trips which we are not able to compute trips to shall be returned too
+                                  the duration of these trips is set to -1
 
     Returns:
         list[Trip]: get all trips
     """
+    min_duration = 0 if not has_invalid_trips else -1
     origin = aliased(Location)
     destination = aliased(Location)
     trips = (
@@ -144,6 +147,7 @@ def get_all_trips(database: Session, origin_id: int) -> list[Trip]:
         .join(origin, Trip.origin_id == origin.id)
         .join(destination, Trip.destination_id == destination.id)
         .filter(Trip.origin_id == origin_id)
+        .filter(Trip.duration >= min_duration)
     )
     return list(trips)
 

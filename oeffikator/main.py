@@ -46,7 +46,7 @@ async def requests_trips(
         a list of trips with information on the duration, origin and destination
     """
     origin = await get_location(origin_description, database)
-    known_trips = get_all_trips(origin.id, database)
+    known_trips = get_all_trips(origin.id, has_invalid_trips=True, database=database)
     if len(known_trips) < 9:
         iterator = GridPointIterator(BOUNDING_BOX, points_per_axis=3)
     else:
@@ -68,7 +68,7 @@ async def requests_trips(
             )
         tmp_trips = await asyncio.gather(*tasks)
         logger.info(tmp_trips)
-        new_trips += [trip for trip in tmp_trips if trip is not None]
+        new_trips += [trip for trip in tmp_trips if trip is not None and trip.duration >= 0]
         logger.info(len(new_trips))
     logger.info([trip.duration for trip in new_trips])
     return new_trips
@@ -97,13 +97,9 @@ async def get_trip_from_coordinates(
     destination = await get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
 
     if destination.geom not in [trip.destination.geom for trip in known_trips]:
-        try:
-            new_trip = await get_trip(origin.id, destination.id, database)
-        except HTTPException:
-            logger.info("Trip is not computable. Skipping this location.")
-        else:
-            return new_trip
-    return None
+        return await get_trip(origin.id, destination.id, database)
+    else:
+        return None
 
 
 @app.get("/location/{location_description}", response_model=schemas.Location | None)
@@ -173,26 +169,25 @@ async def get_trip(origin_id: int, destination_id: int, database: Session = Depe
     else:
         logger.info("Requesting trip time computation")
         requested_trip = await request_trip(origin, destination, database)
-        if requested_trip is not None:
-            logger.info("Creating trip")
-            trip = crud.create_trip(database, requested_trip)
-        else:
+        if requested_trip.duration == -1:
             logger.info("Trip is not available")
-            raise HTTPException(
-                status_code=500,
-                detail="It wasn't possible to successfully request a trip for the given origin -> destination.",
-            )
+        else:
+            logger.info("Creating trip")
+        trip = crud.create_trip(database, requested_trip)
 
     return trip
 
 
 @app.get("/all_trips/{origin_id}", response_model=list[schemas.Trip])
-def get_all_trips(origin_id: int, database: Session = Depends(get_db)) -> list[schemas.Trip]:
+def get_all_trips(
+    origin_id: int, has_invalid_trips: bool = False, database: Session = Depends(get_db)
+) -> list[schemas.Trip]:
     """Get all trip durations for an origin
 
     Args:
         origin_id (int): location id of the origin
-
+        has_invalid_trips (bool): if trips which we are not able to compute trips to shall be returned too
+                                  the duration of these trips is set to -1
     Returns:
         a list of trips with information on the duration, origin and destination
     """
@@ -204,7 +199,7 @@ def get_all_trips(origin_id: int, database: Session = Depends(get_db)) -> list[s
     logger.info("  - Origin:      %s", origin.address)
 
     logger.info("Getting all known trips")
-    trips = crud.get_all_trips(database, origin_id)
+    trips = crud.get_all_trips(database, origin_id, has_invalid_trips)
 
     return trips
 
