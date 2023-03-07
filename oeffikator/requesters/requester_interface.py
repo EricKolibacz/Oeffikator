@@ -2,6 +2,10 @@
 import datetime
 from abc import ABC, abstractmethod
 
+from aiohttp import ClientSession, ClientTimeout
+
+from oeffikator.requesters import RESPONSE_TIMEOUT
+
 
 class RequesterInterface(ABC):
     """This interface defines the basic structure for requesters
@@ -23,7 +27,7 @@ class RequesterInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def query_location(self, query: str, amount_of_results: int) -> dict:
+    async def query_location(self, query: str, amount_of_results: int) -> dict:
         """A method which queries the location given a input string (e.g. 'Brandenburger Tor').
 
         Args:
@@ -38,7 +42,7 @@ class RequesterInterface(ABC):
         """
 
     @abstractmethod
-    def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int) -> dict:
+    async def get_journey(self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int) -> dict:
         """A method which queries the journey trip for a given origin, destination and start date
 
         Args:
@@ -50,6 +54,16 @@ class RequesterInterface(ABC):
         Returns:
             dict: a json with journes information, including most importantly the time, how lang a trip takes
         """
+
+    async def get(self, url: str, params: tuple[tuple[str, str]]) -> dict:
+        async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
+            async with session.get(url, params=params) as response:
+                return await response.json()
+
+    async def post(self, url: str, data: str, headers: dict[str, str]) -> dict:
+        async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
+            async with session.post(url, data=data, headers=headers) as response:
+                return await response.json()
 
     def has_reached_request_limit(self) -> bool:
         """Checks if the requester has reached it request limit per minute
