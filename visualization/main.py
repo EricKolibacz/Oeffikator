@@ -14,7 +14,6 @@ BASE_URL = f"http://{settings.app_container_name}:8000"
 
 print("This is the base url %s,", BASE_URL)
 INITIAL_LOCATION_DESCRIPTION = "Friedrichstr. 50"
-location = requests.get(f"{BASE_URL}/location/{INITIAL_LOCATION_DESCRIPTION}", timeout=5).json()
 
 app.layout = html.Div(
     children=[
@@ -28,7 +27,10 @@ app.layout = html.Div(
                     type="text",
                     debounce=True,
                 ),  # dcc.Store stores the intermediate value
-                dcc.Store(id=STORED_VALUE_ID, data=location),
+                dcc.Store(
+                    id=STORED_VALUE_ID,
+                    data=requests.get(f"{BASE_URL}/location/{INITIAL_LOCATION_DESCRIPTION}", timeout=5).json(),
+                ),
             ]
         ),
         html.Br(),
