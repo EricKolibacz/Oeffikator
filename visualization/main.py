@@ -6,12 +6,15 @@ from visualization import settings
 from visualization.map import get_folium_map
 
 MAP_ID = "map-id"
+STORED_VALUE_ID = "stored-valued-id"
 
 app = Dash(__name__)
 server = app.server
 BASE_URL = f"http://{settings.app_container_name}:8000"
 
 print("This is the base url %s,", BASE_URL)
+INITIAL_LOCATION_DESCRIPTION = "Friedrichstr. 50"
+location = requests.get(f"{BASE_URL}/location/{INITIAL_LOCATION_DESCRIPTION}", timeout=5).json()
 
 app.layout = html.Div(
     children=[
@@ -21,10 +24,11 @@ app.layout = html.Div(
                 "Location Description: ",
                 dcc.Input(
                     id="my-input",
-                    value="Friedrichstr. 50",
+                    value=INITIAL_LOCATION_DESCRIPTION,
                     type="text",
                     debounce=True,
-                ),
+                ),  # dcc.Store stores the intermediate value
+                dcc.Store(id=STORED_VALUE_ID, data=location),
             ]
         ),
         html.Br(),
@@ -41,10 +45,12 @@ app.layout = html.Div(
 @app.callback(
     Output(MAP_ID, "srcDoc"),
     Output(component_id="number-of-points", component_property="children"),
+    Output(STORED_VALUE_ID, "data"),
     Input(component_id="my-input", component_property="value"),
     Input(component_id="new-points-button", component_property="n_clicks"),
+    Input(STORED_VALUE_ID, "data"),
 )
-def update_figure(location_description: str, _) -> list[str, int]:
+def update_figure(location_description: str, _, location) -> list[str, int]:
     """Updates the figure whenever a new location is entered or the "New points" button is clicked
 
     Args:
@@ -61,22 +67,21 @@ def update_figure(location_description: str, _) -> list[str, int]:
         # PreventUpdate prevents ALL outputs updating
         raise exceptions.PreventUpdate
     if ctx.triggered_id == "new-points-button":
-        print("New points, yummy...")
-        print("New points, yummy...")
         requests.put(f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 5}, timeout=180)
 
     print("Rendering figure")
-    response_location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
-    print("%s", response_location)
+    if ctx.triggered_id == "my-input":
+        location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
+        print("Using %s", location)
 
-    response_trip = requests.get(f"{BASE_URL}/all_trips/{response_location['id']}", timeout=5).json()
+    response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
 
     docsrc = get_folium_map(response_trip)
 
-    return docsrc, f"Number of Points: {len(response_trip)}"
+    return docsrc, f"Number of Points: {len(response_trip)}", location
 
 
 if __name__ == "__main__":
     # For Development only, otherwise use uvicorn launch, e.g.
     # uvicorn visualization.main:app --host 0.0.0.0 --port 8080
-    app.run_server(host="0.0.0.0", port=8081, debug=True)
+    app.run_server(host="0.0.0.0", port=8082, debug=True)
