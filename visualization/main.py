@@ -10,6 +10,8 @@ NEW_POINTS_BUTTON_ID = "new-points-button-id"
 MAP_ID = "map-id"
 STORED_VALUE_ID = "stored-valued-id"
 
+NUMBER_OF_NEW_TRIPS = 10
+
 app = Dash(__name__)
 server = app.server
 BASE_URL = f"http://{settings.app_container_name}:8000"
@@ -71,7 +73,9 @@ def update_figure(location_description: str, _, location) -> list[str, int]:
         # PreventUpdate prevents ALL outputs updating
         raise exceptions.PreventUpdate
     if ctx.triggered_id == NEW_POINTS_BUTTON_ID:
-        requests.put(f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 10}, timeout=180)
+        requests.put(
+            f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
+        )
     elif ctx.triggered_id == INPUT_ID:
         location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
         print("Using %s", location)
@@ -79,7 +83,7 @@ def update_figure(location_description: str, _, location) -> list[str, int]:
     response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
     if response_trip == []:
         response_trip = requests.put(
-            f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 10}, timeout=180
+            f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
         ).json()
 
     print("Rendering figure")
