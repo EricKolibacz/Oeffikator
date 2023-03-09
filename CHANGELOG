@@ -1,4 +1,8 @@
 # Changelog
+## 1.1.6
+
+* Improve docker file structure
+
 ## 1.1.5
 
 * Update dependency fastapi to ^0.93.0 (Renovate-bot) 

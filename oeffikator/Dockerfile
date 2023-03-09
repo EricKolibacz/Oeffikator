@@ -14,6 +14,6 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 COPY --from=requirements-stage /tmp/dist /code
 RUN pip install /code/*.whl
 # and now let's get the source code
-COPY ./oeffikator /code/oeffikator
-EXPOSE 8000
+COPY oeffikator/ /code/oeffikator/
+
 CMD ["uvicorn", "oeffikator.main:app", "--host", "0.0.0.0", "--port", "8000"]
