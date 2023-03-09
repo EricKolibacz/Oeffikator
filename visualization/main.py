@@ -48,10 +48,10 @@ app.layout = html.Div(
 
 @app.callback(
     Output(MAP_ID, "srcDoc"),
-    Output(component_id="number-of-points", component_property="children"),
+    Output("number-of-points", "children"),
     Output(STORED_VALUE_ID, "data"),
-    Input(INPUT_ID, component_property="value"),
-    Input(component_id=NEW_POINTS_BUTTON_ID, component_property="n_clicks"),
+    Input(INPUT_ID, "value"),
+    Input(NEW_POINTS_BUTTON_ID, "n_clicks"),
     Input(STORED_VALUE_ID, "data"),
 )
 def update_figure(location_description: str, _, location) -> list[str, int]:
