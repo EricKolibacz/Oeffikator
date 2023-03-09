@@ -5,6 +5,8 @@ from dash import Dash, Input, Output, ctx, dcc, exceptions, html
 from visualization import settings
 from visualization.map import get_folium_map
 
+INPUT_ID = "input-id"
+NEW_POINTS_BUTTON_ID = "new-points-button-id"
 MAP_ID = "map-id"
 STORED_VALUE_ID = "stored-valued-id"
 
@@ -22,7 +24,7 @@ app.layout = html.Div(
             [
                 "Location Description: ",
                 dcc.Input(
-                    id="my-input",
+                    id=INPUT_ID,
                     value=INITIAL_LOCATION_DESCRIPTION,
                     type="text",
                     debounce=True,
@@ -34,7 +36,7 @@ app.layout = html.Div(
             ]
         ),
         html.Br(),
-        html.Button("New Points", id="new-points-button", n_clicks=0),
+        html.Button("New Points", id=NEW_POINTS_BUTTON_ID, n_clicks=0),
         html.Br(),
         html.Br(),
         html.Div("Number of Points:", id="number-of-points"),
@@ -48,8 +50,8 @@ app.layout = html.Div(
     Output(MAP_ID, "srcDoc"),
     Output(component_id="number-of-points", component_property="children"),
     Output(STORED_VALUE_ID, "data"),
-    Input(component_id="my-input", component_property="value"),
-    Input(component_id="new-points-button", component_property="n_clicks"),
+    Input(INPUT_ID, component_property="value"),
+    Input(component_id=NEW_POINTS_BUTTON_ID, component_property="n_clicks"),
     Input(STORED_VALUE_ID, "data"),
 )
 def update_figure(location_description: str, _, location) -> list[str, int]:
@@ -68,11 +70,11 @@ def update_figure(location_description: str, _, location) -> list[str, int]:
     if location_description is None:
         # PreventUpdate prevents ALL outputs updating
         raise exceptions.PreventUpdate
-    if ctx.triggered_id == "new-points-button":
+    if ctx.triggered_id == NEW_POINTS_BUTTON_ID:
         requests.put(f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 5}, timeout=180)
 
     print("Rendering figure")
-    if ctx.triggered_id == "my-input":
+    if ctx.triggered_id == INPUT_ID:
         location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
         print("Using %s", location)
 
