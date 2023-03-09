@@ -1,4 +1,8 @@
 # Changelog
+## 1.1.7
+
+* Improve visualization performance (remove redundant api calls)
+
 ## 1.1.6
 
 * Improve docker file structure
