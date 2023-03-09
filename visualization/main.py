@@ -71,15 +71,18 @@ def update_figure(location_description: str, _, location) -> list[str, int]:
         # PreventUpdate prevents ALL outputs updating
         raise exceptions.PreventUpdate
     if ctx.triggered_id == NEW_POINTS_BUTTON_ID:
-        requests.put(f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 5}, timeout=180)
-
-    print("Rendering figure")
-    if ctx.triggered_id == INPUT_ID:
+        requests.put(f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 10}, timeout=180)
+    elif ctx.triggered_id == INPUT_ID:
         location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
         print("Using %s", location)
 
     response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
+    if response_trip == []:
+        response_trip = requests.put(
+            f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 10}, timeout=180
+        ).json()
 
+    print("Rendering figure")
     docsrc = get_folium_map(response_trip)
 
     return docsrc, f"Number of Points: {len(response_trip)}", location
