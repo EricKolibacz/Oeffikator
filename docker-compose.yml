@@ -3,7 +3,9 @@ version: "3.3"
 services:
   app:
     image: oeffikator
-    build: .
+    build:
+      context: .
+      dockerfile: oeffikator/Dockerfile
     ports:
       - 8000:8000
     environment:
