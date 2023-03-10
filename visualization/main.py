@@ -22,7 +22,7 @@ app.layout = html.Div(
             [
                 dcc.Input(
                     id=INPUT_ID,
-                    value="Friedrichstr. 50",
+                    placeholder="Friedrichstr. 50",
                     type="text",
                     debounce=True,
                     style={"width": 300},
@@ -39,7 +39,7 @@ app.layout = html.Div(
         html.Br(),
         html.Div(
             [
-                html.Iframe(id=MAP_ID, width="80%", height="600vh"),
+                html.Iframe(srcDoc=get_folium_map(None), id=MAP_ID, width="80%", height="600vh"),
             ],
             style={"textAlign": "center"},
         ),
