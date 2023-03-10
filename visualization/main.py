@@ -39,9 +39,9 @@ app.layout = html.Div(
         html.Br(),
         html.Div(
             [
-                html.Iframe(srcDoc=get_folium_map(None), id=MAP_ID, width="80%", height="600vh"),
+                html.Iframe(srcDoc=get_folium_map(None), id=MAP_ID, width="80%", height="100%"),
             ],
-            style={"textAlign": "center"},
+            style={"textAlign": "center", "height": "66vh"},
         ),
         html.Br(),
         html.Br(),
