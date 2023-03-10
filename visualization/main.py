@@ -79,4 +79,4 @@ def update_figure(location_description: str, _) -> list[str, int]:
 if __name__ == "__main__":
     # For Development only, otherwise use uvicorn launch, e.g.
     # uvicorn visualization.main:app --host 0.0.0.0 --port 8080
-    app.run_server(host="0.0.0.0", port=8081, debug=True)
+    app.run_server(host="0.0.0.0", port=8082, debug=True)
