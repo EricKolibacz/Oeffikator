@@ -7,7 +7,7 @@ from visualization.map import get_folium_map
 
 MAP_ID = "map-id"
 
-app = Dash(__name__)
+app = Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
 server = app.server
 BASE_URL = f"http://{settings.app_container_name}:8000"
 
@@ -15,25 +15,40 @@ print("This is the base url %s,", BASE_URL)
 
 app.layout = html.Div(
     children=[
-        html.H1(children="Oeffikator"),
+        html.H1(children="Oeffikator", style={"textAlign": "center"}),
         html.Div(
             [
-                "Location Description: ",
+                "Address: ",
                 dcc.Input(
                     id="my-input",
                     value="Friedrichstr. 50",
                     type="text",
                     debounce=True,
                 ),
-            ]
+            ],
+            style={"textAlign": "center"},
         ),
         html.Br(),
-        html.Button("New Points", id="new-points-button", n_clicks=0),
+        html.Br(),
+        html.Div(
+            [
+                html.Iframe(id=MAP_ID, width="80%", height="600vh"),
+            ],
+            style={"textAlign": "center"},
+        ),
         html.Br(),
         html.Br(),
-        html.Div("Number of Points:", id="number-of-points"),
-        html.Br(),
-        html.Iframe(id=MAP_ID, width=1000, height=500),
+        html.Div(
+            "",
+            id="number-of-points",
+            style={"textAlign": "right", "fontSize": 10},
+        ),
+        html.Button(
+            "More Points",
+            id="new-points-button",
+            n_clicks=0,
+            style={"textAlign": "center"},
+        ),
     ]
 )
 
@@ -73,7 +88,7 @@ def update_figure(location_description: str, _) -> list[str, int]:
 
     docsrc = get_folium_map(response_trip)
 
-    return docsrc, f"Number of Points: {len(response_trip)}"
+    return docsrc, f"{len(response_trip)} Points"
 
 
 if __name__ == "__main__":
