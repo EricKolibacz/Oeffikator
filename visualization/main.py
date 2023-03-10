@@ -6,6 +6,8 @@ from visualization import settings
 from visualization.map import get_folium_map
 
 MAP_ID = "map-id"
+INPUT_ID = "input-id"
+ADDRESS_ID = "address-id"
 
 app = Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
 server = app.server
@@ -18,17 +20,22 @@ app.layout = html.Div(
         html.H1(children="Oeffikator", style={"textAlign": "center"}),
         html.Div(
             [
-                "Address: ",
                 dcc.Input(
-                    id="my-input",
+                    id=INPUT_ID,
                     value="Friedrichstr. 50",
                     type="text",
                     debounce=True,
+                    style={"width": 300},
                 ),
             ],
             style={"textAlign": "center"},
         ),
         html.Br(),
+        html.Div(
+            "",
+            id=ADDRESS_ID,
+            style={"textAlign": "center"},
+        ),
         html.Br(),
         html.Div(
             [
@@ -56,7 +63,8 @@ app.layout = html.Div(
 @app.callback(
     Output(MAP_ID, "srcDoc"),
     Output(component_id="number-of-points", component_property="children"),
-    Input(component_id="my-input", component_property="value"),
+    Output(ADDRESS_ID, "children"),
+    Input(INPUT_ID, component_property="value"),
     Input(component_id="new-points-button", component_property="n_clicks"),
 )
 def update_figure(location_description: str, _) -> list[str, int]:
@@ -88,7 +96,7 @@ def update_figure(location_description: str, _) -> list[str, int]:
 
     docsrc = get_folium_map(response_trip)
 
-    return docsrc, f"{len(response_trip)} Points"
+    return docsrc, f"{len(response_trip)} Points", response_location["address"]
 
 
 if __name__ == "__main__":
