@@ -106,6 +106,7 @@ app.layout = html.Div(
     Output(CONFIRM_ID, "message"),
     Output(STORED_VALUE_ID, "data"),
     Input(INPUT_ID, "value"),
+    prevent_initial_call=True,
 )
 def display_confirm(location_description: str) -> list[bool, str, dict]:
     """Displays the address confirmation window
@@ -134,6 +135,7 @@ def display_confirm(location_description: str) -> list[bool, str, dict]:
     Input(NEW_POINTS_BUTTON_ID, "n_clicks"),
     Input(SLIDER_ID, "value"),
     Input(STORED_VALUE_ID, "data"),
+    prevent_initial_call=True,
 )
 def update_figure(last_submit: int, last_cancel: int, _, opacity: float, location: dict) -> list[str, int]:
     """Updates the figure whenever a new location is entered or the "New points" button is clicked
