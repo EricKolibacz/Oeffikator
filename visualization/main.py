@@ -5,19 +5,24 @@ from dash import Dash, Input, Output, ctx, dcc, exceptions, html
 from visualization import settings
 from visualization.map import get_folium_map
 
-MAP_ID = "map-id"
 INPUT_ID = "input-id"
+NEW_POINTS_BUTTON_ID = "new-points-button-id"
+MAP_ID = "map-id"
 ADDRESS_ID = "address-id"
 SLIDER_DIV_ID = "slider-div-id"
 SLIDER_ID = "silder-id"
 
 INITIAL_SLIDER_VALUE = 0.75
+STORED_VALUE_ID = "stored-valued-id"
+
+NUMBER_OF_NEW_TRIPS = 10
 
 app = Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
 server = app.server
 BASE_URL = f"http://{settings.app_container_name}:8000"
 
 print("This is the base url %s,", BASE_URL)
+INITIAL_LOCATION_DESCRIPTION = "Friedrichstr. 50"
 
 app.layout = html.Div(
     children=[
@@ -30,6 +35,10 @@ app.layout = html.Div(
                     type="text",
                     debounce=True,
                     style={"width": 300},
+                ),  # dcc.Store stores the intermediate value
+                dcc.Store(
+                    id=STORED_VALUE_ID,
+                    data=requests.get(f"{BASE_URL}/location/{INITIAL_LOCATION_DESCRIPTION}", timeout=5).json(),
                 ),
             ],
             style={"textAlign": "center"},
@@ -77,7 +86,7 @@ app.layout = html.Div(
         ),
         html.Button(
             "More Points",
-            id="new-points-button",
+            id=NEW_POINTS_BUTTON_ID,
             n_clicks=0,
             style={"textAlign": "center"},
         ),
@@ -87,19 +96,23 @@ app.layout = html.Div(
 
 @app.callback(
     Output(MAP_ID, "srcDoc"),
-    Output(component_id="number-of-points", component_property="children"),
     Output(ADDRESS_ID, "children"),
+    Output(STORED_VALUE_ID, "data"),
     Output(SLIDER_DIV_ID, "hidden"),
-    Input(INPUT_ID, component_property="value"),
-    Input(component_id="new-points-button", component_property="n_clicks"),
+    Output("number-of-points", "children"),
+    Input(INPUT_ID, "value"),
+    Input(NEW_POINTS_BUTTON_ID, "n_clicks"),
     Input(SLIDER_ID, "value"),
+    Input(STORED_VALUE_ID, "data"),
 )
-def update_figure(location_description: str, _, slider_value: float) -> list[str, int]:
+def update_figure(location_description: str, _, opacity: float, location: dict) -> list[str, int]:
     """Updates the figure whenever a new location is entered or the "New points" button is clicked
 
     Args:
-        location_description (str): _description_
+        location_description (str): the description of the location
         _ (int): ignored parameter from button
+        opacity (float): the opacity of the image on the map (between 0 and 1)
+        location (dict): the stored location
 
     Raises:
         exceptions.PreventUpdate: if the location is not given, the update function should not be called
@@ -110,20 +123,24 @@ def update_figure(location_description: str, _, slider_value: float) -> list[str
     if location_description is None:
         # PreventUpdate prevents ALL outputs updating
         raise exceptions.PreventUpdate
-    if ctx.triggered_id == "new-points-button":
-        print("New points, yummy...")
-        print("New points, yummy...")
-        requests.put(f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 5}, timeout=180)
+    if ctx.triggered_id == NEW_POINTS_BUTTON_ID:
+        requests.put(
+            f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
+        )
+    elif ctx.triggered_id == INPUT_ID:
+        location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
+        print("Using %s", location)
+
+    response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
+    if response_trip == []:
+        response_trip = requests.put(
+            f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
+        ).json()
 
     print("Rendering figure")
-    response_location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
-    print("%s", response_location)
+    docsrc = get_folium_map(response_trip, opacity)
 
-    response_trip = requests.get(f"{BASE_URL}/all_trips/{response_location['id']}", timeout=5).json()
-
-    docsrc = get_folium_map(response_trip, slider_value)
-
-    return docsrc, f"{len(response_trip)} Points", response_location["address"], False
+    return docsrc, location["address"], location, False, f"Number of Points: {len(response_trip)}"
 
 
 if __name__ == "__main__":
