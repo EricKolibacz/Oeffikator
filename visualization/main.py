@@ -1,6 +1,6 @@
 """Main visualization module containing a dash app."""
 import requests
-from dash import Dash, Input, Output, ctx, dcc, exceptions, html
+from dash import Dash, Input, Output, ctx, dcc, html, no_update
 
 from visualization import settings
 from visualization.map import get_folium_map
@@ -11,8 +11,10 @@ MAP_ID = "map-id"
 ADDRESS_ID = "address-id"
 SLIDER_DIV_ID = "slider-div-id"
 SLIDER_ID = "silder-id"
-
 INITIAL_SLIDER_VALUE = 0.75
+CONFIRM_ID = "confirm-id"
+CONFIRM_SUBMITTED_CLICKS_ID = "confirm_submitted_clicks_id"
+SUBMITTED_ADDRESSES = 0
 STORED_VALUE_ID = "stored-valued-id"
 
 NUMBER_OF_NEW_TRIPS = 10
@@ -42,6 +44,11 @@ app.layout = html.Div(
                 ),
             ],
             style={"textAlign": "center"},
+        ),
+        dcc.ConfirmDialog(id=CONFIRM_ID),  # dcc.Store stores the intermediate value
+        dcc.Store(
+            id=CONFIRM_SUBMITTED_CLICKS_ID,
+            data=SUBMITTED_ADDRESSES,
         ),
         html.Br(),
         html.Div(
@@ -95,21 +102,45 @@ app.layout = html.Div(
 
 
 @app.callback(
+    Output(CONFIRM_ID, "displayed"),
+    Output(CONFIRM_ID, "message"),
+    Output(STORED_VALUE_ID, "data"),
+    Input(INPUT_ID, "value"),
+)
+def display_confirm(location_description: str) -> list[bool, str, dict]:
+    """Displays the address confirmation window
+
+    Args:
+        location_description (str): description of the address
+
+    Returns:
+        list[bool, str, dict]: if the message should be displayed, the message of the display
+                               and the location data to be stored
+    """
+    if location_description != "":
+        location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
+        print("Using %s", location)
+        return True, f"We found following address:\n\n{location['address']}\n\nIs this address correct?", location
+    return False, "", None
+
+
+@app.callback(
     Output(MAP_ID, "srcDoc"),
     Output(ADDRESS_ID, "children"),
-    Output(STORED_VALUE_ID, "data"),
     Output(SLIDER_DIV_ID, "hidden"),
     Output("number-of-points", "children"),
-    Input(INPUT_ID, "value"),
+    Input(CONFIRM_ID, "submit_n_clicks_timestamp"),
+    Input(CONFIRM_ID, "cancel_n_clicks_timestamp"),
     Input(NEW_POINTS_BUTTON_ID, "n_clicks"),
     Input(SLIDER_ID, "value"),
     Input(STORED_VALUE_ID, "data"),
 )
-def update_figure(location_description: str, _, opacity: float, location: dict) -> list[str, int]:
+def update_figure(last_submit: int, last_cancel: int, _, opacity: float, location: dict) -> list[str, int]:
     """Updates the figure whenever a new location is entered or the "New points" button is clicked
 
     Args:
-        location_description (str): the description of the location
+        last_submit (int): when the last submit happened
+        last_cancel (int): when the last cancel happened
         _ (int): ignored parameter from button
         opacity (float): the opacity of the image on the map (between 0 and 1)
         location (dict): the stored location
@@ -120,27 +151,30 @@ def update_figure(location_description: str, _, opacity: float, location: dict) 
     Returns:
         list[str, int]: the intrated frame (html string) as string and the number of trips known for the given location
     """
-    if location_description is None:
-        # PreventUpdate prevents ALL outputs updating
-        raise exceptions.PreventUpdate
-    if ctx.triggered_id == NEW_POINTS_BUTTON_ID:
-        requests.put(
-            f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
-        )
-    elif ctx.triggered_id == INPUT_ID:
-        location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
-        print("Using %s", location)
+    if last_cancel is None or last_submit > last_cancel or ctx.triggered_id == NEW_POINTS_BUTTON_ID:
+        if ctx.triggered_id == NEW_POINTS_BUTTON_ID:
+            requests.put(
+                f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
+            )
 
-    response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
-    if response_trip == []:
-        response_trip = requests.put(
-            f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
-        ).json()
+        response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
+        if response_trip == []:
+            response_trip = requests.put(
+                f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
+            ).json()
 
-    print("Rendering figure")
-    docsrc = get_folium_map(response_trip, opacity)
+        print("Rendering figure")
+        docsrc = get_folium_map(response_trip, opacity)
+        is_slider_hidden = False
+        number_of_points = f"Number of Points: {len(response_trip)}"
+    else:
+        print("Address rejected")
+        docsrc = no_update
+        location = no_update
+        is_slider_hidden = no_update
+        number_of_points = no_update
 
-    return docsrc, location["address"], location, False, f"Number of Points: {len(response_trip)}"
+    return docsrc, location["address"], is_slider_hidden, number_of_points
 
 
 if __name__ == "__main__":
