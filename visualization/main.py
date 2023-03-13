@@ -8,6 +8,10 @@ from visualization.map import get_folium_map
 MAP_ID = "map-id"
 INPUT_ID = "input-id"
 ADDRESS_ID = "address-id"
+SLIDER_DIV_ID = "slider-div-id"
+SLIDER_ID = "silder-id"
+
+INITIAL_SLIDER_VALUE = 0.75
 
 app = Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
 server = app.server
@@ -39,11 +43,32 @@ app.layout = html.Div(
         html.Br(),
         html.Div(
             [
-                html.Iframe(srcDoc=get_folium_map(None), id=MAP_ID, width="80%", height="100%"),
+                html.Iframe(srcDoc=get_folium_map(None, INITIAL_SLIDER_VALUE), id=MAP_ID, width="80%", height="100%"),
             ],
             style={"textAlign": "center", "height": "66vh"},
         ),
         html.Br(),
+        html.Div(
+            [
+                dcc.Slider(
+                    0,
+                    1,
+                    0.25,
+                    value=INITIAL_SLIDER_VALUE,
+                    marks={
+                        0: {"label": "0"},
+                        0.25: {"label": "0.25"},
+                        0.5: {"label": "0.5"},
+                        0.75: {"label": "0.75"},
+                        1: {"label": "1"},
+                    },
+                    id=SLIDER_ID,
+                ),
+            ],
+            id=SLIDER_DIV_ID,
+            hidden=True,
+            style={"width": "50%", "padding-left": "25%", "padding-right": "25%"},
+        ),
         html.Br(),
         html.Div(
             "",
@@ -64,10 +89,12 @@ app.layout = html.Div(
     Output(MAP_ID, "srcDoc"),
     Output(component_id="number-of-points", component_property="children"),
     Output(ADDRESS_ID, "children"),
+    Output(SLIDER_DIV_ID, "hidden"),
     Input(INPUT_ID, component_property="value"),
     Input(component_id="new-points-button", component_property="n_clicks"),
+    Input(SLIDER_ID, "value"),
 )
-def update_figure(location_description: str, _) -> list[str, int]:
+def update_figure(location_description: str, _, slider_value: float) -> list[str, int]:
     """Updates the figure whenever a new location is entered or the "New points" button is clicked
 
     Args:
@@ -94,9 +121,9 @@ def update_figure(location_description: str, _) -> list[str, int]:
 
     response_trip = requests.get(f"{BASE_URL}/all_trips/{response_location['id']}", timeout=5).json()
 
-    docsrc = get_folium_map(response_trip)
+    docsrc = get_folium_map(response_trip, slider_value)
 
-    return docsrc, f"{len(response_trip)} Points", response_location["address"]
+    return docsrc, f"{len(response_trip)} Points", response_location["address"], False
 
 
 if __name__ == "__main__":

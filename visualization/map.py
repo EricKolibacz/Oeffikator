@@ -6,11 +6,12 @@ from shapely import from_wkt
 from visualization.heatmap import get_heatmap
 
 
-def get_folium_map(trip_response: dict) -> str:
+def get_folium_map(trip_response: dict, slider_value: float) -> str:
     """Create the map with overlaying image
 
     Args:
         trip_response (dict): a list of trips in .json format
+        slider_value (float): the opacity of the image on the map
 
     Returns:
         str: html file as string
@@ -27,6 +28,6 @@ def get_folium_map(trip_response: dict) -> str:
 
         map_bounds = [[ylim[0], xlim[0]], [ylim[1], xlim[1]]]
         # Overlay raster called img using add_child() function (opacity and bounding box set)
-        map_object.add_child(raster_layers.ImageOverlay(img, opacity=0.8, bounds=map_bounds))
+        map_object.add_child(raster_layers.ImageOverlay(img, opacity=slider_value, bounds=map_bounds))
         Marker(origin_coordinates, popup=origin["address"], tooltip="Click me").add_to(map_object)
     return map_object.get_root().render()
