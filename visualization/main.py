@@ -61,7 +61,7 @@ app.layout = html.Div(
         html.Br(),
         html.Div(
             [
-                html.Iframe(srcDoc=get_folium_map(None, INITIAL_SLIDER_VALUE), id=MAP_ID, width="80%", height="100%"),
+                html.Iframe(srcDoc=get_folium_map(None, INITIAL_SLIDER_VALUE), id=MAP_ID, width="50%", height="100%"),
             ],
             style={"textAlign": "center", "height": "66vh"},
         ),
