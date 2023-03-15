@@ -67,7 +67,15 @@ async def get_trips(origin_description: str, number_of_trips: int, database: Ses
     origin = await get_location(origin_description, database)
     known_trips = get_all_trips(origin.id, has_invalid_trips=True, database=database)
     if len(known_trips) < 9:
-        iterator = GridPointIterator(settings.bounding_box, points_per_axis=3)
+        iterator = GridPointIterator(
+            (
+                settings.max_west,
+                settings.max_east,
+                settings.max_south,
+                settings.max_north,
+            ),
+            points_per_axis=3,
+        )
     else:
         iterator = TriangularPointIterator(
             np.array(

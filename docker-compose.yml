@@ -11,6 +11,10 @@ services:
     environment:
       OEFFI_DB_NAME: ${OEFFI_DB_NAME}
       OEFFI_DB_CONTAINER_NAME: ${OEFFI_DB_CONTAINER_NAME}
+      OEFFI_MAX_WEST: ${OEFFI_MAX_WEST}
+      OEFFI_MAX_EAST: ${OEFFI_MAX_EAST}
+      OEFFI_MAX_SOUTH: ${OEFFI_MAX_SOUTH}
+      OEFFI_MAX_NORTH: ${OEFFI_MAX_NORTH}
     depends_on:
       db:
         condition: service_healthy
@@ -53,6 +57,10 @@ services:
       - "8080:8080"
     environment:
       OEFFI_APP_CONTAINER_NAME: ${OEFFI_APP_CONTAINER_NAME}
+      OEFFI_MAX_WEST: ${OEFFI_MAX_WEST}
+      OEFFI_MAX_EAST: ${OEFFI_MAX_EAST}
+      OEFFI_MAX_SOUTH: ${OEFFI_MAX_SOUTH}
+      OEFFI_MAX_NORTH: ${OEFFI_MAX_NORTH}
     depends_on:
       - app
 

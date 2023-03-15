@@ -10,7 +10,10 @@ class Settings(BaseSettings):
     db_name: str = ""
     db_user: str = ""
     db_pw: str = ""
-    bounding_box: tuple = (12.929257, 13.770260, 52.327450, 52.705182)
+    max_west: float = 13.243
+    max_east: float = 13.51
+    max_south: float = 52.44
+    max_north: float = 52.567
 
     class Config:
         """Defines the source for the settings"""

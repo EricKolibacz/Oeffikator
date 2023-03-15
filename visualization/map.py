@@ -27,14 +27,14 @@ def get_folium_map(trip_response: dict) -> str:
     # Create a map using Stamen Terrain, centered on study area with set zoom level
     map_object = Map(
         location=[from_wkt(trip_response[0]["origin"]["geom"]).y, from_wkt(trip_response[0]["origin"]["geom"]).x],
-        min_lon=settings.bounding_box[0],
-        max_lon=settings.bounding_box[1],
-        min_lat=settings.bounding_box[2],
-        max_lat=settings.bounding_box[3],
+        min_lon=settings.max_west,
+        max_lon=settings.max_east,
+        min_lat=settings.max_south,
+        max_lat=settings.max_north,
         max_bounds=True,
         tiles="Stamen Terrain",
-        zoom_start=12,
-        min_zoom=11,
+        zoom_start=13,
+        min_zoom=13,
     )
 
     map_bounds = [[ylim[0], xlim[0]], [ylim[1], xlim[1]]]
