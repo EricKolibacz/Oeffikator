@@ -28,6 +28,3 @@ if AUTHKEY != "":
 TRAVELLING_DAYTIME = datetime.datetime.today().replace(hour=12, minute=0, second=0) + datetime.timedelta(days=1)
 while TRAVELLING_DAYTIME.weekday() != 0:
     TRAVELLING_DAYTIME += datetime.timedelta(1)
-
-
-BOUNDING_BOX = (13.2756, 13.4892, 52.4677, 52.5532)

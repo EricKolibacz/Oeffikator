@@ -1,4 +1,13 @@
 # Changelog
+
+## 1.1.10
+
+* Update dependencies (fastapi, imageio, matplotlib, pylint, pytest, scikit-learn, scipy, sqlalchmey)
+
+## 1.1.9
+
+* Change renovate bots behavior to create one PR for all dependencies
+
 ## 1.1.8
 
 * Improve visualization performance (remove redundant api calls)

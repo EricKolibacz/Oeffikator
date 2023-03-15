@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "oeffikator"
-version = "1.1.8"
+version = "1.1.10"
 description = "A visualisation tool for commuting times on public transport"
 authors = ["Eric Kolibacz <e.kolibacz@yahoo.de>"]
 license = "GNU GPLv3"
@@ -16,7 +16,7 @@ geopy = "^2.3.0"
 nest-asyncio = "^1.5.6"
 jupyter = "^1.0.0"
 scikit-learn = "^1.2.0"
-fastapi = "^0.93.0"
+fastapi = "^0.94.0"
 uvicorn = "^0.21.0"
 sqlalchemy = "^2.0.0"
 geoalchemy2 = "^0.13.1"

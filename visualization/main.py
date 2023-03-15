@@ -16,6 +16,8 @@ CONFIRM_ID = "confirm-id"
 CONFIRM_SUBMITTED_CLICKS_ID = "confirm_submitted_clicks_id"
 SUBMITTED_ADDRESSES = 0
 STORED_VALUE_ID = "stored-valued-id"
+INTERVAL_ID = "interval-id"
+NUMBER_OF_NEW_TRIPS = 32
 
 NUMBER_OF_NEW_TRIPS = 10
 
@@ -97,8 +99,40 @@ app.layout = html.Div(
             n_clicks=0,
             style={"textAlign": "center"},
         ),
+        dcc.Interval(id=INTERVAL_ID, interval=10 * 1000, n_intervals=3),
     ]
 )
+
+
+@app.callback(
+    Output(MAP_ID, "srcDoc"),
+    Output("number-of-points", "children"),
+    Input(INTERVAL_ID, "n_intervals"),
+    Input(STORED_VALUE_ID, "data"),
+    Input("number-of-points", "children"),
+    Input(SLIDER_ID, "value"),
+)
+def update_figure(n_intervals: int, location: dict, no_of_points: str, opacity: float) -> str:
+    """Periodically update the figure
+
+    Args:
+        n_intervals (int): number of updates done already
+        location (dict): current display location
+        no_of_points (str): Displaying the number of points
+        opacity (float): the opacity of the image on the map (between 0 and 1)
+
+    Returns:
+        str: docstring of the iFrame
+    """
+    if n_intervals < 3 or ctx.triggered_id == SLIDER_ID:
+        response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
+        if response_trip != []:
+            docsrc = get_folium_map(response_trip, opacity)
+            return (
+                docsrc,
+                f"Number of Points: {len(response_trip)}",
+            )
+    return no_update, no_of_points
 
 
 @app.callback(
@@ -126,25 +160,22 @@ def display_confirm(location_description: str) -> list[bool, str, dict]:
 
 
 @app.callback(
-    Output(MAP_ID, "srcDoc"),
     Output(ADDRESS_ID, "children"),
     Output(SLIDER_DIV_ID, "hidden"),
-    Output("number-of-points", "children"),
+    Output(INTERVAL_ID, "n_intervals"),
     Input(CONFIRM_ID, "submit_n_clicks_timestamp"),
     Input(CONFIRM_ID, "cancel_n_clicks_timestamp"),
     Input(NEW_POINTS_BUTTON_ID, "n_clicks"),
-    Input(SLIDER_ID, "value"),
     Input(STORED_VALUE_ID, "data"),
     prevent_initial_call=True,
 )
-def update_figure(last_submit: int, last_cancel: int, _, opacity: float, location: dict) -> list[str, int]:
+def get_location(last_submit: int, last_cancel: int, _, location: dict) -> list[str, int]:
     """Updates the figure whenever a new location is entered or the "New points" button is clicked
 
     Args:
         last_submit (int): when the last submit happened
         last_cancel (int): when the last cancel happened
         _ (int): ignored parameter from button
-        opacity (float): the opacity of the image on the map (between 0 and 1)
         location (dict): the stored location
 
     Raises:
@@ -153,30 +184,27 @@ def update_figure(last_submit: int, last_cancel: int, _, opacity: float, locatio
     Returns:
         list[str, int]: the intrated frame (html string) as string and the number of trips known for the given location
     """
-    if last_cancel is None or last_submit > last_cancel or ctx.triggered_id == NEW_POINTS_BUTTON_ID:
-        if ctx.triggered_id == NEW_POINTS_BUTTON_ID:
-            requests.put(
-                f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
-            )
-
+    location_address = no_update
+    is_hidden_slider = no_update
+    n_intervals = no_update
+    print(last_cancel, last_submit)
+    if ctx.triggered_id == NEW_POINTS_BUTTON_ID:
+        requests.put(
+            f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
+        )
+        n_intervals = 0
+    elif last_cancel is None or last_submit > last_cancel:
         response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
         if response_trip == []:
-            response_trip = requests.put(
+            requests.put(f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": 9}, timeout=180).json()
+            requests.put(
                 f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
             ).json()
+        is_hidden_slider = False
+        n_intervals = 0
+        location_address = location["address"]
 
-        print("Rendering figure")
-        docsrc = get_folium_map(response_trip, opacity)
-        is_slider_hidden = False
-        number_of_points = f"Number of Points: {len(response_trip)}"
-    else:
-        print("Address rejected")
-        docsrc = no_update
-        location = no_update
-        is_slider_hidden = no_update
-        number_of_points = no_update
-
-    return docsrc, location["address"], is_slider_hidden, number_of_points
+    return location_address, is_hidden_slider, n_intervals
 
 
 if __name__ == "__main__":
