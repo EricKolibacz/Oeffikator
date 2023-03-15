@@ -1,6 +1,6 @@
 """Main visualization module containing a dash app."""
 import requests
-from dash import Dash, Input, Output, ctx, dcc, exceptions, html
+from dash import Dash, Input, Output, ctx, dcc, exceptions, html, no_update
 
 from visualization import settings
 from visualization.map import get_folium_map
@@ -9,8 +9,8 @@ INPUT_ID = "input-id"
 NEW_POINTS_BUTTON_ID = "new-points-button-id"
 MAP_ID = "map-id"
 STORED_VALUE_ID = "stored-valued-id"
-
-NUMBER_OF_NEW_TRIPS = 10
+INTERVAL_ID = "interval-id"
+NUMBER_OF_NEW_TRIPS = 32
 
 app = Dash(__name__)
 server = app.server
@@ -44,19 +44,43 @@ app.layout = html.Div(
         html.Div("Number of Points:", id="number-of-points"),
         html.Br(),
         html.Iframe(id=MAP_ID, width=1000, height=500),
+        dcc.Interval(id=INTERVAL_ID, interval=10 * 1000, n_intervals=3),
     ]
 )
 
 
 @app.callback(
     Output(MAP_ID, "srcDoc"),
+    Input(INTERVAL_ID, "n_intervals"),
+    Input(STORED_VALUE_ID, "data"),
+)
+def update_figure(n_intervals: int, location: dict) -> str:
+    """Periodically update the figure
+
+    Args:
+        n_intervals (int): number of updates done already
+        location (dict): current display location
+
+    Returns:
+        str: docstring of the iFrame
+    """
+    if n_intervals < 3:
+        response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
+        if response_trip != []:
+            docsrc = get_folium_map(response_trip)
+            return docsrc
+    return no_update
+
+
+@app.callback(
     Output("number-of-points", "children"),
     Output(STORED_VALUE_ID, "data"),
+    Output(INTERVAL_ID, "n_intervals"),
     Input(INPUT_ID, "value"),
     Input(NEW_POINTS_BUTTON_ID, "n_clicks"),
     Input(STORED_VALUE_ID, "data"),
 )
-def update_figure(location_description: str, _, location) -> list[str, int]:
+def get_location(location_description: str, _, location) -> list[str, int]:
     """Updates the figure whenever a new location is entered or the "New points" button is clicked
 
     Args:
@@ -82,14 +106,12 @@ def update_figure(location_description: str, _, location) -> list[str, int]:
 
     response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
     if response_trip == []:
-        response_trip = requests.put(
+        requests.put(f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 9}, timeout=180).json()
+        requests.put(
             f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
         ).json()
 
-    print("Rendering figure")
-    docsrc = get_folium_map(response_trip)
-
-    return docsrc, f"Number of Points: {len(response_trip)}", location
+    return f"Number of Points: {len(response_trip)}", location, 0
 
 
 if __name__ == "__main__":
