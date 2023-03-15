@@ -51,15 +51,18 @@ app.layout = html.Div(
 
 @app.callback(
     Output(MAP_ID, "srcDoc"),
+    Output("number-of-points", "children"),
     Input(INTERVAL_ID, "n_intervals"),
     Input(STORED_VALUE_ID, "data"),
+    Input("number-of-points", "children"),
 )
-def update_figure(n_intervals: int, location: dict) -> str:
+def update_figure(n_intervals: int, location: dict, no_of_points: str) -> str:
     """Periodically update the figure
 
     Args:
         n_intervals (int): number of updates done already
         location (dict): current display location
+        no_of_points (str): Displaying the number of points
 
     Returns:
         str: docstring of the iFrame
@@ -68,12 +71,14 @@ def update_figure(n_intervals: int, location: dict) -> str:
         response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
         if response_trip != []:
             docsrc = get_folium_map(response_trip)
-            return docsrc
-    return no_update
+            return (
+                docsrc,
+                f"Number of Points: {len(response_trip)}",
+            )
+    return no_update, no_of_points
 
 
 @app.callback(
-    Output("number-of-points", "children"),
     Output(STORED_VALUE_ID, "data"),
     Output(INTERVAL_ID, "n_intervals"),
     Input(INPUT_ID, "value"),
@@ -111,7 +116,7 @@ def get_location(location_description: str, _, location) -> list[str, int]:
                 f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
             ).json()
 
-    return f"Number of Points: {len(response_trip)}", location, 0
+    return location, 0
 
 
 if __name__ == "__main__":
