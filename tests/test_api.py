@@ -1,6 +1,7 @@
 """Tests on the functionality of the api (and indirectly on the database too)"""
 import random
 import string
+import time
 
 import requests.exceptions
 
@@ -160,12 +161,14 @@ def test_requesting_trips_creation():
 
     origin = Location(**client.get_location(origin_description).json())
     client.request_trips(origin_description, number_of_trips)
+    time.sleep(3)
     trips = [Trip(**trip) for trip in client.get_all_trips(origin.id).json()]
 
     assert len(trips) == 1
 
     client.request_trips(origin_description, number_of_trips).json()
     client.request_trips(origin_description, number_of_trips).json()
+    time.sleep(3)
     trips = [Trip(**trip) for trip in client.get_all_trips(origin.id).json()]
 
     assert len(trips) == 3
