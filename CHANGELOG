@@ -1,4 +1,8 @@
 # Changelog
+## 1.1.8
+
+* Improve visualization performance (remove redundant api calls)
+
 ## 1.1.7
 
 * Update dependency uvicorn to ^0.21.0 (Renovate-bot) 
