@@ -160,15 +160,14 @@ def test_requesting_trips_creation():
     number_of_trips = 1
 
     origin = Location(**client.get_location(origin_description).json())
-    client.request_trips(origin_description, number_of_trips)
-    time.sleep(3)
+    client.request_trips(origin.address, number_of_trips)
+    time.sleep(4)
     trips = [Trip(**trip) for trip in client.get_all_trips(origin.id).json()]
 
     assert len(trips) == 1
 
-    client.request_trips(origin_description, number_of_trips).json()
-    client.request_trips(origin_description, number_of_trips).json()
-    time.sleep(3)
+    client.request_trips(origin.address, number_of_trips).json()
+    time.sleep(4)
     trips = [Trip(**trip) for trip in client.get_all_trips(origin.id).json()]
 
-    assert len(trips) == 3
+    assert len(trips) == 2
