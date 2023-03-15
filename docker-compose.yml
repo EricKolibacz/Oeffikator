@@ -53,6 +53,8 @@ services:
       - "8080:8080"
     environment:
       OEFFI_APP_CONTAINER_NAME: ${OEFFI_APP_CONTAINER_NAME}
+    depends_on:
+      - app
 
 secrets:
   oeffi_db_pw:
