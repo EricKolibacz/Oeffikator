@@ -34,7 +34,7 @@ def get_folium_map(trip_response: dict, slider_value: float) -> str:
             min_lon=settings.max_west,
             max_lon=settings.max_east,
             min_lat=settings.max_south,
-            max_lat=settings.max_north,
+            max_lat=settings.max_north - 0.005,
             max_bounds=True,
             tiles="Stamen Terrain",
             zoom_start=12,
