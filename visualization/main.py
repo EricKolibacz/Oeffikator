@@ -104,12 +104,12 @@ def get_location(location_description: str, _, location) -> list[str, int]:
         location = requests.get(f"{BASE_URL}/location/{location_description}", timeout=5).json()
         print("Using %s", location)
 
-    response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
-    if response_trip == []:
-        requests.put(f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 9}, timeout=180).json()
-        requests.put(
-            f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
-        ).json()
+        response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
+        if response_trip == []:
+            requests.put(f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": 9}, timeout=180).json()
+            requests.put(
+                f"{BASE_URL}/trips/{location_description}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
+            ).json()
 
     return f"Number of Points: {len(response_trip)}", location, 0
 
