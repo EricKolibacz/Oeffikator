@@ -19,7 +19,6 @@ STORED_VALUE_ID = "stored-valued-id"
 INTERVAL_ID = "interval-id"
 NUMBER_OF_NEW_TRIPS = 32
 
-NUMBER_OF_NEW_TRIPS = 10
 
 app = Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
 server = app.server
