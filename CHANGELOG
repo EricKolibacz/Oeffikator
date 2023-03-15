@@ -1,4 +1,9 @@
 # Changelog
+
+## 1.1.10
+
+* Change renovate bots behavior to create one PR for all dependencies
+
 ## 1.1.8
 
 * Improve visualization performance (remove redundant api calls)
