@@ -8,18 +8,8 @@ from sqlalchemy.orm import Session
 from oeffikator import TRAVELLING_DAYTIME
 from oeffikator.requesters.requester_interface import RequesterInterface
 
-from . import logger
-from .requesters.bvg_rest_requester import BVGRestRequester
-from .requesters.oeffi_requester import OeffiRequester
+from . import REQUESTERS, logger
 from .sql_app import crud, models, schemas
-
-requester1 = BVGRestRequester()
-REQUESTERS = [requester1]
-
-AUTHKEY = ""
-if AUTHKEY != "":
-    requester2 = OeffiRequester(AUTHKEY)
-    REQUESTERS.append(requester2)
 
 
 def get_requester() -> RequesterInterface:
@@ -41,7 +31,7 @@ def get_requester() -> RequesterInterface:
         if available_requester is None:
             logger.info("No requester seems to be avialble. Waiting a little bit ...")
             time.sleep(5)
-    return requester
+    return available_requester
 
 
 async def request_location(location_description: str, database: Session) -> schemas.LocationCreate:

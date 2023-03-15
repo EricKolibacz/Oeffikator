@@ -1,4 +1,20 @@
 # Changelog
+## 1.1.8
+
+* Improve visualization performance (remove redundant api calls)
+
+## 1.1.7
+
+* Update dependency uvicorn to ^0.21.0 (Renovate-bot) 
+
+## 1.1.6
+
+* Improve docker file structure
+
+## 1.1.5
+
+* Update dependency fastapi to ^0.93.0 (Renovate-bot) 
+
 ## 1.1.4
 
 * Introduce asynchronous querying

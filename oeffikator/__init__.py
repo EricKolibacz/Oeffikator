@@ -13,13 +13,16 @@ __version__ = version("oeffikator")
 logger = logging.getLogger("uvicorn")
 logger.propagate = 0
 
-requester1 = BVGRestRequester()
-requesters = [requester1]
+BVG_V5_URL = "https://v5.bvg.transport.rest"
+BVG_V6_URL = "https://v6.bvg.transport.rest"
+VBB_V6_URL = "https://v6.vbb.transport.rest"
+
+REQUESTERS = [BVGRestRequester(url) for url in [BVG_V5_URL, BVG_V6_URL, VBB_V6_URL]]
 
 AUTHKEY = ""
 if AUTHKEY != "":
-    requester2 = OeffiRequester(AUTHKEY)
-    requesters.append(requester2)
+    requester = OeffiRequester(AUTHKEY)
+    REQUESTERS.append(requester)
 
 
 TRAVELLING_DAYTIME = datetime.datetime.today().replace(hour=12, minute=0, second=0) + datetime.timedelta(days=1)
