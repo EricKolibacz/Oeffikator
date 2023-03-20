@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.11
+
+* Update dependencies (fastapi, imageio, dash, scipy, sqlalchemy, uvicorn)
+
 ## 1.1.10
 
 * Update dependencies (fastapi, imageio, matplotlib, pylint, pytest, scikit-learn, scipy, sqlalchmey)
