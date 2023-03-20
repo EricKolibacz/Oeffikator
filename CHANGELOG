@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.11
+
+* Fix timezone specific errors
+
 ## 1.1.10
 
 * Update dependencies (fastapi, imageio, matplotlib, pylint, pytest, scikit-learn, scipy, sqlalchmey)
