@@ -8,6 +8,7 @@ import pytest
 
 from oeffikator.requesters.bvg_rest_requester import BVGRestRequester
 from oeffikator.requesters.oeffi_requester import OeffiRequester
+from tests import TRAVELLING_DAYTIME
 
 BVG_V5_URL = "https://v5.bvg.transport.rest"
 BVG_V6_URL = "https://v6.bvg.transport.rest"
@@ -62,15 +63,12 @@ def test_get_journey_for_bvg_requester():
     This will fail as soon as if there are constructions on this line!"""
     time_should_be = (10, 11)  # apparently, bvg apis return slightly different values for different versions
 
-    date_today = datetime.datetime.today()
-    date_next_monday = date_today + datetime.timedelta(days=-date_today.weekday(), weeks=1)
-
     requester = BVGRestRequester(URL)
     origin = asyncio.run(requester.query_location("10178 Berlin-Mitte, Alexanderplatz 1"))
     destination = asyncio.run(requester.query_location("10557 Berlin-Moabit, Europaplatz 1"))
 
-    journey = asyncio.run(requester.get_journey(origin=origin, destination=destination, start_date=date_next_monday))
-    time_is = (int(journey["arrivalTime"]) - 120000) / 100
+    journey = asyncio.run(requester.get_journey(origin=origin, destination=destination, start_date=TRAVELLING_DAYTIME))
+    time_is = (int(journey["arrivalTime"]) - (TRAVELLING_DAYTIME.hour * 10000)) / 100
 
     assert time_is in time_should_be
 
