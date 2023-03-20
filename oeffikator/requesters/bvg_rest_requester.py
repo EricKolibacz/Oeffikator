@@ -1,6 +1,8 @@
 """This module includes the requester class for the BVG."""
 import datetime
 
+import pytz
+
 from oeffikator.requesters.requester_interface import RequesterInterface
 
 
@@ -36,6 +38,9 @@ class BVGRestRequester(RequesterInterface):
     async def get_journey(
         self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int = 1
     ) -> dict:
+        print("startdate", start_date)
+        start_date = start_date.astimezone(pytz.timezone("Europe/Budapest")).astimezone(datetime.timezone.utc)
+        print("startdate", start_date)
         params = (
             ("from.address", origin["address"]),
             ("from.latitude", origin["latitude"]),
@@ -43,7 +48,7 @@ class BVGRestRequester(RequesterInterface):
             ("to.address", destination["address"]),
             ("to.latitude", destination["latitude"]),
             ("to.longitude", destination["longitude"]),
-            ("departure", start_date.strftime("%Y-%m-%dT11:00+00:00")),
+            ("departure", start_date.strftime("%Y-%m-%dT%H:00+00:00")),
             ("results", str(amount_of_results)),
             ("stopovers", "true"),
         )
