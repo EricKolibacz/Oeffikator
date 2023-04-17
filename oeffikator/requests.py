@@ -79,8 +79,10 @@ async def request_trip(
     )
     request = crud.create_request(database=database)
 
-    if ("noConnectionFound" in requested_trip.keys() and requested_trip["noConnectionFound"]) or (
-        "noStationFoundNearby" in requested_trip.keys() and requested_trip["noStationFoundNearby"]
+    if (
+        ("noConnectionFound" in requested_trip.keys() and requested_trip["noConnectionFound"])
+        or ("noStationFoundNearby" in requested_trip.keys() and requested_trip["noStationFoundNearby"])
+        or requested_trip["arrivalTime"] is None
     ):  # no connection or no address was found
         trip = schemas.TripCreate(
             duration=-1,
@@ -89,7 +91,6 @@ async def request_trip(
             request_id=request.id,
         )
         return trip
-
     arrivale_time = datetime.datetime.strptime(requested_trip["arrivalTime"], "%H%M%S").time()
     arrivale_time = datetime.datetime.combine(TRAVELLING_DAYTIME.date(), arrivale_time)
     duration = (arrivale_time - TRAVELLING_DAYTIME).total_seconds() / 60  # in minutes

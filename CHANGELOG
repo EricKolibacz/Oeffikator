@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.14
+
+* Improve visualization layout
+
 ## 1.1.13
 
 * Update dependencies (imageio, pylint, pytz, scipy)
