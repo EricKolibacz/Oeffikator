@@ -31,9 +31,9 @@ def get_folium_map(trip_response: dict, slider_value: float) -> str:
         # Create a map using Stamen Terrain, centered on study area with set zoom level
         map_object = Map(
             location=[from_wkt(trip_response[0]["origin"]["geom"]).y, from_wkt(trip_response[0]["origin"]["geom"]).x],
-            min_lon=settings.max_west,
-            max_lon=settings.max_east,
-            min_lat=settings.max_south,
+            min_lon=settings.max_west + 0.01,
+            max_lon=settings.max_east - 0.01,
+            min_lat=settings.max_south + 0.005,
             max_lat=settings.max_north - 0.005,
             max_bounds=True,
             tiles="Stamen Terrain",
