@@ -40,12 +40,13 @@ def get_heatmap(trip_response: dict) -> list[io.BytesIO, list[float, float], lis
     axis.set_facecolor((1, 1, 1, 0))
 
     # define the amount of color levels should be there
-    levels = np.linspace(np.min(trips["duration"]), np.max(trips["duration"]), 60)
+    levels = np.linspace(max(0, np.min(trips["duration"])), 75, 75)
     axis.tricontourf(
         trips["lon"],
         trips["lat"],
         trips["duration"],
         levels=levels,
+        extend="both",
         alpha=0.5,
         cmap=CMAP,
         antialiased=True,
