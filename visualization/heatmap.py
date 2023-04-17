@@ -2,8 +2,8 @@
 import io
 
 import matplotlib as plt
-import matplotlib.colors as mcolors  # noqa
-import matplotlib.pyplot as plt  # noqa
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from shapely import from_wkt
@@ -40,12 +40,13 @@ def get_heatmap(trip_response: dict) -> list[io.BytesIO, list[float, float], lis
     axis.set_facecolor((1, 1, 1, 0))
 
     # define the amount of color levels should be there
-    levels = np.linspace(np.min(trips["duration"]), np.max(trips["duration"]), 60)
+    levels = np.linspace(max(0, np.min(trips["duration"])), 75, 75)
     axis.tricontourf(
         trips["lon"],
         trips["lat"],
         trips["duration"],
         levels=levels,
+        extend="both",
         alpha=0.5,
         cmap=CMAP,
         antialiased=True,
@@ -56,17 +57,11 @@ def get_heatmap(trip_response: dict) -> list[io.BytesIO, list[float, float], lis
     # Displaying destination locations
     # ax.scatter(df["lon"], df["lat"], alpha=0.9, color="black", label="Journey Stops", zorder=-2)
 
-    # ax.legend(fontsize="xx-large")
     plt.gca().set_axis_off()
     plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
     plt.margins(0, 0)
-    # fig.canvas.draw()
-    # plt.savefig("test.png", bbox_inches="tight", pad_inches=0, transparent=True)
-    # plt.close()
+
     buf = io.BytesIO()
     fig.savefig(buf)
     buf.seek(0)
     return buf, axis.get_xlim(), axis.get_ylim()
-
-
-# get_image()
