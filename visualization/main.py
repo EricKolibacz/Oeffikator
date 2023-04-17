@@ -1,4 +1,6 @@
 """Main visualization module containing a dash app."""
+import time
+
 import requests
 from dash import Dash, Input, Output, ctx, dcc, html, no_update
 
@@ -6,9 +8,10 @@ from visualization import settings
 from visualization.map import get_folium_map
 
 INPUT_ID = "input-id"
-NEW_POINTS_BUTTON_ID = "new-points-button-id"
+POINTS_BUTTON_ID = "points-button-id"
 MAP_ID = "map-id"
 ADDRESS_ID = "address-id"
+LOADING_ID = "loading-id"
 SLIDER_DIV_ID = "slider-div-id"
 SLIDER_ID = "silder-id"
 INITIAL_SLIDER_VALUE = 0.75
@@ -16,7 +19,6 @@ CONFIRM_ID = "confirm-id"
 CONFIRM_SUBMITTED_CLICKS_ID = "confirm_submitted_clicks_id"
 SUBMITTED_ADDRESSES = 0
 STORED_VALUE_ID = "stored-valued-id"
-INTERVAL_ID = "interval-id"
 NUMBER_OF_NEW_TRIPS = 32
 
 
@@ -52,10 +54,14 @@ app.layout = html.Div(
             data=SUBMITTED_ADDRESSES,
         ),
         html.Br(),
-        html.Div(
-            "",
-            id=ADDRESS_ID,
-            style={"textAlign": "center"},
+        dcc.Loading(
+            id=LOADING_ID,
+            type="default",
+            children=html.Div(
+                "",
+                id=ADDRESS_ID,
+                style={"textAlign": "center"},
+            ),
         ),
         html.Br(),
         html.Div(
@@ -94,44 +100,13 @@ app.layout = html.Div(
         ),
         html.Button(
             "More Points",
-            id=NEW_POINTS_BUTTON_ID,
+            id=POINTS_BUTTON_ID,
             n_clicks=0,
             style={"textAlign": "center"},
+            hidden=True,
         ),
-        dcc.Interval(id=INTERVAL_ID, interval=10 * 1000, n_intervals=3),
     ]
 )
-
-
-@app.callback(
-    Output(MAP_ID, "srcDoc"),
-    Output("number-of-points", "children"),
-    Input(INTERVAL_ID, "n_intervals"),
-    Input(STORED_VALUE_ID, "data"),
-    Input("number-of-points", "children"),
-    Input(SLIDER_ID, "value"),
-)
-def update_figure(n_intervals: int, location: dict, no_of_points: str, opacity: float) -> str:
-    """Periodically update the figure
-
-    Args:
-        n_intervals (int): number of updates done already
-        location (dict): current display location
-        no_of_points (str): Displaying the number of points
-        opacity (float): the opacity of the image on the map (between 0 and 1)
-
-    Returns:
-        str: docstring of the iFrame
-    """
-    if n_intervals < 3 or ctx.triggered_id == SLIDER_ID:
-        response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
-        if response_trip != []:
-            docsrc = get_folium_map(response_trip, opacity)
-            return (
-                docsrc,
-                f"Number of Points: {len(response_trip)}",
-            )
-    return no_update, no_of_points
 
 
 @app.callback(
@@ -161,14 +136,17 @@ def display_confirm(location_description: str) -> list[bool, str, dict]:
 @app.callback(
     Output(ADDRESS_ID, "children"),
     Output(SLIDER_DIV_ID, "hidden"),
-    Output(INTERVAL_ID, "n_intervals"),
+    Output(MAP_ID, "srcDoc"),
+    Output("number-of-points", "children"),
+    Output(POINTS_BUTTON_ID, "hidden"),
     Input(CONFIRM_ID, "submit_n_clicks_timestamp"),
     Input(CONFIRM_ID, "cancel_n_clicks_timestamp"),
-    Input(NEW_POINTS_BUTTON_ID, "n_clicks"),
+    Input(POINTS_BUTTON_ID, "n_clicks"),
     Input(STORED_VALUE_ID, "data"),
+    Input(SLIDER_ID, "value"),
     prevent_initial_call=True,
 )
-def get_location(last_submit: int, last_cancel: int, _, location: dict) -> list[str, int]:
+def get_location(last_submit: int, last_cancel: int, _, location: dict, opacity: float) -> list[str, int]:
     """Updates the figure whenever a new location is entered or the "New points" button is clicked
 
     Args:
@@ -185,25 +163,37 @@ def get_location(last_submit: int, last_cancel: int, _, location: dict) -> list[
     """
     location_address = no_update
     is_hidden_slider = no_update
-    n_intervals = no_update
-    print(last_cancel, last_submit)
-    if ctx.triggered_id == NEW_POINTS_BUTTON_ID:
-        requests.put(
-            f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
-        )
-        n_intervals = 0
-    elif last_cancel is None or last_submit > last_cancel:
-        response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
-        if response_trip == []:
-            requests.put(f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": 9}, timeout=180).json()
+    total_trips = no_update
+
+    if ctx.triggered_id != SLIDER_ID:
+        if ctx.triggered_id == POINTS_BUTTON_ID:
             requests.put(
                 f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
-            ).json()
-        is_hidden_slider = False
-        n_intervals = 0
-        location_address = location["address"]
+            )
+        elif last_cancel is None or last_submit > last_cancel:
+            response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
+            if response_trip == []:
+                requests.put(f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": 9}, timeout=180)
+                while 9 > len(requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()):
+                    time.sleep(0.5)
+                requests.put(
+                    f"{BASE_URL}/trips/{location['address']}",
+                    params={"number_of_trips": NUMBER_OF_NEW_TRIPS},
+                    timeout=180,
+                )
+            is_hidden_slider = False
+            location_address = location["address"]
 
-    return location_address, is_hidden_slider, n_intervals
+        total_trips = len(requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json())
+        while total_trips + NUMBER_OF_NEW_TRIPS - 3 > len(
+            requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
+        ):
+            time.sleep(1)
+
+    response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
+    docsrc = get_folium_map(response_trip, opacity)
+
+    return location_address, is_hidden_slider, docsrc, f"#Points {len(response_trip)}", False
 
 
 if __name__ == "__main__":
