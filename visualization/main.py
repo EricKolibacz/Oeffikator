@@ -3,6 +3,7 @@ import time
 
 import requests
 from dash import Dash, Input, Output, ctx, dcc, html, no_update
+from PIL import Image
 
 from visualization import settings
 from visualization.map import get_folium_map
@@ -31,7 +32,24 @@ INITIAL_LOCATION_DESCRIPTION = "Friedrichstr. 50"
 
 app.layout = html.Div(
     children=[
-        html.H1(children="Oeffikator", style={"textAlign": "center"}),
+        html.Div(
+            children=[
+                html.H1(
+                    children="Oeffikator",
+                    style={
+                        "textAlign": "center",
+                        "display": "inline-block",
+                        "verticalAlign": "middle",
+                    },
+                ),
+                html.A(
+                    children=html.Img(src=Image.open("visualization/images/github-mark.png"), height=24),
+                    href="https://github.com/EricKolibacz/Oeffikator",
+                    target="_blank",
+                ),
+            ],
+            style={"textAlign": "center"},
+        ),
         html.Div(
             [
                 dcc.Input(
