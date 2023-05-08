@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 from aiohttp import ClientSession
 
-from oeffikator.requesters import RESPONSE_TIMEOUT
+from oeffikator.requesters import CHECK_FOR_REQUESTER_AVAILABILITY_IN_SECS, RESPONSE_TIMEOUT
 
 
 class RequesterInterface(ABC):
@@ -13,6 +13,8 @@ class RequesterInterface(ABC):
 
     def __init__(self) -> None:
         self.past_requests = []
+        self.last_responding_check = None
+        self._is_responding = False
 
     @property
     def request_rate(self) -> str:
@@ -95,3 +97,27 @@ class RequesterInterface(ABC):
         ):
             self.past_requests.pop(0)
         return len(self.past_requests) > self.request_rate
+
+    async def is_responding(self) -> bool:
+        """A method to check if the requesters receives responses from the api.
+
+        Returns:
+            bool: true, if the api is responding
+        """
+
+        if (
+            self.last_responding_check is None
+            or datetime.datetime.now() - self.last_responding_check
+            >= datetime.timedelta(seconds=CHECK_FOR_REQUESTER_AVAILABILITY_IN_SECS)
+        ):
+            self.last_responding_check = datetime.datetime.now()
+            self._is_responding = await self._check_response()
+        return self._is_responding
+
+    @abstractmethod
+    async def _check_response(self) -> bool:
+        """A method to check if the requesters receives responses from the api.
+
+        Returns:
+            bool: true, if the api is responding
+        """

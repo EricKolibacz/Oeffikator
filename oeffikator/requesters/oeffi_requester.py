@@ -53,6 +53,9 @@ class OeffiRequester(RequesterInterface):
             return {"origin": origin, "destination": destination, "arrivalTime": None, "stopovers": None}
         return {"origin": origin, "destination": destination, "arrivalTime": arrival_time, "stopovers": None}
 
+    async def _check_response(self) -> bool:
+        raise NotImplementedError
+
     async def __request_data(self, json_string: str) -> dict:
         """Request data from the API
 
