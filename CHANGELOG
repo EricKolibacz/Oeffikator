@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+* Catch non-responsive apis (for the case they are down, which happens from time to time)
+
 ## 1.1.15
 
 * Update dependencies (pytz, scipy, geoalchemy2)
