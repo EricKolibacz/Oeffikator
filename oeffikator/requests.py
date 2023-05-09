@@ -25,7 +25,7 @@ async def get_requester() -> RequesterInterface:
     available_requester = None
     for _ in range(12):
         for requester in REQUESTERS:
-            if await requester.is_responding() and not requester.has_reached_request_limit():
+            if not requester.has_reached_request_limit():
                 available_requester = requester
                 break
         if available_requester is None:
