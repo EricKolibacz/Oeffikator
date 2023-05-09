@@ -181,18 +181,13 @@ def get_location(last_submit: int, last_cancel: int, _, location: dict, opacity:
     """
     location_address = no_update
     is_hidden_slider = no_update
-    total_trips = no_update
 
     if ctx.triggered_id != SLIDER_ID:
         if ctx.triggered_id == POINTS_BUTTON_ID:
-            total_trips = len(requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json())
             requests.put(
                 f"{BASE_URL}/trips/{location['address']}", params={"number_of_trips": NUMBER_OF_NEW_TRIPS}, timeout=180
             )
-            while total_trips + NUMBER_OF_NEW_TRIPS - 3 > len(
-                requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
-            ):
-                time.sleep(1)
+            time.sleep(2)
         elif last_cancel is None or last_submit > last_cancel:
             response_trip = requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
             if response_trip == []:
@@ -204,10 +199,7 @@ def get_location(last_submit: int, last_cancel: int, _, location: dict, opacity:
                     params={"number_of_trips": NUMBER_OF_NEW_TRIPS},
                     timeout=180,
                 )
-                while 9 + NUMBER_OF_NEW_TRIPS - 3 > len(
-                    requests.get(f"{BASE_URL}/all_trips/{location['id']}", timeout=5).json()
-                ):
-                    time.sleep(1)
+                time.sleep(3)
             is_hidden_slider = False
             location_address = location["address"]
 
