@@ -18,6 +18,7 @@ BVG_V6_URL = "https://v6.bvg.transport.rest"
 VBB_V6_URL = "https://v6.vbb.transport.rest"
 
 REQUESTERS = [BVGRestRequester(url) for url in [BVG_V5_URL, BVG_V6_URL, VBB_V6_URL]]
+REQUESTERS = [requester for requester in REQUESTERS if requester.is_responding()]
 
 AUTHKEY = ""
 if AUTHKEY != "":

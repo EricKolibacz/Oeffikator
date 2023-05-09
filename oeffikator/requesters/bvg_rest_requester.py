@@ -103,9 +103,9 @@ class BVGRestRequester(RequesterInterface):
             }
         return {"arrivalTime": arrival_time, "stopovers": stopsovers}
 
-    async def _check_response(self) -> bool:
+    def _check_response(self) -> bool:
         try:
-            response = await self.get(f"{self.url}/locations?query=alexanderplatz&results=1", params=())
+            response = requests.get(f"{self.url}/locations?query=alexanderplatz&results=1", timeout=1)
         except requests.exceptions.ReadTimeout:
             return False
-        return response is not None
+        return response.status_code // 100 == 2
