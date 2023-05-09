@@ -20,7 +20,7 @@ CONFIRM_ID = "confirm-id"
 CONFIRM_SUBMITTED_CLICKS_ID = "confirm_submitted_clicks_id"
 SUBMITTED_ADDRESSES = 0
 STORED_VALUE_ID = "stored-valued-id"
-NUMBER_OF_NEW_TRIPS = 32
+NUMBER_OF_NEW_TRIPS = 8
 
 
 app = Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
