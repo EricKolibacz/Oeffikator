@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+* Change default visualization port to http port for easier deployment
+
 ## 1.2.0
 
 * Catch non-responsive apis (for the case they are down, which happens from time to time)

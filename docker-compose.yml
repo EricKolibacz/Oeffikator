@@ -63,7 +63,7 @@ services:
       context: .
       dockerfile: visualization/Dockerfile
     ports:
-      - "8080:8080"
+      - "80:80"
     environment:
       OEFFI_APP_CONTAINER_NAME: ${OEFFI_APP_CONTAINER_NAME}
       OEFFI_MAX_WEST: ${OEFFI_MAX_WEST}
