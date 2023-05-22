@@ -38,7 +38,7 @@ jobs:
         poetry install --without code_check
     - name: Run tests with coverage
       run: |
-        poetry run pytest --cov=./oeffikator --cov-report lcov:./coverage/lcov.info --cov-report term-missing
+        poetry run pytest --cov=./oeffikator --cov-report lcov:./coverage/lcov.info --cov-report term-missing -rsx
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
