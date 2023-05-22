@@ -36,10 +36,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install poetry
         poetry install --without code_check
-    - name: Test with pytest
-      run: |
-        poetry run pytest .
-    - name: Run test coverage
+    - name: Run tests with coverage
       run: |
         poetry run pytest --cov=./oeffikator --cov-report lcov:./coverage/lcov.info --cov-report term-missing
     - name: Coveralls
