@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2
+
+* Improve the GitHub workflow for testing by removing unnecessary duplicated tests
+* Improve app Dockerfile by fixing wrong dependency group reference
+
 ## 1.2.1
 
 * Change default visualization port to http port for easier deployment
