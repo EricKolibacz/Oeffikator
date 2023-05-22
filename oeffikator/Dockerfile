@@ -4,7 +4,7 @@ FROM python:3.11 as requirements-stage
 WORKDIR /tmp
 RUN pip install poetry
 COPY . /tmp/
-RUN poetry build && poetry export -f requirements.txt --output requirements.txt --without-hashes --without code_check,test,example
+RUN poetry build && poetry export -f requirements.txt --output requirements.txt --without-hashes --without code_check,test
 FROM python:3.11
 WORKDIR /code
 # install required python packages
