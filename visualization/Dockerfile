@@ -20,4 +20,4 @@ COPY .env/ /code
 COPY visualization/ /code/visualization/
 ENV PYTHONPATH "${PYTHONPATH}:/code"
 
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "visualization.main:server"]
+CMD ["gunicorn", "-b", "0.0.0.0:80", "visualization.main:server"]

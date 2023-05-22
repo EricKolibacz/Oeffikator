@@ -2,6 +2,7 @@
 import datetime
 
 import pytz
+import requests
 
 from oeffikator.requesters.requester_interface import RequesterInterface
 
@@ -31,7 +32,12 @@ class BVGRestRequester(RequesterInterface):
             ("stops", "false"),
             ("poi", "false"),
         )
-        response = await self.get(f"{self.url}/locations", params=params)
+        try:
+            response = await self.get(f"{self.url}/locations", params=params)
+        except TypeError as error:
+            raise TypeError(
+                f"It seems that the requester is not available. The requests raised an error: {error}"
+            ) from error
         self.past_requests.append({"time": datetime.datetime.now()})
         return response[0]
 
@@ -96,3 +102,10 @@ class BVGRestRequester(RequesterInterface):
                 "noStationFoundNearby": has_no_station_nearby,
             }
         return {"arrivalTime": arrival_time, "stopovers": stopsovers}
+
+    def _check_response(self) -> bool:
+        try:
+            response = requests.get(f"{self.url}/locations?query=alexanderplatz&results=1", timeout=1)
+        except requests.exceptions.ReadTimeout:
+            return False
+        return response.status_code // 100 == 2
