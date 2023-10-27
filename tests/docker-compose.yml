@@ -10,7 +10,7 @@ services:
       - 8001:8000
     environment:
       OEFFI_DB_NAME: ${OEFFI_DB_NAME}
-      OEFFI_DB_CONTAINER_NAME: ${OEFFI_DB_CONTAINER_NAME}
+      OEFFI_BVG_API_CONTAINER_NAME: test-bvg-api
     depends_on:
       test-db:
         condition: service_healthy
@@ -46,10 +46,11 @@ services:
       timeout: 5s
       retries: 3
   
-  bvg-api:
+  test-bvg-api:
     image: derhuerst/bvg-rest:6
     ports:
       - "3000:3000"    
+    container_name: test-bvg-api   
     healthcheck:
       test:
         [

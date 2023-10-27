@@ -11,6 +11,7 @@ services:
     environment:
       OEFFI_DB_NAME: ${OEFFI_DB_NAME}
       OEFFI_DB_CONTAINER_NAME: ${OEFFI_DB_CONTAINER_NAME}
+      OEFFI_BVG_API_CONTAINER_NAME: ${OEFFI_BVG_API_CONTAINER_NAME}   
       OEFFI_MAX_WEST: ${OEFFI_MAX_WEST}
       OEFFI_MAX_EAST: ${OEFFI_MAX_EAST}
       OEFFI_MAX_SOUTH: ${OEFFI_MAX_SOUTH}
@@ -80,6 +81,7 @@ services:
     image: derhuerst/bvg-rest:6
     ports:
       - "3000:3000"    
+    container_name: ${OEFFI_BVG_API_CONTAINER_NAME}    
     healthcheck:
       test:
         [
