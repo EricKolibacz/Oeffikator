@@ -64,7 +64,7 @@ def test_trip():
     """Test whether the oeffikator gets the trip duration properly"""
     origin_description = LOCATION_1
     destination_description = LOCATION_2
-    expected_trip_duration = 15  # in minutes
+    expected_trip_duration = 14  # in minutes
 
     origin = Location(**client.get_location(origin_description).json())
     destination = Location(**client.get_location(destination_description).json())

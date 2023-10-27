@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     db_name: str = ""
     db_user: str = ""
     db_pw: str = ""
+    bvg_api_container_name: str = "0.0.0.0"
     max_west: float = 13.2
     max_east: float = 13.55
     max_south: float = 52.42

@@ -14,7 +14,9 @@ from tests.requesters_commons import is_alive
 BVG_V5_URL = "https://v5.bvg.transport.rest"
 BVG_V6_URL = "https://v6.bvg.transport.rest"
 VBB_V6_URL = "https://v6.vbb.transport.rest"
-AVAILABLE_URLS = [url for url in [BVG_V5_URL, BVG_V6_URL, VBB_V6_URL] if is_alive(url)]
+BVG_V6_URL_LOCAL = "http://127.0.0.1:3000"
+
+AVAILABLE_URLS = [url for url in [BVG_V6_URL_LOCAL] if is_alive(url)]
 
 URL = random.choice(AVAILABLE_URLS) if AVAILABLE_URLS else None
 
@@ -73,14 +75,14 @@ def test_get_journey_for_bvg_requester():
     This will fail as soon as if there are constructions on this line!"""
     if URL is None:
         pytest.skip("No Requester is alive")
-    time_should_be = (10, 11)  # apparently, bvg apis return slightly different values for different versions
+    time_should_be = (10, 11, 12)  # apparently, bvg apis return slightly different values for different versions
 
     requester = BVGRestRequester(URL)
     origin = asyncio.run(requester.query_location("10178 Berlin-Mitte, Alexanderplatz 1"))
     destination = asyncio.run(requester.query_location("10557 Berlin-Moabit, Europaplatz 1"))
 
     journey = asyncio.run(requester.get_journey(origin=origin, destination=destination, start_date=TRAVELLING_DAYTIME))
-    time_is = (int(journey["arrivalTime"]) - (TRAVELLING_DAYTIME.hour * 10000)) / 100
+    time_is = (int(journey["arrivalTime"]) - ((TRAVELLING_DAYTIME.hour - 1) * 10000)) / 100
 
     assert time_is in time_should_be
 

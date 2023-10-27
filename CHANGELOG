@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.4
+
+* Replace BVG(/VBB)-API with local instance for more stability
+
+
 ## 1.2.3
 
 * Update dependencies (fastapi, geoalchemy, pylint, pytz, requests, scipy, sqlalchemy)

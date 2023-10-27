@@ -16,8 +16,9 @@ logger.propagate = 0
 BVG_V5_URL = "https://v5.bvg.transport.rest"
 BVG_V6_URL = "https://v6.bvg.transport.rest"
 VBB_V6_URL = "https://v6.vbb.transport.rest"
+BVG_V6_URL_LOCAL = f"http://{settings.bvg_api_container_name}:3000"
 
-REQUESTERS = [BVGRestRequester(url) for url in [BVG_V5_URL, BVG_V6_URL, VBB_V6_URL]]
+REQUESTERS = [BVGRestRequester(url) for url in [BVG_V6_URL_LOCAL]]
 REQUESTERS = [requester for requester in REQUESTERS if requester.is_responding()]
 
 AUTHKEY = ""
