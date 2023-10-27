@@ -11,6 +11,8 @@ from oeffikator.requesters.requester_interface import RequesterInterface
 from . import REQUESTERS, logger
 from .sql_app import crud, models, schemas
 
+# pylint: disable-msg=W0511
+
 
 async def get_requester() -> RequesterInterface:
     """Simple function to get an available requester (=one which hasn't reached its request limit yet)
