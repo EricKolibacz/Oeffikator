@@ -1,5 +1,5 @@
 """Pydantic database table models (and helpers)"""
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 
 # pylint: disable=R0903
 
@@ -17,11 +17,7 @@ class Request(RequestBase):
 
     id: int
     date: str
-
-    class Config:
-        """For pydantic configuration"""
-
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LocationBase(BaseModel):
@@ -30,11 +26,7 @@ class LocationBase(BaseModel):
     address: str
     geom: str
     request_id: int
-
-    class Config:
-        """For pydantic configuration"""
-
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LocationCreate(LocationBase):
@@ -45,11 +37,7 @@ class Location(LocationBase):
     """Pydantic model for adding attributes for reading"""
 
     id: int
-
-    class Config:
-        """For pydantic configuration"""
-
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LocationAliasBase(BaseModel):
@@ -67,11 +55,7 @@ class LocationAlias(LocationAliasBase):
 
     id: int
     location_id: int
-
-    class Config:
-        """For pydantic configuration"""
-
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TripBase(BaseModel):
@@ -91,8 +75,4 @@ class Trip(TripBase):
     """Pydantic model for adding attributes for reading"""
 
     id: int
-
-    class Config:
-        """For pydantic configuration"""
-
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
