@@ -94,8 +94,9 @@ async def request_trip(
         )
         return trip
     arrivale_time = datetime.datetime.strptime(requested_trip["arrivalTime"], "%H%M%S").time()
-    arrivale_time = datetime.datetime.combine(TRAVELLING_DAYTIME.date(), arrivale_time)
-    duration = (arrivale_time - TRAVELLING_DAYTIME).total_seconds() / 60  # in minutes
+    # TODO replace this hacky fix of adding one hour to the output. Why does this return an hour of difference
+    arrivale_time = datetime.datetime.combine(TRAVELLING_DAYTIME.date(), arrivale_time) + datetime.timedelta(hours=1)
+    duration = int((arrivale_time - TRAVELLING_DAYTIME).total_seconds() / 60)  # in minutes
 
     trip = schemas.TripCreate(
         duration=duration,
