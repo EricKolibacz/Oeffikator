@@ -1,5 +1,5 @@
 """Implements the settings for the oeffikator container"""
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 # pylint: disable=R0903,R0801
@@ -15,9 +15,4 @@ class Settings(BaseSettings):
     max_east: float = 13.55
     max_south: float = 52.42
     max_north: float = 52.59
-
-    class Config:
-        """Defines the source for the settings"""
-
-        env_prefix = "OEFFI_"
-        secrets_dir = "/run/secrets"
+    model_config = SettingsConfigDict(env_prefix="OEFFI_", secrets_dir="/run/secrets")

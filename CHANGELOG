@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.5
+
+* Update dependencies (github actions, python version, aiohttp, numpy, geoalchemy, pylint, gunicorn)
+
+
 ## 1.2.4
 
 * Replace BVG(/VBB)-API with local instance for more stability
