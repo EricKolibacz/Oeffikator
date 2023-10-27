@@ -10,6 +10,7 @@ services:
       - 8001:8000
     environment:
       OEFFI_DB_NAME: ${OEFFI_DB_NAME}
+      OEFFI_DB_CONTAINER_NAME: test-db
       OEFFI_BVG_API_CONTAINER_NAME: test-bvg-api
     depends_on:
       test-db:
@@ -20,7 +21,6 @@ services:
       - oeffi_db_user
       - oeffi_db_pw
 
-  # TODO rename this to db only (container name will be oeffikator-db) - maybe for oeffikator container too?
   # TODO add build: dockerfile ?
   test-db:
     image: postgis/postgis
@@ -35,7 +35,6 @@ services:
       - oeffi_db_pw
     volumes:
       - ../scripts/:/docker-entrypoint-initdb.d/
-    container_name: ${OEFFI_DB_CONTAINER_NAME}
     healthcheck:
       test:
         [
