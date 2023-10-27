@@ -80,7 +80,7 @@ services:
   bvg-api:
     image: derhuerst/bvg-rest:6
     ports:
-      - "3000:3000"    
+      - "3000:3000"
     container_name: ${OEFFI_BVG_API_CONTAINER_NAME}    
     healthcheck:
       test:
