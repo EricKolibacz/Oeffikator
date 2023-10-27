@@ -14,6 +14,8 @@ services:
     depends_on:
       test-db:
         condition: service_healthy
+      bvg-api:
+        condition: service_healthy
     secrets:
       - oeffi_db_user
       - oeffi_db_pw
@@ -39,6 +41,20 @@ services:
         [
           "CMD-SHELL",
           "pg_isready -U $(cat /run/secrets/oeffi_db_user) -d ${OEFFI_DB_NAME}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+  
+  bvg-api:
+    image: derhuerst/bvg-rest:6
+    ports:
+      - "3000:3000"    
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "echo 0"
         ]
       interval: 5s
       timeout: 5s
