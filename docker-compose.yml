@@ -11,12 +11,15 @@ services:
     environment:
       OEFFI_DB_NAME: ${OEFFI_DB_NAME}
       OEFFI_DB_CONTAINER_NAME: ${OEFFI_DB_CONTAINER_NAME}
+      OEFFI_BVG_API_CONTAINER_NAME: ${OEFFI_BVG_API_CONTAINER_NAME}   
       OEFFI_MAX_WEST: ${OEFFI_MAX_WEST}
       OEFFI_MAX_EAST: ${OEFFI_MAX_EAST}
       OEFFI_MAX_SOUTH: ${OEFFI_MAX_SOUTH}
       OEFFI_MAX_NORTH: ${OEFFI_MAX_NORTH}
     depends_on:
       db:
+        condition: service_healthy
+      bvg-api:
         condition: service_healthy
     secrets:
       - oeffi_db_user
@@ -73,6 +76,21 @@ services:
     depends_on:
       app:
         condition: service_healthy
+
+  bvg-api:
+    image: derhuerst/bvg-rest:6
+    ports:
+      - "3000:3000"
+    container_name: ${OEFFI_BVG_API_CONTAINER_NAME}    
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "echo 0"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
 
 secrets:
   oeffi_db_pw:

@@ -10,15 +10,17 @@ services:
       - 8001:8000
     environment:
       OEFFI_DB_NAME: ${OEFFI_DB_NAME}
-      OEFFI_DB_CONTAINER_NAME: ${OEFFI_DB_CONTAINER_NAME}
+      OEFFI_DB_CONTAINER_NAME: test-db
+      OEFFI_BVG_API_CONTAINER_NAME: test-bvg-api
     depends_on:
       test-db:
+        condition: service_healthy
+      test-bvg-api:
         condition: service_healthy
     secrets:
       - oeffi_db_user
       - oeffi_db_pw
 
-  # TODO rename this to db only (container name will be oeffikator-db) - maybe for oeffikator container too?
   # TODO add build: dockerfile ?
   test-db:
     image: postgis/postgis
@@ -33,12 +35,26 @@ services:
       - oeffi_db_pw
     volumes:
       - ../scripts/:/docker-entrypoint-initdb.d/
-    container_name: ${OEFFI_DB_CONTAINER_NAME}
     healthcheck:
       test:
         [
           "CMD-SHELL",
           "pg_isready -U $(cat /run/secrets/oeffi_db_user) -d ${OEFFI_DB_NAME}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+  
+  test-bvg-api:
+    image: derhuerst/bvg-rest:6
+    ports:
+      - "3000:3000"    
+    container_name: test-bvg-api   
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "echo 0"
         ]
       interval: 5s
       timeout: 5s
