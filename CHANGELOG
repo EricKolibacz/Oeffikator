@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.4
+
+* Update dependencies (github actions, python version, numpy, geoalchemy, pylint, gunicorn)
+
+
 ## 1.2.3
 
 * Update dependencies (fastapi, geoalchemy, pylint, pytz, requests, scipy, sqlalchemy)
