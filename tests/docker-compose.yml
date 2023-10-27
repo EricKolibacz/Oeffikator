@@ -15,7 +15,7 @@ services:
     depends_on:
       test-db:
         condition: service_healthy
-      bvg-api:
+      test-bvg-api:
         condition: service_healthy
     secrets:
       - oeffi_db_user
