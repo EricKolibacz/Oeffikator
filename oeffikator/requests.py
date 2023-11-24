@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from oeffikator import TRAVELLING_DAYTIME
 from oeffikator.requesters.requester_interface import RequesterInterface
 
-from . import REQUESTERS, logger
+from . import LOCATION_REQUESTER, REQUESTERS, logger
 from .sql_app import crud, models, schemas
 
 # pylint: disable-msg=W0511
@@ -58,6 +58,29 @@ async def request_location(location_description: str, database: Session) -> sche
     location = schemas.LocationCreate(
         address=requested_location["address"],
         geom=f"POINT({requested_location['longitude']} {requested_location['latitude']})",
+        request_id=request.id,
+    )
+    return location
+
+
+async def request_location_by_coordinates(
+    latitude: float, longitude: float, database: Session
+) -> schemas.LocationCreate:
+    """A function for querying location address, coordinates, etc. for given description
+
+    Args:
+        latitude (float): latitude of the location
+        longitude (float): longitude of the location
+        database (Session): session to connected database
+
+    Returns:
+        schemas.LocationCreate: information on the location and the corresponding request id
+    """
+    address = await LOCATION_REQUESTER.query_address_from_coordinates(latitude=latitude, longitude=longitude)
+    request = crud.create_request(database=database)
+    location = schemas.LocationCreate(
+        address=address,
+        geom=f"POINT({longitude} {latitude})",
         request_id=request.id,
     )
     return location

@@ -28,6 +28,18 @@ class AppTestClient:
         """
         return requests.get(f"{self.base_url}/location/{location_description}", timeout=5)
 
+    def get_location_from_coordinates(self, latitude: float, longitude: float) -> Response:
+        """Get a location by coordinates from the app
+
+        Args:
+            latitude (float): latitude of the location
+            longitude (float): longitude of the location
+
+        Returns:
+            Response: the location including address, geometry and id
+        """
+        return requests.get(f"{self.base_url}/location-from-coordinates/{latitude}/{longitude}", timeout=5)
+
     def get_trip(self, origin_id: int, destination_id: int) -> Response:
         """Get a trip from the app
 

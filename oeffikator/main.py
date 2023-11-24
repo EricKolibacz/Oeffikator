@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from oeffikator.point_iterator.grid_point_iterator import GridPointIterator
 from oeffikator.point_iterator.triangular_iterator_interface import TriangularPointIterator
-from oeffikator.requests import request_location, request_trip
+from oeffikator.requests import request_location, request_location_by_coordinates, request_trip
 
 from . import __version__, logger, settings
 from .sql_app import crud, models, schemas
@@ -117,7 +117,9 @@ async def get_trip_from_coordinates(
         destination_coordiantes[1],
     )
 
-    destination = await get_location(f"{destination_coordiantes[0]} {destination_coordiantes[1]}", database)
+    destination = await get_location_from_coordinates(
+        latitude=destination_coordiantes[0], longitude=destination_coordiantes[1], database=database
+    )
 
     if destination.geom not in [trip.destination.geom for trip in known_trips]:
         return await get_trip(origin.id, destination.id, database)
@@ -140,6 +142,48 @@ async def get_location(location_description: str, database: Session = Depends(ge
     if db_location is None:
         logger.info("Location description not known")
         location = await request_location(location_description, database)
+        db_location = crud.get_location_by_address(database, location.address)
+
+        if db_location is None:
+            logger.info("Address of Location not known")
+            logger.info("Saving address")
+            db_location = crud.create_location(database, location)
+        else:
+            logger.info("Address of Location is already known. No location created.")
+
+        logger.info("Saving alias")
+        crud.create_alias(database, schemas.LocationAliasCreate(address_alias=location_description), db_location.id)
+    else:
+        logger.info("Location description is already known. No location created.")
+
+    logger.info("Returning:")
+    logger.info("  - Address: %s", db_location.address)
+    logger.info("  - Coordinates: %s", db_location.geom)
+    return db_location
+
+
+@app.get("/location-from-coordinates/{latitude}/{longitude}", response_model=schemas.Location | None)
+async def get_location_from_coordinates(
+    latitude: float, longitude: float, database: Session = Depends(get_db)
+) -> schemas.Location:
+    """Get location for given coordinates. If not known yet, a location will be created.
+
+    Args:
+        latitude (float): latitude of the location
+        longitude (float): longitude of the location
+
+    Returns:
+        Location information like address of coordinates
+    """
+    # Note: to reduce the number of saved instances just group all locations within 1/1000 degree ~ 100m
+    latitude, longitude = round(latitude, 3), round(longitude, 3)
+    location_description = f"Point({latitude}, {longitude})"
+    logger.info("Using origin with following description: %s", location_description)
+    db_location = crud.get_location_by_alias(database, location_description)
+
+    if db_location is None:
+        logger.info("Location coordinates not known")
+        location = await request_location_by_coordinates(latitude=latitude, longitude=longitude, database=database)
         db_location = crud.get_location_by_address(database, location.address)
 
         if db_location is None:

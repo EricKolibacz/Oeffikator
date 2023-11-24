@@ -3,6 +3,8 @@ import datetime
 import logging
 from importlib.metadata import version
 
+from oeffikator.requesters.geopy_location_requester import GeopyLocationRequester
+
 from .requesters.rest_requester import RestRequester
 from .settings import Settings
 
@@ -11,6 +13,8 @@ __version__ = version("oeffikator")
 
 logger = logging.getLogger("uvicorn")
 logger.propagate = 0
+
+LOCATION_REQUESTER = GeopyLocationRequester()
 
 BVG_V6_URL_LOCAL = f"http://{settings.bvg_api_container_name}:3000"
 VBB_V6_URL_LOCAL = f"http://{settings.vbb_api_container_name}:3000"

@@ -12,6 +12,11 @@ client = AppTestClient("http://0.0.0.0:8200")
 LOCATION_1 = "Alexanderplatz 1"
 LOCATION_2 = "Friedrichstr. 50"
 LOCATION_3 = "Unter den Linden 1"
+LOCATION_COORDINATES = (
+    52.509669,
+    13.376294,
+)  # Berlin Potsdamer Platz, Tilla-Durieux-Park, Tiergarten, Mitte, Berlin, 10785, Deutschland
+
 
 # TEST CASES: Basic API tests (how it behaves on different edge cases)
 
@@ -58,6 +63,15 @@ def test_location_alias():
     location = Location(**response.json())
     location_alias = Location(**response_alias.json())
     assert location.id == location_alias.id
+
+
+def test_location_by_coordinates():
+    """Test whether the oeffikator gets the location by coorindates right"""
+    response = client.get_location_from_coordinates(LOCATION_COORDINATES[0], LOCATION_COORDINATES[1])
+    location = Location(**response.json())
+    assert (
+        location.address == "Berlin Potsdamer Platz, Tilla-Durieux-Park, Tiergarten, Mitte, Berlin, 10785, Deutschland"
+    )
 
 
 def test_trip():
