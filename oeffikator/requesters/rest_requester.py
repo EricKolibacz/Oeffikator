@@ -140,3 +140,9 @@ class RestRequester(RequesterInterface):
         async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
             async with session.post(url, data=data, headers=headers) as response:
                 return await response.json(content_type=None)
+
+    def __str__(self) -> str:
+        return self.url
+
+    def __repr__(self) -> str:
+        return self.__str__()
