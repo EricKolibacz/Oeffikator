@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.6
+
+* Update dependencies (aiohttp, black, fastapi, folium, geopy, imageio, matplotlib, numpy, pandas, pydantic-settings, pytz, scipy, sqlalchemy, uvicorn)
+
+
 ## 1.2.5
 
 * Update dependencies (github actions, python version, aiohttp, numpy, geoalchemy, pylint, gunicorn)
