@@ -46,24 +46,6 @@ def get_location_by_id(database: Session, location_id: int) -> Location | None:
     return database.query(Location).filter(Location.id == location_id).first()
 
 
-def get_location_by_coordinates(database: Session, latitude: float, longitude: float) -> Location | None:
-    """Get a location by its id
-
-    Args:
-        db (Session): database session
-        latitude (float): latitude of the location
-        longitude (float): longitude of the location
-
-    Returns:
-        Location: the queried location
-    """
-    return (
-        database.query(Location)
-        .filter(Location._geom == WKTElement(f"POINT({longitude} {latitude})", srid=4326))
-        .first()
-    )
-
-
 def create_location(database: Session, location: schemas.LocationCreate) -> Location:
     """Get a location by its location description(/alias)
 
