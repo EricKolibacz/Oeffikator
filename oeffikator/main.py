@@ -111,12 +111,12 @@ async def get_trip_from_coordinates(
     """
     logger.info(
         "Computing new trip for destination coordinates %f, %f",
-        destination_coordiantes[0],
         destination_coordiantes[1],
+        destination_coordiantes[0],
     )
 
     destination = await get_location_from_coordinates(
-        latitude=destination_coordiantes[0], longitude=destination_coordiantes[1], database=database
+        latitude=destination_coordiantes[1], longitude=destination_coordiantes[0], database=database
     )
 
     if destination.geom not in [trip.destination.geom for trip in known_trips]:
