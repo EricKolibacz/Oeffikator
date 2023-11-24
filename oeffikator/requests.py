@@ -17,8 +17,11 @@ from .sql_app import crud, models, schemas
 # pylint: disable-msg=W0511
 
 
-async def get_requester() -> RequesterInterface:
+async def get_requester(is_berlin: bool = False) -> RequesterInterface:
     """Simple function to get an available requester (=one which hasn't reached its request limit yet)
+
+    Args:
+        is_berlin (bool): if the requester is berlin specific
 
     Raises:
         ModuleNotFoundError: raises if no requester is available
@@ -27,11 +30,15 @@ async def get_requester() -> RequesterInterface:
     Returns:
         RequesterInterface: an available requester
     """
+    if not is_berlin:
+        requesters = [requester for requester in REQUESTERS]
+    else:
+        requesters = [requester for requester in REQUESTERS if requester.is_berlin_based]
+    shuffle(requesters)
+
     available_requester = None
-    requesters_shuffeld = list(copy.deepcopy(REQUESTERS))
-    shuffle(requesters_shuffeld)
     for _ in range(12):
-        for requester in requesters_shuffeld:
+        for requester in requesters:
             if not requester.has_reached_request_limit():
                 available_requester = requester
                 break
@@ -53,7 +60,7 @@ async def request_location(location_description: str, database: Session) -> sche
     Returns:
         schemas.LocationCreate: information on the location and the corresponding request id
     """
-    requester = await get_requester()
+    requester = await get_requester(is_berlin=True)
     requested_location = await requester.query_location(location_description)
     request = crud.create_request(database=database)
     location = schemas.LocationCreate(

@@ -25,6 +25,7 @@ class RestRequester(RequesterInterface):
     def __init__(self, url: str) -> None:
         super().__init__()
         self.url = url  # https://v5.bvg.transport.rest/locations
+        self.is_berlin_based = True if "bvg" in url.lower() or "vbb" in url.lower() else False
 
     async def query_location(self, query: str) -> dict:
         params = (
