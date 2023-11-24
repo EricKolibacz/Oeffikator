@@ -1,6 +1,8 @@
 """Module which combines everything connected to the requesters"""
+import copy
 import datetime
 import time
+from random import shuffle
 
 from shapely import from_wkt
 from sqlalchemy.orm import Session
@@ -25,8 +27,10 @@ async def get_requester() -> RequesterInterface:
         RequesterInterface: an available requester
     """
     available_requester = None
+    requesters_shuffeld = list(copy.deepcopy(REQUESTERS))
+    shuffle(requesters_shuffeld)
     for _ in range(12):
-        for requester in REQUESTERS:
+        for requester in requesters_shuffeld:
             if not requester.has_reached_request_limit():
                 available_requester = requester
                 break

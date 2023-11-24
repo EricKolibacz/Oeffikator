@@ -18,7 +18,7 @@ VBB_V6_URL_LOCAL = f"http://{settings.vbb_api_container_name}:3000"
 DB_V6_URL_LOCAL = f"http://{settings.db_api_container_name}:3000"
 
 REQUESTERS = [BVGRestRequester(url) for url in [DB_V6_URL_LOCAL, BVG_V6_URL_LOCAL, VBB_V6_URL_LOCAL]]
-REQUESTERS = [requester for requester in REQUESTERS if requester.is_responding()]
+REQUESTERS = tuple([requester for requester in REQUESTERS if requester.is_responding()])
 
 AUTHKEY = ""
 if AUTHKEY != "":
