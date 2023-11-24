@@ -27,7 +27,6 @@ class RestRequester(RequesterInterface):
     async def query_location(self, query: str, amount_of_results: int = 1) -> dict:
         params = (
             ("query", query),
-            ("results", str(amount_of_results)),
             ("addresses", "true"),
             ("stops", "false"),
             ("poi", "false"),
