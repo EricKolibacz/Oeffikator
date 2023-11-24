@@ -45,7 +45,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U $(cat /run/secrets/oeffi_db_user) -d ${OEFFI_DB_NAME}"
+          "pg_isready -U $(cat /run/secrets/oeffi_db_user) -d test"
         ]
       interval: 5s
       timeout: 5s
