@@ -54,7 +54,7 @@ services:
   test-bvg-api:
     build:
       context: .
-      dockerfile: transport_apis/bvg/Dockerfile
+      dockerfile: ../transport_apis/bvg/Dockerfile
     ports:
       - "3200:3000"
     container_name: ${OEFFI_BVG_API_CONTAINER_NAME}    
@@ -71,7 +71,7 @@ services:
   test-vbb-api:
     build:
       context: .
-      dockerfile: transport_apis/vbb/Dockerfile
+      dockerfile: ../transport_apis/vbb/Dockerfile
     ports:
       - "3201:3000"
     container_name: ${OEFFI_VBB_API_CONTAINER_NAME}    
@@ -88,7 +88,7 @@ services:
   test-db-api:
     build:
       context: .
-      dockerfile: transport_apis/db/Dockerfile
+      dockerfile: ../transport_apis/db/Dockerfile
     ports:
       - "3202:3000"
     container_name: ${OEFFI_DB_API_CONTAINER_NAME}    
