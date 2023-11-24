@@ -1,5 +1,5 @@
 """Pydantic database table models (and helpers)"""
-from pydantic import ConfigDict, BaseModel
+from pydantic import BaseModel, ConfigDict
 
 # pylint: disable=R0903
 
