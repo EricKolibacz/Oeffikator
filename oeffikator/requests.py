@@ -1,4 +1,5 @@
 """Module which combines everything connected to the requesters"""
+import asyncio
 import copy
 import datetime
 import time
@@ -76,6 +77,8 @@ async def request_location_by_coordinates(
     Returns:
         schemas.LocationCreate: information on the location and the corresponding request id
     """
+    while LOCATION_REQUESTER.has_reached_request_limit():
+        await asyncio.sleep(1)
     address = await LOCATION_REQUESTER.query_address_from_coordinates(latitude=latitude, longitude=longitude)
     request = crud.create_request(database=database)
     location = schemas.LocationCreate(
