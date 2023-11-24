@@ -25,9 +25,20 @@ class RestRequester(RequesterInterface):
     def __init__(self, url: str) -> None:
         super().__init__()
         self.url = url  # https://v5.bvg.transport.rest/locations
-        self.is_berlin_based = True if "bvg" in url.lower() or "vbb" in url.lower() else False
+        self.is_berlin_based = "bvg" in url.lower() or "vbb" in url.lower()
 
     async def query_location(self, query: str) -> dict:
+        """Queries the location given a query
+
+        Args:
+            query (str): description of the location
+
+        Raises:
+            TypeError: raised if the requester is not available
+
+        Returns:
+            dict: First result of the query
+        """
         params = (
             ("query", query),
             ("addresses", "true"),
@@ -46,6 +57,17 @@ class RestRequester(RequesterInterface):
     async def get_journey(
         self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int = 1
     ) -> dict:
+        """Returns a journey by public transport given a origin and destination
+
+        Args:
+            origin (dict): origin, corresponds to return type of self.query_location
+            destination (dict): destination, corresponds to return type of self.query_location
+            start_date (datetime): Time of journey start
+            amount_of_results (int, optional): Number of results to query. Defaults to 1.
+
+        Returns:
+            dict: the journey
+        """
         start_date = start_date.replace(tzinfo=pytz.timezone("Europe/Budapest")).astimezone(datetime.timezone.utc)
         params = (
             ("from.address", origin["address"]),

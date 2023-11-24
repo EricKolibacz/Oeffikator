@@ -1,5 +1,4 @@
 """The C(reate)R(ead)U(pdate)Delete functions"""
-from geoalchemy2 import WKTElement
 from sqlalchemy.orm import Session, aliased
 
 from oeffikator.sql_app.models import Location, LocationAlias, Request, Trip

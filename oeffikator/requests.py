@@ -1,6 +1,5 @@
 """Module which combines everything connected to the requesters"""
 import asyncio
-import copy
 import datetime
 import time
 from random import shuffle
@@ -31,7 +30,7 @@ async def get_requester(is_berlin: bool = False) -> RequesterInterface:
         RequesterInterface: an available requester
     """
     if not is_berlin:
-        requesters = [requester for requester in REQUESTERS]
+        requesters = REQUESTERS
     else:
         requesters = [requester for requester in REQUESTERS if requester.is_berlin_based]
     shuffle(requesters)

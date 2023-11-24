@@ -2,9 +2,7 @@
 import datetime
 from abc import ABC, abstractmethod
 
-from aiohttp import ClientSession
-
-from oeffikator.requesters import CHECK_FOR_REQUESTER_AVAILABILITY_IN_SECS, RESPONSE_TIMEOUT
+from oeffikator.requesters import CHECK_FOR_REQUESTER_AVAILABILITY_IN_SECS
 
 
 class RequesterInterface(ABC):
