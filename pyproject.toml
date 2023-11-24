@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "oeffikator"
-version = "1.2.6"
+version = "2.0.0"
 description = "A visualisation tool for commuting times on public transport"
 authors = ["Eric Kolibacz <e.kolibacz@yahoo.de>"]
 license = "GNU GPLv3"

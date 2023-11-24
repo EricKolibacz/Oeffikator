@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.0
+
+* Switch to OpenStreetMap map after Stamen is rate limited now 
+* Run Oeffikator with local instances of requesters (inspired by https://github.com/derhuerst)
+
+
 ## 1.2.6
 
 * Update dependencies (aiohttp, black, fastapi, folium, geopy, imageio, matplotlib, numpy, pandas, pydantic-settings, pytz, scipy, sqlalchemy, uvicorn)
