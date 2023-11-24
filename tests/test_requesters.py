@@ -14,7 +14,7 @@ from tests.requesters_commons import is_alive
 BVG_V5_URL = "https://v5.bvg.transport.rest"
 BVG_V6_URL = "https://v6.bvg.transport.rest"
 VBB_V6_URL = "https://v6.vbb.transport.rest"
-BVG_V6_URL_LOCAL = "http://127.0.0.1:3000"
+BVG_V6_URL_LOCAL = "http://127.0.0.1:3200"
 
 AVAILABLE_URLS = [url for url in [BVG_V6_URL_LOCAL] if is_alive(url)]
 

@@ -7,7 +7,7 @@ services:
       context: ..
       dockerfile: oeffikator/Dockerfile
     ports:
-      - 8001:8000
+      - 8200:8000
     environment:
       OEFFI_DB_NAME: ${OEFFI_DB_NAME}
       OEFFI_DB_CONTAINER_NAME: test-db
@@ -48,7 +48,7 @@ services:
   test-bvg-api:
     image: derhuerst/bvg-rest:6
     ports:
-      - "3000:3000"    
+      - "3200:3000"    
     container_name: test-bvg-api   
     healthcheck:
       test:

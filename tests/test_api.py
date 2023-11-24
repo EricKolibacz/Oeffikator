@@ -8,7 +8,7 @@ import requests.exceptions
 from oeffikator.sql_app.schemas import Location, Trip
 from tests.api_commons import AppTestClient
 
-client = AppTestClient("http://0.0.0.0:8001")
+client = AppTestClient("http://0.0.0.0:8200")
 LOCATION_1 = "Alexanderplatz 1"
 LOCATION_2 = "Friedrichstr. 50"
 LOCATION_3 = "Unter den Linden 1"
