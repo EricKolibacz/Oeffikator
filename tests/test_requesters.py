@@ -7,7 +7,6 @@ import numpy as np
 import pytest
 
 from oeffikator.requesters.bvg_rest_requester import BVGRestRequester
-from oeffikator.requesters.oeffi_requester import OeffiRequester
 from tests import TRAVELLING_DAYTIME
 from tests.requesters_commons import is_alive
 
@@ -101,19 +100,6 @@ def test_catch_wrong_requests_for_wrong_journey_for_bvg_requester():
     assert response == excepted_response
 
 
-# Oeffi requester
-def test_for_empty_auth_key_for_oeffi_requester():
-    """Check if we receive an appropriate warning if the authkey is empty."""
-    authkey = ""
-    with pytest.raises(ValueError):
-        OeffiRequester(authkey)
-
-
-def test_for_none_auth_key_for_oeffi_requester():
-    """Check if we receive an appropriate warning if the authkey is None."""
-    authkey = None
-    with pytest.raises(ValueError):
-        OeffiRequester(authkey)
 
 
 # requester interface check
