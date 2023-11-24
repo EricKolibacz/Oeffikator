@@ -3,9 +3,13 @@
 from geopy.adapters import AioHTTPAdapter
 from geopy.geocoders import Nominatim
 
+from oeffikator.requesters.requester_interface import RequesterInterface
 
-class GeopyLocationRequester:
+
+class GeopyLocationRequester(RequesterInterface):
     """This requester can transform coordinates into addresses."""
+
+    request_rate = 60
 
     async def query_address_from_coordinates(self, latitude: float, longitude: float) -> list[str]:
         """A method which queries the location given coordinates.
@@ -24,3 +28,6 @@ class GeopyLocationRequester:
         ) as geolocator:
             location = await geolocator.reverse(f"{latitude}, {longitude}")
         return location.address
+
+    def _check_response(self) -> bool:
+        return True
