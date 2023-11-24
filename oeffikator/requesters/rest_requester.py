@@ -26,7 +26,7 @@ class RestRequester(RequesterInterface):
 
     async def query_location(self, query: str) -> dict:
         if "berlin" not in query.lower():
-            query += ", Berlin, Deutschland"
+            query += ", Berlin"
         params = (
             ("query", query),
             ("addresses", "true"),
