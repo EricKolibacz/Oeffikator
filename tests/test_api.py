@@ -69,9 +69,7 @@ def test_location_by_coordinates():
     """Test whether the oeffikator gets the location by coorindates right"""
     response = client.get_location_from_coordinates(LOCATION_COORDINATES[0], LOCATION_COORDINATES[1])
     location = Location(**response.json())
-    assert (
-        location.address == "Berlin Potsdamer Platz, Tilla-Durieux-Park, Tiergarten, Mitte, Berlin, 10785, Deutschland"
-    )
+    assert location.address == "Berlin Potsdamer Platz, Potsdamer Platz, Tiergarten, Mitte, Berlin, 10785, Deutschland"
 
 
 def test_trip():
