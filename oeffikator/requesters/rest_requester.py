@@ -3,12 +3,14 @@ import datetime
 
 import pytz
 import requests
+from aiohttp import ClientSession
 
+from oeffikator.requesters import RESPONSE_TIMEOUT
 from oeffikator.requesters.requester_interface import RequesterInterface
 
 
-class BVGRestRequester(RequesterInterface):
-    """An requester querying data from the BVG.
+class RestRequester(RequesterInterface):
+    """An requester querying data from the BVG/VBB/DB.
     Does not require any authentification and is able to query coordinates from location strings.
 
     Args:
@@ -20,14 +22,25 @@ class BVGRestRequester(RequesterInterface):
 
     request_rate = 100
 
-    def __init__(self, url) -> None:
+    def __init__(self, url: str) -> None:
         super().__init__()
         self.url = url  # https://v5.bvg.transport.rest/locations
+        self.is_berlin_based = "bvg" in url.lower() or "vbb" in url.lower()
 
-    async def query_location(self, query: str, amount_of_results: int = 1) -> dict:
+    async def query_location(self, query: str) -> dict:
+        """Queries the location given a query
+
+        Args:
+            query (str): description of the location
+
+        Raises:
+            TypeError: raised if the requester is not available
+
+        Returns:
+            dict: First result of the query
+        """
         params = (
             ("query", query),
-            ("results", str(amount_of_results)),
             ("addresses", "true"),
             ("stops", "false"),
             ("poi", "false"),
@@ -44,6 +57,17 @@ class BVGRestRequester(RequesterInterface):
     async def get_journey(
         self, origin: dict, destination: dict, start_date: datetime, amount_of_results: int = 1
     ) -> dict:
+        """Returns a journey by public transport given a origin and destination
+
+        Args:
+            origin (dict): origin, corresponds to return type of self.query_location
+            destination (dict): destination, corresponds to return type of self.query_location
+            start_date (datetime): Time of journey start
+            amount_of_results (int, optional): Number of results to query. Defaults to 1.
+
+        Returns:
+            dict: the journey
+        """
         start_date = start_date.replace(tzinfo=pytz.timezone("Europe/Budapest")).astimezone(datetime.timezone.utc)
         params = (
             ("from.address", origin["address"]),
@@ -109,3 +133,38 @@ class BVGRestRequester(RequesterInterface):
         except requests.exceptions.ReadTimeout:
             return False
         return response.status_code // 100 == 2
+
+    async def get(self, url: str, params: tuple[tuple[str, str]]) -> dict:
+        """Method to for "GET"
+
+        Args:
+            url (str): the url to call get on
+            params (tuple[tuple[str, str]]): additional parameters
+
+        Returns:
+            dict: get respondse
+        """
+        async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
+            async with session.get(url, params=params) as response:
+                return await response.json(content_type=None)
+
+    async def post(self, url: str, data: str, headers: dict[str, str]) -> dict:
+        """Method to for "POST"
+
+        Args:
+            url (str): the url to call get on
+            data (str): data to post
+            headers (dict[str, str]): required headers
+
+        Returns:
+            dict: post response
+        """
+        async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
+            async with session.post(url, data=data, headers=headers) as response:
+                return await response.json(content_type=None)
+
+    def __str__(self) -> str:
+        return self.url
+
+    def __repr__(self) -> str:
+        return self.__str__()

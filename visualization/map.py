@@ -18,9 +18,13 @@ def get_folium_map(trip_response: dict, slider_value: float) -> str:
     Returns:
         str: html file as string
     """
-    # Create a map using Stamen Terrain, centered on study area with set zoom level
-    map_object = Map(location=[52.514811, 13.389394], tiles="Stamen Terrain", zoom_start=12)
-    if trip_response is not None:
+    if trip_response is None:
+        # Create a map using Stamen Terrain, centered on study area with set zoom level
+        map_object = Map(
+            location=[52.514811, 13.389394],
+            zoom_start=12,
+        )
+    else:
         buf, xlim, ylim = get_heatmap(trip_response)
         img = iio.imread(buf)
 
@@ -36,7 +40,6 @@ def get_folium_map(trip_response: dict, slider_value: float) -> str:
             min_lat=settings.max_south + 0.005,
             max_lat=settings.max_north - 0.005,
             max_bounds=True,
-            tiles="Stamen Terrain",
             zoom_start=12,
             min_zoom=12,
         )

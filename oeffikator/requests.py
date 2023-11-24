@@ -1,6 +1,8 @@
 """Module which combines everything connected to the requesters"""
+import asyncio
 import datetime
 import time
+from random import shuffle
 
 from shapely import from_wkt
 from sqlalchemy.orm import Session
@@ -8,14 +10,17 @@ from sqlalchemy.orm import Session
 from oeffikator import TRAVELLING_DAYTIME
 from oeffikator.requesters.requester_interface import RequesterInterface
 
-from . import REQUESTERS, logger
+from . import LOCATION_REQUESTER, REQUESTERS, logger
 from .sql_app import crud, models, schemas
 
 # pylint: disable-msg=W0511
 
 
-async def get_requester() -> RequesterInterface:
+async def get_requester(is_berlin: bool = False) -> RequesterInterface:
     """Simple function to get an available requester (=one which hasn't reached its request limit yet)
+
+    Args:
+        is_berlin (bool): if the requester is berlin specific
 
     Raises:
         ModuleNotFoundError: raises if no requester is available
@@ -24,15 +29,21 @@ async def get_requester() -> RequesterInterface:
     Returns:
         RequesterInterface: an available requester
     """
+    if not is_berlin:
+        requesters = REQUESTERS
+    else:
+        requesters = [requester for requester in REQUESTERS if requester.is_berlin_based]
+    shuffle(requesters)
+
     available_requester = None
     for _ in range(12):
-        for requester in REQUESTERS:
+        for requester in requesters:
             if not requester.has_reached_request_limit():
                 available_requester = requester
                 break
         if available_requester is None:
             logger.info("No requester seems to be avialble. Waiting a little bit ...")
-            time.sleep(5)
+            time.sleep(1)
     if available_requester is None:
         raise ValueError("No requesters are available at the moment.")
     return available_requester
@@ -48,12 +59,37 @@ async def request_location(location_description: str, database: Session) -> sche
     Returns:
         schemas.LocationCreate: information on the location and the corresponding request id
     """
-    requester = await get_requester()
+    requester = await get_requester(is_berlin=True)
     requested_location = await requester.query_location(location_description)
     request = crud.create_request(database=database)
     location = schemas.LocationCreate(
         address=requested_location["address"],
         geom=f"POINT({requested_location['longitude']} {requested_location['latitude']})",
+        request_id=request.id,
+    )
+    return location
+
+
+async def request_location_by_coordinates(
+    latitude: float, longitude: float, database: Session
+) -> schemas.LocationCreate:
+    """A function for querying location address, coordinates, etc. for given description
+
+    Args:
+        latitude (float): latitude of the location
+        longitude (float): longitude of the location
+        database (Session): session to connected database
+
+    Returns:
+        schemas.LocationCreate: information on the location and the corresponding request id
+    """
+    while LOCATION_REQUESTER.has_reached_request_limit():
+        await asyncio.sleep(1)
+    address = await LOCATION_REQUESTER.query_address_from_coordinates(latitude=latitude, longitude=longitude)
+    request = crud.create_request(database=database)
+    location = schemas.LocationCreate(
+        address=address,
+        geom=f"POINT({longitude} {latitude})",
         request_id=request.id,
     )
     return location

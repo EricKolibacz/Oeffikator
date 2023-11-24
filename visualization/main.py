@@ -28,7 +28,7 @@ server = app.server
 BASE_URL = f"http://{settings.app_container_name}:8000"
 
 print("This is the base url %s,", BASE_URL)
-INITIAL_LOCATION_DESCRIPTION = "Friedrichstr. 50"
+INITIAL_LOCATION_DESCRIPTION = "Friedrichstr. 50, Berlin-Mitte"
 
 app.layout = html.Div(
     children=[

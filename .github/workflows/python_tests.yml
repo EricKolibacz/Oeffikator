@@ -31,6 +31,7 @@ jobs:
         echo "docker"  > oeffikator_db_user.txt
         tr -dc A-Za-z0-9 </dev/urandom | head -c 13  > oeffikator_db_pw.txt
         docker compose -f tests/docker-compose.yml up --build -d
+        sleep 30
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

@@ -3,14 +3,14 @@ import asyncio
 
 import numpy as np
 
-from oeffikator.requesters.bvg_rest_requester import BVGRestRequester
+from oeffikator.requesters.rest_requester import RestRequester
 
 
 def is_alive(url: str) -> bool:
     """Tests if the requester queries the location properly"""
     coordinates_should_be = np.array([52.51627344417692, 13.37766793796735])
     if "bvg" in url or "vbb" in url or "127.0.0.1" in url:
-        requester = BVGRestRequester(url)
+        requester = RestRequester(url)
     else:
         raise ValueError(f"The url {url} is not supported")
     try:
