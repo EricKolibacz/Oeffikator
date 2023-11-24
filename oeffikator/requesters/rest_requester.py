@@ -27,8 +27,6 @@ class RestRequester(RequesterInterface):
         self.url = url  # https://v5.bvg.transport.rest/locations
 
     async def query_location(self, query: str) -> dict:
-        if "berlin" not in query.lower():
-            query += ", Berlin"
         params = (
             ("query", query),
             ("addresses", "true"),
