@@ -27,7 +27,6 @@ services:
       - oeffi_db_user
       - oeffi_db_pw
 
-  # TODO add build: dockerfile ?
   test-db:
     image: postgis/postgis
     ports:
