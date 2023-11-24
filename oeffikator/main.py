@@ -48,9 +48,7 @@ def requests_trips(
     Returns:
         a list of trips with information on the duration, origin and destination
     """
-    logger.info("Here")
     background_tasks.add_task(get_trips, origin_description, number_of_trips, database)
-    logger.info("there")
     return {"message": "Trips requested in the background"}
 
 
