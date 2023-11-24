@@ -3,7 +3,9 @@ import datetime
 
 import pytz
 import requests
+from aiohttp import ClientSession
 
+from oeffikator.requesters import RESPONSE_TIMEOUT
 from oeffikator.requesters.requester_interface import RequesterInterface
 
 
@@ -110,3 +112,32 @@ class RestRequester(RequesterInterface):
         except requests.exceptions.ReadTimeout:
             return False
         return response.status_code // 100 == 2
+
+    async def get(self, url: str, params: tuple[tuple[str, str]]) -> dict:
+        """Method to for "GET"
+
+        Args:
+            url (str): the url to call get on
+            params (tuple[tuple[str, str]]): additional parameters
+
+        Returns:
+            dict: get respondse
+        """
+        async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
+            async with session.get(url, params=params) as response:
+                return await response.json(content_type=None)
+
+    async def post(self, url: str, data: str, headers: dict[str, str]) -> dict:
+        """Method to for "POST"
+
+        Args:
+            url (str): the url to call get on
+            data (str): data to post
+            headers (dict[str, str]): required headers
+
+        Returns:
+            dict: post response
+        """
+        async with ClientSession(timeout=RESPONSE_TIMEOUT) as session:
+            async with session.post(url, data=data, headers=headers) as response:
+                return await response.json(content_type=None)
