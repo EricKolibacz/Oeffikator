@@ -12,10 +12,16 @@ services:
       OEFFI_DB_NAME: ${OEFFI_DB_NAME}
       OEFFI_DB_CONTAINER_NAME: test-db
       OEFFI_BVG_API_CONTAINER_NAME: test-bvg-api
+      OEFFI_VBB_API_CONTAINER_NAME: test-vbb-api
+      OEFFI_DB_API_CONTAINER_NAME: test-db-api
     depends_on:
       test-db:
         condition: service_healthy
       test-bvg-api:
+        condition: service_healthy
+      test-vbb-api:
+        condition: service_healthy
+      test-db-api:
         condition: service_healthy
     secrets:
       - oeffi_db_user
@@ -46,10 +52,12 @@ services:
       retries: 3
   
   test-bvg-api:
-    image: derhuerst/bvg-rest:6
+    build:
+      context: .
+      dockerfile: transport_apis/bvg/Dockerfile
     ports:
-      - "3200:3000"    
-    container_name: test-bvg-api   
+      - "3200:3000"
+    container_name: ${OEFFI_BVG_API_CONTAINER_NAME}    
     healthcheck:
       test:
         [
@@ -59,6 +67,41 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
+
+  test-vbb-api:
+    build:
+      context: .
+      dockerfile: transport_apis/vbb/Dockerfile
+    ports:
+      - "3201:3000"
+    container_name: ${OEFFI_VBB_API_CONTAINER_NAME}    
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "echo 0"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  test-db-api:
+    build:
+      context: .
+      dockerfile: transport_apis/db/Dockerfile
+    ports:
+      - "3202:3000"
+    container_name: ${OEFFI_DB_API_CONTAINER_NAME}    
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "echo 0"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
 
 secrets:
   oeffi_db_pw:

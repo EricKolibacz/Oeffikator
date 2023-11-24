@@ -11,7 +11,9 @@ services:
     environment:
       OEFFI_DB_NAME: ${OEFFI_DB_NAME}
       OEFFI_DB_CONTAINER_NAME: ${OEFFI_DB_CONTAINER_NAME}
-      OEFFI_BVG_API_CONTAINER_NAME: ${OEFFI_BVG_API_CONTAINER_NAME}   
+      OEFFI_BVG_API_CONTAINER_NAME: ${OEFFI_BVG_API_CONTAINER_NAME}
+      OEFFI_VBB_API_CONTAINER_NAME: ${OEFFI_VBB_API_CONTAINER_NAME}
+      OEFFI_DB_API_CONTAINER_NAME: ${OEFFI_DB_API_CONTAINER_NAME} 
       OEFFI_MAX_WEST: ${OEFFI_MAX_WEST}
       OEFFI_MAX_EAST: ${OEFFI_MAX_EAST}
       OEFFI_MAX_SOUTH: ${OEFFI_MAX_SOUTH}
@@ -20,6 +22,10 @@ services:
       db:
         condition: service_healthy
       bvg-api:
+        condition: service_healthy
+      vbb-api:
+        condition: service_healthy
+      db-api:
         condition: service_healthy
     secrets:
       - oeffi_db_user
@@ -78,10 +84,46 @@ services:
         condition: service_healthy
 
   bvg-api:
-    image: derhuerst/bvg-rest:6
+    build:
+      context: .
+      dockerfile: transport_apis/bvg/Dockerfile
     ports:
       - "3100:3000"
     container_name: ${OEFFI_BVG_API_CONTAINER_NAME}    
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "echo 0"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  vbb-api:
+    build:
+      context: .
+      dockerfile: transport_apis/vbb/Dockerfile
+    ports:
+      - "3101:3000"
+    container_name: ${OEFFI_VBB_API_CONTAINER_NAME}    
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "echo 0"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  db-api:
+    build:
+      context: .
+      dockerfile: transport_apis/db/Dockerfile
+    ports:
+      - "3102:3000"
+    container_name: ${OEFFI_DB_API_CONTAINER_NAME}    
     healthcheck:
       test:
         [

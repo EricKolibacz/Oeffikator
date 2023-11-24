@@ -11,47 +11,40 @@ from oeffikator.requesters.oeffi_requester import OeffiRequester
 from tests import TRAVELLING_DAYTIME
 from tests.requesters_commons import is_alive
 
-BVG_V5_URL = "https://v5.bvg.transport.rest"
-BVG_V6_URL = "https://v6.bvg.transport.rest"
-VBB_V6_URL = "https://v6.vbb.transport.rest"
 BVG_V6_URL_LOCAL = "http://127.0.0.1:3200"
+VBB_V6_URL_LOCAL = "http://127.0.0.1:3201"
+DB_V6_URL_LOCAL = "http://127.0.0.1:3202"
 
-AVAILABLE_URLS = [url for url in [BVG_V6_URL_LOCAL] if is_alive(url)]
+AVAILABLE_URLS = [url for url in [BVG_V6_URL_LOCAL, VBB_V6_URL_LOCAL, DB_V6_URL_LOCAL] if is_alive(url)]
 
 URL = random.choice(AVAILABLE_URLS) if AVAILABLE_URLS else None
 
 
 # BVG Rest requester
-def test_bvg5_alive():
-    """Tests if the bvg rest requester queries the location properly"""
-    if BVG_V5_URL not in AVAILABLE_URLS:
-        pytest.skip("BVG V5 is not alive")
-    coordinates_should_be = np.array([52.51627344417692, 13.37766793796735])
-    requester = BVGRestRequester(BVG_V5_URL)
-    location = asyncio.run(requester.query_location("Brandenburger Tor"))
-    coordinates_is = np.array([location["latitude"], location["longitude"]])
-    np.testing.assert_array_almost_equal(coordinates_should_be, coordinates_is, decimal=3)
-
-
-# BVG Rest requester
 def test_bvg6_alive():
     """Tests if the bvg rest requester queries the location properly"""
-    if BVG_V6_URL not in AVAILABLE_URLS:
-        pytest.skip("BVG V6 is not alive")
     coordinates_should_be = np.array([52.51627344417692, 13.37766793796735])
-    requester = BVGRestRequester(BVG_V6_URL)
+    requester = BVGRestRequester(BVG_V6_URL_LOCAL)
     location = asyncio.run(requester.query_location("Brandenburger Tor"))
     coordinates_is = np.array([location["latitude"], location["longitude"]])
     np.testing.assert_array_almost_equal(coordinates_should_be, coordinates_is, decimal=3)
 
 
-# BVG Rest requester
+# VBB Rest requester
 def test_vbb6_alive():
     """Tests if the bvg rest requester queries the location properly"""
-    if VBB_V6_URL not in AVAILABLE_URLS:
-        pytest.skip("VBB V6 is not alive")
     coordinates_should_be = np.array([52.51627344417692, 13.37766793796735])
-    requester = BVGRestRequester(VBB_V6_URL)
+    requester = BVGRestRequester(VBB_V6_URL_LOCAL)
+    location = asyncio.run(requester.query_location("Brandenburger Tor"))
+    coordinates_is = np.array([location["latitude"], location["longitude"]])
+    np.testing.assert_array_almost_equal(coordinates_should_be, coordinates_is, decimal=3)
+
+
+# DB Rest requester
+def test_db6_alive():
+    """Tests if the bvg rest requester queries the location properly"""
+    coordinates_should_be = np.array([52.51627344417692, 13.37766793796735])
+    requester = BVGRestRequester(DB_V6_URL_LOCAL)
     location = asyncio.run(requester.query_location("Brandenburger Tor"))
     coordinates_is = np.array([location["latitude"], location["longitude"]])
     np.testing.assert_array_almost_equal(coordinates_should_be, coordinates_is, decimal=3)
