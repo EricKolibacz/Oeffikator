@@ -36,7 +36,7 @@ async def get_requester() -> RequesterInterface:
                 break
         if available_requester is None:
             logger.info("No requester seems to be avialble. Waiting a little bit ...")
-            time.sleep(5)
+            time.sleep(1)
     if available_requester is None:
         raise ValueError("No requesters are available at the moment.")
     return available_requester
