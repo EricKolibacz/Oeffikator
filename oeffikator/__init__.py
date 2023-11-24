@@ -3,7 +3,7 @@ import datetime
 import logging
 from importlib.metadata import version
 
-from .requesters.bvg_rest_requester import BVGRestRequester
+from .requesters.rest_requester import RestRequester
 from .settings import Settings
 
 settings = Settings()
@@ -16,7 +16,7 @@ BVG_V6_URL_LOCAL = f"http://{settings.bvg_api_container_name}:3000"
 VBB_V6_URL_LOCAL = f"http://{settings.vbb_api_container_name}:3000"
 DB_V6_URL_LOCAL = f"http://{settings.db_api_container_name}:3000"
 
-REQUESTERS = [BVGRestRequester(url) for url in [DB_V6_URL_LOCAL, BVG_V6_URL_LOCAL, VBB_V6_URL_LOCAL]]
+REQUESTERS = [RestRequester(url) for url in [DB_V6_URL_LOCAL, BVG_V6_URL_LOCAL, VBB_V6_URL_LOCAL]]
 REQUESTERS = tuple([requester for requester in REQUESTERS if requester.is_responding()])
 
 

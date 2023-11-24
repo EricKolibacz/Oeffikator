@@ -7,8 +7,8 @@ import requests
 from oeffikator.requesters.requester_interface import RequesterInterface
 
 
-class BVGRestRequester(RequesterInterface):
-    """An requester querying data from the BVG.
+class RestRequester(RequesterInterface):
+    """An requester querying data from the BVG/VBB/DB.
     Does not require any authentification and is able to query coordinates from location strings.
 
     Args:
