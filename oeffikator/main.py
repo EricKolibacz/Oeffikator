@@ -109,15 +109,15 @@ async def get_trip_from_coordinates(
     Returns:
         schemas.Trip | None: _description_
     """
+    # Note: to reduce the number of saved instances just group all locations within 1/1000 degree ~ 100m
+    latitude, longitude = round(destination_coordiantes[1], 3), round(destination_coordiantes[0], 3)
+
     logger.info(
         "Computing new trip for destination coordinates %f, %f",
-        destination_coordiantes[1],
-        destination_coordiantes[0],
+        latitude,
+        longitude,
     )
-
-    destination = await get_location_from_coordinates(
-        latitude=destination_coordiantes[1], longitude=destination_coordiantes[0], database=database
-    )
+    destination = await get_location(location_description=f"{longitude} {latitude}", database=database)
 
     if destination.geom not in [trip.destination.geom for trip in known_trips]:
         return await get_trip(origin.id, destination.id, database)
@@ -173,8 +173,6 @@ async def get_location_from_coordinates(
     Returns:
         Location information like address of coordinates
     """
-    # Note: to reduce the number of saved instances just group all locations within 1/1000 degree ~ 100m
-    latitude, longitude = round(latitude, 3), round(longitude, 3)
     location_description = f"Point({latitude}, {longitude})"
     logger.info("Using origin with following description: %s", location_description)
     db_location = crud.get_location_by_alias(database, location_description)
