@@ -100,8 +100,6 @@ def test_catch_wrong_requests_for_wrong_journey_for_bvg_requester():
     assert response == excepted_response
 
 
-
-
 # requester interface check
 def test_has_reached_limit_for_requester_interface():
     """Tests if the bvg rest requester queries the location properly"""
