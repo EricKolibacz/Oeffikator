@@ -29,7 +29,7 @@ pydantic-settings = "^2.0.3"
 
 [tool.poetry.group.code_check.dependencies]
 isort = "^5.11.4"
-black = {extras = ["jupyter"], version = "^23.0.0"}
+black = {extras = ["jupyter"], version = "^24.0.0"}
 pylint = "^3.0.0"
 pycodestyle = "^2.10.0"
 nbqa = "^1.6.0"
