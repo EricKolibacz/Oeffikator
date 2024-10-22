@@ -1,11 +1,11 @@
 # From the Fastapi website (https://fastapi.tiangolo.com/deployment/docker/#docker-image-with-poetry)
-FROM python:3.12 as requirements-stage
+FROM python:3.13 as requirements-stage
 # create requirements.txt from poetry
 WORKDIR /tmp
 RUN pip install poetry
 COPY . /tmp/
 RUN poetry build && poetry export -f requirements.txt --output requirements.txt --without-hashes --without code_check,test
-FROM python:3.12
+FROM python:3.13
 WORKDIR /code
 # install required python packages
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
